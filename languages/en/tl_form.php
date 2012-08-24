@@ -21,20 +21,20 @@
  * Software Foundation website at <http://www.gnu.org/licenses/>.
  *
  * PHP version 5
- * @copyright  Leo Feyer 2005-2012
- * @author     Leo Feyer <http://www.contao.org>
+ * @copyright  terminal42 gmbh
+ * @author     Yanick Witschi <yanick.witschi@terminal42.ch> 
  * @package    mp_forms
- * @license    LGPL
+ * @license    LGPL 
  * @filesource
  */
 
 
 /**
- * Form fields
+ * Legends
  */
-$GLOBALS['TL_LANG']['FFL']['mp_form_pageswitch']		= array('Page break', 'Separates the form fields into different pages/steps.');
+$GLOBALS['TL_LANG']['tl_form']['mp_forms_legend']	= 'Multiple page forms';
 
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_fwd']	= array('Label', 'Please enter the label that is going to be used for the "next page" button.');
+$GLOBALS['TL_LANG']['tl_form']['mp_forms_getParam']	= array('GET parameter', 'You can optionally modify the used GET parameter here.');
