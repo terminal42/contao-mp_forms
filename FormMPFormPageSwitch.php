@@ -89,7 +89,7 @@ class FormMPFormPageSwitch extends Widget
 		if (TL_MODE == 'BE')
 		{
 			$objTemplate = new BackendTemplate('be_wildcard');
-			$objTemplate->wildcard = '### PAGE BREAK ###;';
+			$objTemplate->wildcard = '### PAGE BREAK ###';
 			return $objTemplate->parse();
 		}
 
@@ -123,6 +123,11 @@ class FormMPFormPageSwitch extends Widget
 	 */
 	public function parse($arrAttributes=null)
 	{
+		if (TL_MODE == 'BE')
+		{
+			return parent::parse($arrAttributes);
+		}
+
 		$strBuffer = parent::parse($arrAttributes);
 		return $strBuffer . $this->mp_forms_afterSubmit;
 	}
