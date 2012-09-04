@@ -88,8 +88,9 @@ class FormMPFormPageSwitch extends Widget
 	{
 		if ($this->imageSubmit && is_file(TL_ROOT . '/' . $this->singleSRC))
 		{
-			$strBuffer = sprintf('<input type="image" src="%s" id="ctrl_%s" class="submit%s" title="%s" alt="%s"%s%s',
+			$strBuffer = sprintf('<input type="image" src="%s" id="ctrl_%s" name="%s" class="submit%s" title="%s" alt="%s"%s%s',
 				$this->singleSRC,
+				'mpform_submit_' . $this->pid,
 				'mpform_submit_' . $this->pid,
 				(strlen($this->strClass) ? ' ' . $this->strClass : ''),
 				specialchars($this->slabel),
@@ -99,7 +100,8 @@ class FormMPFormPageSwitch extends Widget
 		}
 		else
 		{
-			$strBuffer = sprintf('<input type="submit" id="ctrl_%s" class="submit%s" value="%s"%s%s',
+			$strBuffer = sprintf('<input type="submit" id="ctrl_%s" name="%s" class="submit%s" value="%s"%s%s',
+				'mpform_submit_' . $this->pid,
 				'mpform_submit_' . $this->pid,
 				(strlen($this->strClass) ? ' ' . $this->strClass : ''),
 				specialchars($this->slabel),
