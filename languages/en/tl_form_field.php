@@ -37,4 +37,4 @@ $GLOBALS['TL_LANG']['FFL']['mp_form_pageswitch']		= array('Page break', 'Separat
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_fwd']	= array('Label', 'Please enter the label that is going to be used for the "next page" button.');
+$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_afterSubmit']	= array('HTML Code after button', 'You can define HTML code that gets inserted right after the button but before the page break.');

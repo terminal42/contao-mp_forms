@@ -7,6 +7,16 @@
 -- *                                                        *
 -- **********************************************************
 
+--
+-- Table `tl_form_field`
+--
+
+CREATE TABLE `tl_form_field` (
+  `mp_forms_afterSubmit` text NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+----------------------------------
+
 
 --
 -- Table `tl_form`

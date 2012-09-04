@@ -86,9 +86,16 @@ class FormMPFormPageSwitch extends Widget
 	 */
 	public function generate()
 	{
+		if (TL_MODE == 'BE')
+		{
+			$objTemplate = new BackendTemplate('be_wildcard');
+			$objTemplate->wildcard = '### PAGE BREAK ###;';
+			return $objTemplate->parse();
+		}
+
 		if ($this->imageSubmit && is_file(TL_ROOT . '/' . $this->singleSRC))
 		{
-			$strBuffer = sprintf('<input type="image" src="%s" id="ctrl_%s" name="%s" class="submit%s" title="%s" alt="%s"%s%s',
+			return sprintf('<input type="image" src="%s" id="ctrl_%s" name="%s" class="submit%s" title="%s" alt="%s"%s%s',
 				$this->singleSRC,
 				'mpform_submit_' . $this->pid,
 				'mpform_submit_' . $this->pid,
@@ -98,24 +105,25 @@ class FormMPFormPageSwitch extends Widget
 				$this->getAttributes(),
 				$this->strTagEnding);
 		}
-		else
-		{
-			$strBuffer = sprintf('<input type="submit" id="ctrl_%s" name="%s" class="submit%s" value="%s"%s%s',
-				'mpform_submit_' . $this->pid,
-				'mpform_submit_' . $this->pid,
-				(strlen($this->strClass) ? ' ' . $this->strClass : ''),
-				specialchars($this->slabel),
-				$this->getAttributes(),
-				$this->strTagEnding);
-		}
 
-		if (TL_MODE == 'BE')
-		{
-			$objTemplate = new BackendTemplate('be_wildcard');
-			$objTemplate->wildcard = '### PAGE BREAK ###; Button: ' . $strBuffer;
-			return $objTemplate->parse();
-		}
+		return sprintf('<input type="submit" id="ctrl_%s" name="%s" class="submit%s" value="%s"%s%s',
+			'mpform_submit_' . $this->pid,
+			'mpform_submit_' . $this->pid,
+			(strlen($this->strClass) ? ' ' . $this->strClass : ''),
+			specialchars($this->slabel),
+			$this->getAttributes(),
+			$this->strTagEnding);
+	}
 
-		return $strBuffer;
+
+	/**
+	 * Add custom HTML after the widget
+	 * @param array attributes
+	 * @return string
+	 */
+	public function parse($arrAttributes=null)
+	{
+		$strBuffer = parent::parse($arrAttributes);
+		return $strBuffer . $this->mp_forms_afterSubmit;
 	}
 }
