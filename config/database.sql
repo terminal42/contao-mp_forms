@@ -7,15 +7,6 @@
 -- *                                                        *
 -- **********************************************************
 
--- 
--- Table `tl_form_field`
--- 
-
-CREATE TABLE `tl_form_field` (
-  `mp_forms_fwd` varchar(255) NOT NULL default ''
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-----------------------------------
 
 --
 -- Table `tl_form`

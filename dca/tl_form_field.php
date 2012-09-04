@@ -32,11 +32,4 @@
 /**
  * Table tl_form_field
  */
-$GLOBALS['TL_DCA']['tl_form_field']['palettes']['mp_form_pageswitch'] = '{type_legend},type;{fconfig_legend},mp_forms_fwd;';
-
-$GLOBALS['TL_DCA']['tl_form_field']['fields']['mp_forms_fwd'] = array
-(
-	'label'                   => &$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_fwd'],
-	'exclude'                 => true,
-	'inputType'               => 'text'
-);
+$GLOBALS['TL_DCA']['tl_form_field']['palettes']['mp_form_pageswitch'] = '{type_legend},type,slabel;{image_legend:hide},imageSubmit;{expert_legend:hide},class,accesskey,tabindex';

@@ -30,21 +30,90 @@
 
 class FormMPFormPageSwitch extends Widget
 {
-	public $strTemplate = 'form_widget';
 
+	/**
+	 * Template
+	 * @var string
+	 */
+	protected $strTemplate = 'form_submit';
+
+
+	/**
+	 * Add specific attributes
+	 * @param string
+	 * @param mixed
+	 */
+	public function __set($strKey, $varValue)
+	{
+		switch ($strKey)
+		{
+			case 'required':
+			case 'mandatory':
+				// Ignore
+				break;
+
+			case 'singleSRC':
+				$this->arrConfiguration['singleSRC'] = $varValue;
+				break;
+
+			case 'imageSubmit':
+				$this->arrConfiguration['imageSubmit'] = $varValue ? true : false;
+				break;
+
+			case 'name':
+				$this->arrAttributes['name'] = $varValue;
+				break;
+
+			default:
+				parent::__set($strKey, $varValue);
+				break;
+		}
+	}
+
+
+	/**
+	 * Validate input and set value
+	 */
+	public function validate()
+	{
+		return;
+	}
+
+
+	/**
+	 * Generate the widget and return it as string
+	 * @return string
+	 */
 	public function generate()
 	{
-		if (TL_MODE == 'BE')
+		if ($this->imageSubmit && is_file(TL_ROOT . '/' . $this->singleSRC))
 		{
-			return '### PAGE BREAK; Forward label: ' . $this->mp_forms_fwd . '  ###';
+			$strBuffer = sprintf('<input type="image" src="%s" id="ctrl_%s" class="submit%s" title="%s" alt="%s"%s%s',
+				$this->singleSRC,
+				'mpform_submit_' . $this->pid,
+				(strlen($this->strClass) ? ' ' . $this->strClass : ''),
+				specialchars($this->slabel),
+				specialchars($this->slabel),
+				$this->getAttributes(),
+				$this->strTagEnding);
+		}
+		else
+		{
+			$strBuffer = sprintf('<input type="submit" id="ctrl_%s" class="submit%s" value="%s"%s%s',
+				'mpform_submit_' . $this->pid,
+				(strlen($this->strClass) ? ' ' . $this->strClass : ''),
+				specialchars($this->slabel),
+				$this->getAttributes(),
+				$this->strTagEnding);
 		}
 
-		return sprintf('<input name="%s" type="submit" id="ctrl_%s" class="submit%s" value="%s"%s%s',
-			'mpform_submit_' . $this->pid,
-			$this->strId,
-			(strlen($this->strClass) ? ' ' . $this->strClass : ''),
-			specialchars($this->mp_forms_fwd),
-			$this->getAttributes(),
-			$this->strTagEnding);
+		if (TL_MODE == 'BE')
+		{
+			$objTemplate = new BackendTemplate('be_wildcard');
+			$objTemplate->wildcard = '### PAGE BREAK ###; Button: ' . $strBuffer;
+			return $objTemplate->parse();
+		}
+
+		return $strBuffer;
 	}
 }
