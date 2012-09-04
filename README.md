@@ -18,5 +18,6 @@ to step 1.
 InsertTags
 ---
 
-Get current form step:   {{mp_forms::<form id>::current}}
-Get the number of steps: {{mp_forms::<form id>::total}}
+Get current form step:   {{mp_forms::\<form id\>::current}}
+
+Get the number of steps: {{mp_forms::\<form id\>::total}}
