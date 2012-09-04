@@ -99,7 +99,7 @@ class MPForms extends Controller
 		}
 
 		$strStepGetParam = ($arrData['mp_forms_getParam']) ? $arrData['mp_forms_getParam'] : 'step';
-		$blnStepSubmitted = (boolean) $this->Input->post('mpform_submit_' . $arrData['id']);
+		$blnStepSubmitted = (boolean) $this->Input->post('mpform_submit_' . $arrData['id']) || $this->Input->post('mpform_submit_' . $arrData['id'] . '_x');
 
 		// if no parameter is set but we have steps, then we are on step 1
 		$intCurrentStep = ($this->Input->get($strStepGetParam)) ? $this->Input->get($strStepGetParam) : 1;
