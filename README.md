@@ -14,3 +14,9 @@ page break in the form.
 
 Another cool feature is that if a user manually wants to go to step 3 and did not fill in step 1 or 2, he/she'll be redirected
 to step 1.
+
+InsertTags
+---
+
+Get current form step:   {{mp_forms::<form id>::current}}
+Get the number of steps: {{mp_forms::<form id>::total}}

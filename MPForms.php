@@ -443,4 +443,34 @@ class MPForms extends Controller
 
 		return $blnHasErrors;
 	}
+
+
+	/**
+	 * Replace InsertTags
+	 * @param string
+	 * @return string|false
+	 */
+	public function replaceTags($strTag)
+	{
+		if (strpos($strTag, 'mp_forms::') === false)
+		{
+			return false;
+		}
+
+		$arrChunks = explode('::', $strTag);
+
+		$intForm = $arrChunks[1];
+		$strMode = $arrChunks[2];
+
+		$objForm = Database::getInstance()->prepare('SELECT * FROM tl_form WHERE id=?')->execute($intForm);
+
+		switch ($strMode)
+		{
+			case 'current':
+				$strParam = ($objForm->mp_forms_getParam) ? $objForm->mp_forms_getParam : 'step';
+				return $this->Input->get($strParam);
+			case 'total':
+				return self::getNumberOfSteps($intForm);
+		}
+	}
 }
