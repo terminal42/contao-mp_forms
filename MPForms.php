@@ -104,6 +104,12 @@ class MPForms extends Controller
 		// if no parameter is set but we have steps, then we are on step 1
 		$intCurrentStep = ($this->Input->get($strStepGetParam)) ? $this->Input->get($strStepGetParam) : 1;
 
+		// redirect to step 1 if somebody feels like he has to enter step=1000000
+		if ($intCurrentStep > $intTotalSteps)
+		{
+			$this->redirectToStep($strStepGetParam, 1);
+		}
+
 		// -1 because we use arrays but a user doesn't get ?step=0
 		$intCurrentStep = $intCurrentStep - 1;
 
