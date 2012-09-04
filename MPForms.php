@@ -467,8 +467,9 @@ class MPForms extends Controller
 		switch ($strMode)
 		{
 			case 'current':
-				$strParam = ($objForm->mp_forms_getParam) ? $objForm->mp_forms_getParam : 'step';
-				return $this->Input->get($strParam);
+				$intStep = $this->Input->get((($objForm->mp_forms_getParam) ? $objForm->mp_forms_getParam : 'step'));
+				$intStep = ($intStep) ? $intStep : 1;
+				return $intStep;
 			case 'total':
 				return self::getNumberOfSteps($intForm);
 		}
