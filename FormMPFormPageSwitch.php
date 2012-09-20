@@ -95,7 +95,7 @@ class FormMPFormPageSwitch extends Widget
 
 		if ($this->imageSubmit && is_file(TL_ROOT . '/' . $this->singleSRC))
 		{
-			return sprintf('<input type="image" src="%s" id="ctrl_%s" name="%s" class="submit%s" title="%s" alt="%s"%s%s',
+			return sprintf('<input type="image" src="%s" id="ctrl_%s" name="%s" class="next submit%s" title="%s" alt="%s"%s%s',
 				$this->singleSRC,
 				'mpform_submit_' . $this->pid,
 				'mpform_submit_' . $this->pid,
@@ -106,7 +106,7 @@ class FormMPFormPageSwitch extends Widget
 				$this->strTagEnding);
 		}
 
-		return sprintf('<input type="submit" id="ctrl_%s" name="%s" class="submit%s" value="%s"%s%s',
+		return sprintf('<input type="submit" id="ctrl_%s" name="%s" class="next submit%s" value="%s"%s%s',
 			'mpform_submit_' . $this->pid,
 			'mpform_submit_' . $this->pid,
 			(strlen($this->strClass) ? ' ' . $this->strClass : ''),
