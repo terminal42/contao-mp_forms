@@ -4,22 +4,6 @@
     <td class="col_1 col_last"><div class="submit_container"><?php echo $this->generate(); ?></div></td>
   </tr>
 <?php else: ?>
-	<?php if ($this->mp_forms_progress != 'mp_forms_none'): ?>
-	<div class="progress_bar">
-		<?php echo $this->generateProgressBar($this->mp_forms_progress); ?>
-	</div>
-	<?php endif; ?>
-  <div class="submit_container">
-    <?php echo $this->generate(); ?> 
-  </div>
-<?php endif; ?>
-
-<?php if (!$this->tableless): ?>
-  <tr class="<?php echo $this->rowClass; ?>">
-    <td class="col_0 col_first">&nbsp;</td>
-    <td class="col_1 col_last"><div class="submit_container"><?php echo $this->generate(); ?></div></td>
-  </tr>
-<?php else: ?>
   <?php if ($this->mp_forms_progress == 'mp_forms_percentage'): ?>
     <?php $percentage = $this->getProgress(); ?>
     <div class="progress_bar">
