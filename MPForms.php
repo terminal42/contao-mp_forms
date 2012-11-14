@@ -68,7 +68,22 @@ class MPForms extends Controller
 		return count(array_keys(self::sortFormFieldsPerPage($intForm)));
 	}
 
+    
+    /**
+	 * Get the current step of a form
+	 * @param int form id
+	 * @return int number of current step
+	 */
+	public static function getCurrentStep($intForm)
+	{
+		$objForm = Database::getInstance()->prepare('SELECT * FROM tl_form WHERE id=?')->execute($intForm);
 
+		$intStep = Input::getInstance()->get((($objForm->mp_forms_getParam) ? $objForm->mp_forms_getParam : 'step'));
+		$intStep = ($intStep) ? $intStep : 1;
+		return $intStep;
+	}
+
+    
 	/**
 	 * Get the widgets of a step
 	 * @param int form id
@@ -468,14 +483,10 @@ class MPForms extends Controller
 		$intForm = $arrChunks[1];
 		$strMode = $arrChunks[2];
 
-		$objForm = Database::getInstance()->prepare('SELECT * FROM tl_form WHERE id=?')->execute($intForm);
-
 		switch ($strMode)
 		{
 			case 'current':
-				$intStep = $this->Input->get((($objForm->mp_forms_getParam) ? $objForm->mp_forms_getParam : 'step'));
-				$intStep = ($intStep) ? $intStep : 1;
-				return $intStep;
+				return self::getCurrentStep($intForm);
 			case 'total':
 				return self::getNumberOfSteps($intForm);
 		}

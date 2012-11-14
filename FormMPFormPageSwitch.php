@@ -115,24 +115,26 @@ class FormMPFormPageSwitch extends Widget
 			$this->strTagEnding);
 	}
 
+    
     /**
-	 * Generate the progress bar
-	 * @return string
+	 * Calculate the current step related to the total steps
+	 * @param string mode
+	 * @return int
 	 */
-	public function generateProgressBar($mode)
+	public function getProgress($mode = 'percentage')
 	{
-		$currentStep = $this->replaceInsertTags('{{mp_forms::'.$this->pid.'::current}}');
-		$totalSteps = $this->replaceInsertTags('{{mp_forms::'.$this->pid.'::total}}');
-		$progress = $currentStep / $totalSteps * 100;
-		if ($mode == 'mp_forms_percentage')
+		$currentStep = MPForms::getCurrentStep($this->pid);
+		$totalSteps = MPForms::getNumberOfSteps($this->pid);
+		if ($mode == 'percentage')
 		{
-			return '<span style="width:'.$progress.'%;">'.$progress.'%</span>';
+			return $currentStep / $totalSteps * 100;
 		}
-		else 
+		else
 		{
-			return '<span style="width:'.$progress.'%;">'.$currentStep.' / '.$totalSteps.'</span>';
+			return $currentStep . ' / ' . $totalSteps;
 		}
 	}
+
 
 	/**
 	 * Add custom HTML after the widget
