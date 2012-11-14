@@ -35,7 +35,7 @@ class FormMPFormPageSwitch extends Widget
 	 * Template
 	 * @var string
 	 */
-	protected $strTemplate = 'form_submit';
+	protected $strTemplate = 'form_page_switch';
 
 
 	/**
@@ -79,7 +79,6 @@ class FormMPFormPageSwitch extends Widget
 		return;
 	}
 
-
 	/**
 	 * Generate the widget and return it as string
 	 * @return string
@@ -121,13 +120,19 @@ class FormMPFormPageSwitch extends Widget
 	 * @param array attributes
 	 * @return string
 	 */
-	public function parse($arrAttributes=null)
+	public function parse($arrAttributes = null)
 	{
 		if (TL_MODE == 'BE')
 		{
 			return parent::parse($arrAttributes);
 		}
-
+        
+        // pass the progress in percentage and numbers to the template
+		$currentStep = MPForms::getCurrentStep($this->pid);;
+		$totalSteps = MPForms::getNumberOfSteps($this->pid);
+		$this->percentage = $currentStep / $totalSteps * 100;
+		$this->numbers = $currentStep . ' / ' . $totalSteps;
+        
 		$strBuffer = parent::parse($arrAttributes);
 		return $strBuffer . $this->mp_forms_afterSubmit;
 	}
