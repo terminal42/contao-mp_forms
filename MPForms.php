@@ -68,8 +68,8 @@ class MPForms extends Controller
 		return count(array_keys(self::sortFormFieldsPerPage($intForm)));
 	}
 
-    
-    /**
+
+   	/**
 	 * Get the current step of a form
 	 * @param int form id
 	 * @return int number of current step
@@ -83,7 +83,7 @@ class MPForms extends Controller
 		return $intStep;
 	}
 
-    
+
 	/**
 	 * Get the widgets of a step
 	 * @param int form id

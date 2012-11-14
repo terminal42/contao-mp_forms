@@ -4,20 +4,7 @@
     <td class="col_1 col_last"><div class="submit_container"><?php echo $this->generate(); ?></div></td>
   </tr>
 <?php else: ?>
-  <?php if ($this->mp_forms_progress == 'mp_forms_percentage'): ?>
-    <?php $percentage = $this->getProgress(); ?>
-    <div class="progress_bar">
-      <span style="width:<?php echo $percentage; ?>%"><?php echo $percentage; ?>%</span>
-    </div>
-  <?php elseif ($this->mp_forms_progress == 'mp_forms_numbers'): ?>
-    <?php $percentage = $this->getProgress();
-	      $numbers = $this->getProgress('numbers');
-	?>
-    <div class="progress_bar">
-      <span style="width:<?php echo $percentage; ?>%"><?php echo $numbers; ?></span>
-    </div>
-  <?php endif; ?>
   <div class="submit_container">
-    <?php echo $this->generate(); ?>
-  </div>
+    <?php echo $this->generate(); ?> 
+</div>
 <?php endif; ?>

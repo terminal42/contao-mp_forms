@@ -12,8 +12,7 @@
 --
 
 CREATE TABLE `tl_form_field` (
-  `mp_forms_afterSubmit` text NULL,
-  `mp_forms_progress` varchar(32) NOT NULL default ''
+  `mp_forms_afterSubmit` text NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 ----------------------------------
