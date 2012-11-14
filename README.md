@@ -15,6 +15,9 @@ page break in the form.
 Another cool feature is that if a user manually wants to go to step 3 and did not fill in step 1 or 2, he/she'll be redirected
 to step 1.
 
+If you want to provide a progress bar indicating the current step in relation to the total steps you can implement this by 
+using the variables "$this->percentage" (e.g. _50%_) and "$this->numbers" (e.g. _2 / 5_) in the template _form_page_switch_.
+
 InsertTags
 ---
 
