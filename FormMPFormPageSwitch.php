@@ -116,19 +116,6 @@ class FormMPFormPageSwitch extends Widget
 
 
 	/**
-	 * Pass the percentage and number values to the template
-	 */
-	private function setProgressData()
-	{
-		$currentStep = MPForms::getCurrentStep($this->pid);;
-		$totalSteps = MPForms::getNumberOfSteps($this->pid);
-		
-		$this->arrConfiguration["percentage"] = $currentStep / $totalSteps * 100;
-		$this->arrConfiguration["numbers"] = $currentStep . ' / ' . $totalSteps;
-	}
-
-
-	/**
 	 * Add custom HTML after the widget
 	 * @param array attributes
 	 * @return string
@@ -139,8 +126,13 @@ class FormMPFormPageSwitch extends Widget
 		{
 			return parent::parse($arrAttributes);
 		}
-		
-		$this->setProgressData();
+        
+        // pass the progress in percentage and numbers to the template
+		$currentStep = MPForms::getCurrentStep($this->pid);;
+		$totalSteps = MPForms::getNumberOfSteps($this->pid);
+		$this->percentage = $currentStep / $totalSteps * 100;
+		$this->numbers = $currentStep . ' / ' . $totalSteps;
+        
 		$strBuffer = parent::parse($arrAttributes);
 		return $strBuffer . $this->mp_forms_afterSubmit;
 	}
