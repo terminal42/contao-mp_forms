@@ -35,7 +35,7 @@ class FormMPFormPageSwitch extends Widget
 	 * Template
 	 * @var string
 	 */
-	protected $strTemplate = 'form_submit';
+	protected $strTemplate = 'form_page_switch';
 
 
 	/**
@@ -115,6 +115,24 @@ class FormMPFormPageSwitch extends Widget
 			$this->strTagEnding);
 	}
 
+    /**
+	 * Generate the progress bar
+	 * @return string
+	 */
+	public function generateProgressBar($mode)
+	{
+		$currentStep = $this->replaceInsertTags('{{mp_forms::'.$this->pid.'::current}}');
+		$totalSteps = $this->replaceInsertTags('{{mp_forms::'.$this->pid.'::total}}');
+		$progress = $currentStep / $totalSteps * 100;
+		if ($mode == 'mp_forms_percentage')
+		{
+			return '<span style="width:'.$progress.'%;">'.$progress.'%</span>';
+		}
+		else 
+		{
+			return '<span style="width:'.$progress.'%;">'.$currentStep.' / '.$totalSteps.'</span>';
+		}
+	}
 
 	/**
 	 * Add custom HTML after the widget

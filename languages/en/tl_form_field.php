@@ -38,3 +38,7 @@ $GLOBALS['TL_LANG']['FFL']['mp_form_pageswitch']		= array('Page break', 'Separat
  * Fields
  */
 $GLOBALS['TL_LANG']['tl_form_field']['mp_forms_afterSubmit']	= array('HTML Code after button', 'You can define HTML code that gets inserted right after the button but before the page break.');
+$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_progress']		= array('Progress bar', 'Insert a progress bar displaying the current step in percentage or numbers.');
+$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_none']			= array('No progress bar', 'Hide the progress bar.');
+$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_percentage']		= array('Show progress in percentage', 'Display the current progress in percentage.');
+$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_numbers']		= array('Show progress with numbers', 'Display the current progress in numbers.');

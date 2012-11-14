@@ -38,3 +38,7 @@ $GLOBALS['TL_LANG']['FFL']['mp_form_pageswitch']		= array('Seitenumbruch', 'Tren
  * Fields
  */
 $GLOBALS['TL_LANG']['tl_form_field']['mp_forms_afterSubmit']	= array('Eigener HTML-Code nach Button', 'Hier können Sie eigenen HTML-Code eingeben, welcher noch nach dem Button aber vor dem Seitenumbruch ausgegeben wird.');
+$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_progress']		= array('Fortschrittsanzeige', 'Hier können Sie eine Fortschrittsanzeige einfügen, welche den aktuellen Schritt innerhalb des Formulars anzeigt.');
+$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_none']			= array('Keine Fortschrittsanzeige', 'Keine Fortschrittsanzeige anzeigen.');
+$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_percentage']		= array('Fortschrittsanzeige in Prozent darstellen', 'Fortschrittsanzeige in Prozent darstellen.');
+$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_numbers']		= array('Fortschrittsanzeige mit Nummern darstellen', 'Fortschrittsanzeige mit Nummern darstellen.');
