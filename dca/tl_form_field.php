@@ -16,8 +16,8 @@ $GLOBALS['TL_DCA']['tl_form_field']['palettes']['mp_form_pageswitch'] = '{type_l
 
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['mp_forms_afterSubmit'] = array
 (
-	'label'                   => &$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_afterSubmit'],
-	'exclude'                 => true,
-	'inputType'               => 'textarea',
-	'eval'                    => array('tl_class'=>'clr', 'allowHtml'=>true)
+    'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_afterSubmit'],
+    'exclude'   => true,
+    'inputType' => 'textarea',
+    'eval'      => array('tl_class' => 'clr', 'allowHtml' => true)
 );

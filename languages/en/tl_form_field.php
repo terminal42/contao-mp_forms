@@ -11,9 +11,9 @@
 /**
  * Form fields
  */
-$GLOBALS['TL_LANG']['FFL']['mp_form_pageswitch']		= array('Page break', 'Separates the form fields into different pages/steps.');
+$GLOBALS['TL_LANG']['FFL']['mp_form_pageswitch'] = array('Page break', 'Separates the form fields into different pages/steps.');
 
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_afterSubmit']	= array('HTML Code after button', 'You can define HTML code that gets inserted right after the button but before the page break.');
+$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_afterSubmit'] = array('HTML Code after button', 'You can define HTML code that gets inserted right after the button but before the page break.');

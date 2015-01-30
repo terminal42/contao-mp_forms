@@ -12,9 +12,9 @@
 /**
  * Legends
  */
-$GLOBALS['TL_LANG']['tl_form']['mp_forms_legend']	= 'Mehrseitige Formulare';
+$GLOBALS['TL_LANG']['tl_form']['mp_forms_legend'] = 'Mehrseitige Formulare';
 
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_form']['mp_forms_getParam']	= array('GET-Parameter', 'Sie können hier optional den verwendeten GET-Parameter umstellen.');
+$GLOBALS['TL_LANG']['tl_form']['mp_forms_getParam'] = array('GET-Parameter', 'Sie können hier optional den verwendeten GET-Parameter umstellen.');

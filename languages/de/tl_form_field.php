@@ -11,9 +11,9 @@
 /**
  * Form fields
  */
-$GLOBALS['TL_LANG']['FFL']['mp_form_pageswitch']		= array('Seitenumbruch', 'Trennt die Felder in mehrere Seiten.');
+$GLOBALS['TL_LANG']['FFL']['mp_form_pageswitch'] = array('Seitenumbruch', 'Trennt die Felder in mehrere Seiten.');
 
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_afterSubmit']	= array('Eigener HTML-Code nach Button', 'Hier können Sie eigenen HTML-Code eingeben, welcher noch nach dem Button aber vor dem Seitenumbruch ausgegeben wird.');
+$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_afterSubmit'] = array('Eigener HTML-Code nach Button', 'Hier können Sie eigenen HTML-Code eingeben, welcher noch nach dem Button aber vor dem Seitenumbruch ausgegeben wird.');
