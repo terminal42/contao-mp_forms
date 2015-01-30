@@ -1,6 +1,6 @@
 <?php
 /**
- * fineuploader extension for Contao Open Source CMS
+ * mp_forms extension for Contao Open Source CMS
  *
  * @copyright  Copyright (c) 2015, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
