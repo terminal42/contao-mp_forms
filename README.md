@@ -30,3 +30,16 @@ You can use exactly the same parameters as you have in your template also via In
 * `{{mp_forms::<form id>::total}}`
 * `{{mp_forms::<form id>::percentage}}`
 * `{{mp_forms::<form id>::numbers}}`
+
+Note that they can be especially useful together with the `Custom HTML code after button` field that is available for every
+`Page break` form field. Let's assume you want to display a progress bar and show the steps after the `Continue` button for
+form ID 5:
+
+````html
+<div class="progress">
+    <div class="progress-bar">
+        <div class="progress-bar-inner" style="width:{{mp_forms::5::percentage}}%"></div>
+    </div>
+    <div class="numbers">{{mp_forms::5::numbers}}</div>
+</div>
+``
