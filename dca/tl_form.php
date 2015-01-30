@@ -17,5 +17,7 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_getParam'] = array
 (
     'label'     => &$GLOBALS['TL_LANG']['tl_form']['mp_forms_getParam'],
     'exclude'   => true,
-    'inputType' => 'text'
+    'default'   => 'step',
+    'inputType' => 'text',
+    'sql'       => "varchar(255) NOT NULL default 'step'"
 );
