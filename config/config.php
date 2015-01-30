@@ -9,14 +9,13 @@
  */
 
 
-
 /**
  * Form fields
  */
-$GLOBALS['TL_FFL']['mp_form_pageswitch']	= 'FormMPFormPageSwitch';
+$GLOBALS['TL_FFL']['mp_form_pageswitch']    = 'FormMPFormPageSwitch';
 
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['replaceInsertTags'][]	= array('MPForms', 'replaceTags');
-$GLOBALS['TL_HOOKS']['loadFormField'][]		= array('MPForms', 'loadFormField');
+$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('MPForms', 'replaceTags');
+$GLOBALS['TL_HOOKS']['loadFormField'][]     = array('MPForms', 'loadFormField');
