@@ -21,6 +21,7 @@ class FormMPFormPageSwitch extends FormSubmit
 
     /**
      * Add custom HTML after the widget
+     *
      * @param   array $arrAttributes
      * @return  string
      */
@@ -33,14 +34,20 @@ class FormMPFormPageSwitch extends FormSubmit
             return $template->parse();
         }
 
-        // pass the progress in percentage and numbers to the template
-        $currentStep = MPForms::getCurrentStep($this->pid);;
-        $totalSteps       = MPForms::getNumberOfSteps($this->pid);
-        $this->percentage = $currentStep / $totalSteps * 100;
-        $this->numbers    = $currentStep . ' / ' . $totalSteps;
+        $form = \FormModel::findByPk($this->pid);
+        $manager = new MPFormsFormManager(
+            \FormFieldModel::findPublishedByPid($form->id)
+        );
+        $getParam = $form->mp_forms_getParam ?: 'step';
+        $currentStep = (int) \Input::get($getParam);
 
-        $strBuffer = parent::parse($arrAttributes);
+        $this->current = $currentStep + 1;
+        $this->total = $manager->getNumberOfSteps() + 1;
+        $this->percentage = ($currentStep + 1) / ($manager->getNumberOfSteps() + 1) * 100;
+        $this->numbers    = ($currentStep + 1) . ' / ' . ($manager->getNumberOfSteps() + 1);
 
-        return $strBuffer . $this->mp_forms_afterSubmit;
+        $buffer = parent::parse($arrAttributes);
+
+        return $buffer . $this->mp_forms_afterSubmit;
     }
 }
