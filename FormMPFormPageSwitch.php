@@ -8,100 +8,29 @@
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       https://github.com/terminal42/contao-mp_forms
  */
-class FormMPFormPageSwitch extends Widget
+class FormMPFormPageSwitch extends FormSubmit
 {
-
     /**
-     * Template
-     * @var string
-     */
-    protected $strTemplate = 'form_page_switch';
-
-
-    /**
-     * Add specific attributes
-     * @param string
-     * @param mixed
-     */
-    public function __set($strKey, $varValue)
-    {
-        switch ($strKey) {
-            case 'required':
-            case 'mandatory':
-                // Ignore
-                break;
-
-            case 'singleSRC':
-                $this->arrConfiguration['singleSRC'] = $varValue;
-                break;
-
-            case 'imageSubmit':
-                $this->arrConfiguration['imageSubmit'] = $varValue ? true : false;
-                break;
-
-            case 'name':
-                $this->arrAttributes['name'] = $varValue;
-                break;
-
-            default:
-                parent::__set($strKey, $varValue);
-                break;
-        }
-    }
-
-
-    /**
-     * Validate input and set value
+     * Do not validate this form field
      */
     public function validate()
     {
         return;
     }
 
-    /**
-     * Generate the widget and return it as string
-     * @return string
-     */
-    public function generate()
-    {
-        if (TL_MODE == 'BE') {
-            $objTemplate           = new BackendTemplate('be_wildcard');
-            $objTemplate->wildcard = '### PAGE BREAK ###';
-
-            return $objTemplate->parse();
-        }
-
-        if ($this->imageSubmit && is_file(TL_ROOT . '/' . $this->singleSRC)) {
-            return sprintf('<input type="image" src="%s" id="ctrl_%s" name="%s" class="next submit%s" title="%s" alt="%s"%s%s',
-                $this->singleSRC,
-                'mpform_submit_' . $this->pid,
-                'mpform_submit_' . $this->pid,
-                (strlen($this->strClass) ? ' ' . $this->strClass : ''),
-                specialchars($this->slabel),
-                specialchars($this->slabel),
-                $this->getAttributes(),
-                $this->strTagEnding);
-        }
-
-        return sprintf('<input type="submit" id="ctrl_%s" name="%s" class="next submit%s" value="%s"%s%s',
-            'mpform_submit_' . $this->pid,
-            'mpform_submit_' . $this->pid,
-            (strlen($this->strClass) ? ' ' . $this->strClass : ''),
-            specialchars($this->slabel),
-            $this->getAttributes(),
-            $this->strTagEnding);
-    }
-
 
     /**
      * Add custom HTML after the widget
-     * @param array attributes
-     * @return string
+     * @param   array $arrAttributes
+     * @return  string
      */
     public function parse($arrAttributes = null)
     {
         if (TL_MODE == 'BE') {
-            return parent::parse($arrAttributes);
+            $template = new BackendTemplate('be_wildcard');
+            $template->wildcard = '### PAGE BREAK ###';
+
+            return $template->parse();
         }
 
         // pass the progress in percentage and numbers to the template

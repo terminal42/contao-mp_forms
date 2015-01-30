@@ -14,13 +14,6 @@
  */
 ClassLoader::addClasses(array
 (
-    'FromMPFormPageSwitch'   => 'system/modules/mp_forms/FromMPFormPageSwitch.php',
+    'FormMPFormPageSwitch'   => 'system/modules/mp_forms/FormMPFormPageSwitch.php',
     'MPForms'                => 'system/modules/mp_forms/MPForms.php'
-));
-/**
- * Register the templates
- */
-TemplateLoader::addFiles(array
-(
-    'form_page_switch'  => 'system/modules/mp_forms/templates'
 ));
