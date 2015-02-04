@@ -1,33 +1,12 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
-
+<?php
 /**
- * Contao Open Source CMS
- * Copyright (C) 2005-2012 Leo Feyer
+ * mp_forms extension for Contao Open Source CMS
  *
- * Formerly known as TYPOlight Open Source CMS.
- *
- * This program is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation, either
- * version 3 of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program. If not, please visit the Free
- * Software Foundation website at <http://www.gnu.org/licenses/>.
- *
- * PHP version 5
- * @copyright  terminal42 gmbh
- * @author     Yanick Witschi <yanick.witschi@terminal42.ch> 
- * @package    mp_forms
- * @license    LGPL 
- * @filesource
+ * @copyright  Copyright (c) 2015, terminal42 gmbh
+ * @author     terminal42 gmbh <info@terminal42.ch>
+ * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
+ * @link       https://github.com/terminal42/contao-mp_forms
  */
-
 
 /**
  * Table tl_form
@@ -36,7 +15,9 @@ $GLOBALS['TL_DCA']['tl_form']['palettes']['default'] .= ';{mp_forms_legend},mp_f
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_getParam'] = array
 (
-	'label'                   => &$GLOBALS['TL_LANG']['tl_form']['mp_forms_getParam'],
-	'exclude'                 => true,
-	'inputType'               => 'text'
+    'label'     => &$GLOBALS['TL_LANG']['tl_form']['mp_forms_getParam'],
+    'exclude'   => true,
+    'default'   => 'step',
+    'inputType' => 'text',
+    'sql'       => "varchar(255) NOT NULL default 'step'"
 );

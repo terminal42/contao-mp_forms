@@ -1,41 +1,22 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
-
+<?php
 /**
- * Contao Open Source CMS
- * Copyright (C) 2005-2010 Leo Feyer
+ * mp_forms extension for Contao Open Source CMS
  *
- * Formerly known as TYPOlight Open Source CMS.
- *
- * This program is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation, either
- * version 3 of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program. If not, please visit the Free
- * Software Foundation website at <http://www.gnu.org/licenses/>.
- *
- * PHP version 5
- * @copyright  certo web & design GmbH 2012 
- * @author     Yanick Witschi <yanick.witschi@certo-net.ch> 
- * @package    mp_forms
- * @license    LGPL
- * @filesource
+ * @copyright  Copyright (c) 2015, terminal42 gmbh
+ * @author     terminal42 gmbh <info@terminal42.ch>
+ * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
+ * @link       https://github.com/terminal42/contao-mp_forms
  */
 
 
 /**
  * Form fields
  */
-$GLOBALS['TL_FFL']['mp_form_pageswitch']	= 'FormMPFormPageSwitch';
+$GLOBALS['TL_FFL']['mp_form_pageswitch'] = 'FormMPFormPageSwitch';
 
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['replaceInsertTags'][]	= array('MPForms', 'replaceTags');
-$GLOBALS['TL_HOOKS']['loadFormField'][]		= array('MPForms', 'loadFormField');
+$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('MPForms', 'replaceTags');
+$GLOBALS['TL_HOOKS']['compileFormFields'][] = array('MPForms', 'compileFormFields');
+$GLOBALS['TL_HOOKS']['prepareFormData'][]   = array('MPForms', 'prepareFormData');

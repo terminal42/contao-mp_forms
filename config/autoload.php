@@ -10,11 +10,11 @@
 
 
 /**
- * Legends
+ * Register the classes
  */
-$GLOBALS['TL_LANG']['tl_form']['mp_forms_legend'] = 'Multiple page forms';
-
-/**
- * Fields
- */
-$GLOBALS['TL_LANG']['tl_form']['mp_forms_getParam'] = array('GET parameter', 'You can optionally modify the used GET parameter here.');
+ClassLoader::addClasses(array
+(
+    'FormMPFormPageSwitch'   => 'system/modules/mp_forms/FormMPFormPageSwitch.php',
+    'MPForms'                => 'system/modules/mp_forms/MPForms.php',
+    'MPFormsFormManager'     => 'system/modules/mp_forms/MPFormsFormManager.php',
+));
