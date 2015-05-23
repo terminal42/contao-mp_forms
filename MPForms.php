@@ -19,6 +19,11 @@ class MPForms
      */
     public function compileFormFields($formFields, $formId, $form)
     {
+        // Make sure empty form fields arrays are skipped
+        if (empty($formFields)) {
+            return $formFields;
+        }
+        
         $manager = new MPFormsFormManager($formFields);
 
         // Don't do anything if no page break
