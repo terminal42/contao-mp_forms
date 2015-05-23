@@ -119,11 +119,11 @@ class MPForms
             case 'current':
                 return (int) $currentStep + 1;
             case 'total':
-                return $manager->getNumberOfSteps() + 1;
+                return $manager->getNumberOfSteps();
             case 'percentage':
-                return ($currentStep + 1) / ($manager->getNumberOfSteps() + 1) * 100;
+                return ($currentStep + 1) / ($manager->getNumberOfSteps()) * 100;
             case 'numbers':
-                return ($currentStep + 1) . ' / ' . ($manager->getNumberOfSteps() + 1);
+                return ($currentStep + 1) . ' / ' . ($manager->getNumberOfSteps());
         }
     }
 
