@@ -74,10 +74,16 @@ class MPForms
 
         // Complete $submitted and $labels with previous step data and reset session
         if ($isLast) {
+            $sessionSubmitted = array();
+            $sessionLabels = array();
+
             foreach ((array) $_SESSION['MPFORMSTORAGE'][$form->id] as $stepData) {
-                $submitted = array_merge($submitted, $stepData['submitted']);
-                $labels = array_merge($labels, $stepData['labels']);
+                $sessionSubmitted = array_merge($sessionSubmitted, $stepData['submitted']);
+                $sessionLabels = array_merge($sessionLabels, $stepData['labels']);
             }
+
+            $submitted = array_merge($sessionSubmitted, $submitted);
+            $labels = array_merge($sessionLabels, $labels);
 
             unset($_SESSION['MPFORMSTORAGE'][$form->id]);
             return;
