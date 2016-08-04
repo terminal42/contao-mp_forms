@@ -18,14 +18,14 @@ class FormMPFormPageSwitch extends FormSubmit
         return;
     }
 
-
     /**
      * Add custom HTML after the widget
      *
-     * @param   array $arrAttributes
-     * @return  string
+     * @param array $attributes
+     *
+     * @return string
      */
-    public function parse($arrAttributes = null)
+    public function parse($attributes = null)
     {
         if (TL_MODE == 'BE') {
             $template = new BackendTemplate('be_wildcard');
@@ -46,7 +46,7 @@ class FormMPFormPageSwitch extends FormSubmit
         $this->percentage = ($currentStep + 1) / ($manager->getNumberOfSteps() + 1) * 100;
         $this->numbers    = ($currentStep + 1) . ' / ' . ($manager->getNumberOfSteps() + 1);
 
-        $buffer = parent::parse($arrAttributes);
+        $buffer = parent::parse($attributes);
 
         return $buffer . $this->mp_forms_afterSubmit;
     }

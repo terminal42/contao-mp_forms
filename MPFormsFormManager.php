@@ -19,7 +19,7 @@ class MPFormsFormManager
      * Array containing the fields per step
      * @var array
      */
-    private $formFieldsPerStep = array();
+    private $formFieldsPerStep = [];
 
     /**
      * Create a new form manager
@@ -46,6 +46,7 @@ class MPFormsFormManager
      * Check if a given step is available
      *
      * @param int $step
+     *
      * @return boolean
      */
     public function hasStep($step = 0)
@@ -57,7 +58,9 @@ class MPFormsFormManager
      * Get the fields for a given step
      *
      * @param int $step
+     *
      * @return FormFieldModel[]
+     *
      * @throws InvalidArgumentException
      */
     public function getFieldsForStep($step = 0)

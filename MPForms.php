@@ -11,23 +11,25 @@
 class MPForms
 {
     /**
-     * Adjust form fields to given page
+     * Adjust form fields to given page.
      *
-     * @param   FormFieldModel[] $formFields
-     * @param   string $formId
-     * @param   Form $form
+     * @param \FormFieldModel[] $formFields
+     * @param string $formId
+     * @param \Form $form
      */
-    public function compileFormFields($formFields, $formId, $form)
+    public function compileFormFields($formFields, $formId, \Form $form)
     {
         // Make sure empty form fields arrays are skipped
-        if (empty($formFields)) {
+        if (0 === count($formFields)) {
+
             return $formFields;
         }
         
         $manager = new MPFormsFormManager($formFields);
 
         // Don't do anything if no page break
-        if ($manager->getNumberOfSteps() === 1) {
+        if (1 === $manager->getNumberOfSteps()) {
+
             return $formFields;
         }
 
@@ -37,7 +39,7 @@ class MPForms
 
         // validate previous steps data
         // Do not validate if we are on the first step (there's no previous data)
-        $stepsToValidate = $isFirst ? array() : range(0, $currentStep - 1);
+        $stepsToValidate = $isFirst ? [] : range(0, $currentStep - 1);
         foreach ($stepsToValidate as $step) {
                 foreach ($manager->getFieldsForStep($step) as $formField) {
                     if (!$this->validateWidget($formField, $formId, $form)) {
@@ -51,20 +53,21 @@ class MPForms
 
     /**
      * Store the submitted data into the session and redirect to the next step
-     * unless it's the last
+     * unless it's the last.
      *
-     * @param   array $submitted
-     * @param   array $labels
-     * @param   Form $form
+     * @param array $submitted
+     * @param array $labels
+     * @param \Form $form
      */
-    public function prepareFormData(&$submitted, &$labels, $form)
+    public function prepareFormData(&$submitted, &$labels, \Form $form)
     {
         $manager = new MPFormsFormManager(
             \FormFieldModel::findPublishedByPid($form->id)
         );
 
         // Don't do anything if no page break
-        if ($manager->getNumberOfSteps() === 1) {
+        if (1 === $manager->getNumberOfSteps()) {
+
             return;
         }
 
@@ -99,14 +102,16 @@ class MPForms
     }
 
     /**
-     * Replace InsertTags
+     * Replace InsertTags.
      *
-     * @param   string $tag
-     * @return  int|false
+     * @param string $tag
+     *
+     * @return int|false
      */
     public function replaceTags($tag)
     {
         if (strpos($tag, 'mp_forms::') === false) {
+
             return false;
         }
 
@@ -133,15 +138,17 @@ class MPForms
         }
     }
 
+
     /**
-     * Validate a widget
+     * Validate widget.
      *
-     * @param   FormFieldModel $formField
-     * @param   string $formId
-     * @param   Form $form
-     * @return  boolean
+     * @param string $formField
+     * @param string $formId
+     * @param \Form  $form
+     *
+     * @return bool
      */
-    private function validateWidget($formField, $formId, $form)
+    private function validateWidget($formField, $formId, \Form $form)
     {
         $class = $GLOBALS['TL_FFL'][$formField->type];
 
@@ -175,10 +182,10 @@ class MPForms
     }
 
     /**
-     * Redirect to step
+     * Redirect to step.
      *
-     * @param   string $getParam
-     * @param   int $step
+     * @param string $getParam
+     * @param int    $step
      */
     private function redirectToStep($getParam, $step)
     {
