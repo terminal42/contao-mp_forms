@@ -17,6 +17,6 @@ $GLOBALS['TL_FFL']['mp_form_pageswitch'] = 'FormMPFormPageSwitch';
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('MPForms', 'replaceTags');
-$GLOBALS['TL_HOOKS']['compileFormFields'][] = array('MPForms', 'compileFormFields');
-$GLOBALS['TL_HOOKS']['prepareFormData'][]   = array('MPForms', 'prepareFormData');
+$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = ['MPForms', 'replaceTags'];
+$GLOBALS['TL_HOOKS']['compileFormFields'][] = ['MPForms', 'compileFormFields'];
+$GLOBALS['TL_HOOKS']['prepareFormData'][]   = ['MPForms', 'prepareFormData'];

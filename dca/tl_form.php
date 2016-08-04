@@ -13,11 +13,10 @@
  */
 $GLOBALS['TL_DCA']['tl_form']['palettes']['default'] .= ';{mp_forms_legend},mp_forms_getParam;';
 
-$GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_getParam'] = array
-(
+$GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_getParam'] = [
     'label'     => &$GLOBALS['TL_LANG']['tl_form']['mp_forms_getParam'],
     'exclude'   => true,
     'default'   => 'step',
     'inputType' => 'text',
     'sql'       => "varchar(255) NOT NULL default 'step'"
-);
+];

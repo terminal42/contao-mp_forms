@@ -12,9 +12,8 @@
 /**
  * Register the classes
  */
-ClassLoader::addClasses(array
-(
+ClassLoader::addClasses([
     'FormMPFormPageSwitch'   => 'system/modules/mp_forms/FormMPFormPageSwitch.php',
     'MPForms'                => 'system/modules/mp_forms/MPForms.php',
     'MPFormsFormManager'     => 'system/modules/mp_forms/MPFormsFormManager.php',
-));
+]);

@@ -77,8 +77,8 @@ class MPForms
 
         // Complete $submitted and $labels with previous step data and reset session
         if ($isLast) {
-            $sessionSubmitted = array();
-            $sessionLabels = array();
+            $sessionSubmitted = [];
+            $sessionLabels = [];
 
             foreach ((array) $_SESSION['MPFORMSTORAGE'][$form->id] as $stepData) {
                 $sessionSubmitted = array_merge($sessionSubmitted, $stepData['submitted']);
@@ -93,10 +93,10 @@ class MPForms
         }
 
         // Store data in session and redirect to next step
-        $_SESSION['MPFORMSTORAGE'][$form->id][$currentStep] = array(
+        $_SESSION['MPFORMSTORAGE'][$form->id][$currentStep] = [
             'submitted' => $submitted,
             'labels'    => $labels
-        );
+        ];
 
         $this->redirectToStep($getParam, ++$currentStep);
     }
@@ -190,7 +190,7 @@ class MPForms
     private function redirectToStep($getParam, $step)
     {
         if ($step === 0) {
-            $url = \Haste\Util\Url::removeQueryString(array($getParam));
+            $url = \Haste\Util\Url::removeQueryString([$getParam]);
         } else {
             $url = \Haste\Util\Url::addQueryString($getParam  . '=' . $step);
         }
