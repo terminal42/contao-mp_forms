@@ -17,3 +17,10 @@ ClassLoader::addClasses([
     'MPForms'                => 'system/modules/mp_forms/MPForms.php',
     'MPFormsFormManager'     => 'system/modules/mp_forms/MPFormsFormManager.php',
 ]);
+
+/**
+ * Register the templates
+ */
+TemplateLoader::addFiles([
+    'form_mp_forms_page_switch' => 'system/modules/mp_forms/templates'
+]);

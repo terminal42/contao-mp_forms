@@ -14,8 +14,8 @@ class MPForms
      * Adjust form fields to given page.
      *
      * @param \FormFieldModel[] $formFields
-     * @param string $formId
-     * @param \Form $form
+     * @param string            $formId
+     * @param \Form             $form
      */
     public function compileFormFields($formFields, $formId, \Form $form)
     {
@@ -24,31 +24,34 @@ class MPForms
 
             return $formFields;
         }
-        
-        $manager = new MPFormsFormManager($formFields);
 
-        // Don't do anything if no page break
-        if (1 === $manager->getNumberOfSteps()) {
+        $manager = new MPFormsFormManager(
+            $formFields,
+            $form->id,
+            $form->mp_forms_getParam
+        );
 
-            return $formFields;
+        // Don't try to render multi page form if no valid combination
+        if (!$manager->isValidFormFieldCombination()) {
+
+            return $manager->getFieldsWithoutPageBreaks();
         }
 
-        $getParam = $form->mp_forms_getParam ?: 'step';
-        $currentStep = (int) \Input::get($getParam);
-        $isFirst = $currentStep == 0;
-
-        // validate previous steps data
+        // Validate previous steps data
         // Do not validate if we are on the first step (there's no previous data)
-        $stepsToValidate = $isFirst ? [] : range(0, $currentStep - 1);
+        $stepsToValidate = $manager->isFirstStep() ?
+            [] :
+            range(0, $manager->getCurrentStep() - 1);
+
         foreach ($stepsToValidate as $step) {
-                foreach ($manager->getFieldsForStep($step) as $formField) {
-                    if (!$this->validateWidget($formField, $formId, $form)) {
-                        $this->redirectToStep($getParam, $step);
-                    }
+            foreach ($manager->getFieldsForStep($step) as $formField) {
+                if (!$this->validateWidget($formField, $formId, $form)) {
+                    $this->redirectToStep($manager->getGetParam(), $step);
                 }
             }
+        }
 
-        return $manager->getFieldsForStep($currentStep);
+        return $manager->getFieldsForStep($manager->getCurrentStep());
     }
 
     /**
@@ -62,43 +65,40 @@ class MPForms
     public function prepareFormData(&$submitted, &$labels, \Form $form)
     {
         $manager = new MPFormsFormManager(
-            \FormFieldModel::findPublishedByPid($form->id)
+            \FormFieldModel::findPublishedByPid($form->id),
+            $form->id,
+            $form->mp_forms_getParam
         );
 
-        // Don't do anything if no page break
-        if (1 === $manager->getNumberOfSteps()) {
+        // Don't do anything if not valid
+        if (!$manager->isValidFormFieldCombination()) {
 
             return;
         }
 
-        $getParam = $form->mp_forms_getParam ?: 'step';
-        $currentStep = (int) \Input::get($getParam);
-        $isLast = $currentStep == ($manager->getNumberOfSteps() - 1);
+        // Store data in session
+        $manager->storeData($submitted, $labels);
 
-        // Complete $submitted and $labels with previous step data and reset session
-        if ($isLast) {
-            $sessionSubmitted = [];
-            $sessionLabels = [];
+        // Want to go back or continue?
+        $direction = 'back' === $submitted['mp_form_pageswitch'] ? 'back' : 'continue';
+        $nextStep  = 'back' === $direction ? $manager->getPreviousStep() : $manager->getNextStep();
 
-            foreach ((array) $_SESSION['MPFORMSTORAGE'][$form->id] as $stepData) {
-                $sessionSubmitted = array_merge($sessionSubmitted, $stepData['submitted']);
-                $sessionLabels = array_merge($sessionLabels, $stepData['labels']);
-            }
+        // Submit form
+        if ($manager->isLastStep() && 'continue' === $direction) {
 
-            $submitted = array_merge($sessionSubmitted, $submitted);
-            $labels = array_merge($sessionLabels, $labels);
+            $allData = $manager->getDataOfAllSteps();
 
-            unset($_SESSION['MPFORMSTORAGE'][$form->id]);
+            // Replace data by reference and then return so the default Contao
+            // routine kicks in
+            $submitted = $allData['submitted'];
+            $labels = $allData['labels'];
+
+            // Clear session
+            $manager->resetData();
             return;
         }
 
-        // Store data in session and redirect to next step
-        $_SESSION['MPFORMSTORAGE'][$form->id][$currentStep] = [
-            'submitted' => $submitted,
-            'labels'    => $labels
-        ];
-
-        $this->redirectToStep($getParam, ++$currentStep);
+        $this->redirectToStep($manager->getGetParam(), $nextStep);
     }
 
     /**
@@ -121,20 +121,20 @@ class MPForms
 
         $form = \FormModel::findByPk($formId);
         $manager = new MPFormsFormManager(
-            \FormFieldModel::findPublishedByPid($form->id)
+            \FormFieldModel::findPublishedByPid($form->id),
+            $form->id,
+            $form->mp_forms_getParam
         );
-        $getParam = $form->mp_forms_getParam ?: 'step';
-        $currentStep = (int) \Input::get($getParam);
 
         switch ($value) {
             case 'current':
-                return (int) $currentStep + 1;
+                return (int) $manager->getCurrentStep() + 1;
             case 'total':
                 return $manager->getNumberOfSteps();
             case 'percentage':
-                return ($currentStep + 1) / ($manager->getNumberOfSteps()) * 100;
+                return ($manager->getCurrentStep() + 1) / ($manager->getNumberOfSteps()) * 100;
             case 'numbers':
-                return ($currentStep + 1) . ' / ' . ($manager->getNumberOfSteps());
+                return ($manager->getCurrentStep() + 1) . ' / ' . ($manager->getNumberOfSteps());
         }
     }
 

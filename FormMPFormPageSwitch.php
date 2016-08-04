@@ -8,14 +8,38 @@
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       https://github.com/terminal42/contao-mp_forms
  */
-class FormMPFormPageSwitch extends FormSubmit
+class FormMPFormPageSwitch extends \Widget
 {
     /**
-     * Do not validate this form field
+     * Template
+     *
+     * @var string
      */
-    public function validate()
+    protected $strTemplate = 'form_mp_forms_page_switch';
+
+    /**
+     * The CSS class prefix
+     *
+     * @var string
+     */
+    protected $strPrefix = 'widget widget-pagebreak';
+
+    /**
+     * Submit indicator
+     * @var boolean
+     */
+    protected $blnSubmitInput = true;
+
+    /**
+     * Do not validate this form field
+     *
+     * @param string
+     *
+     * @return string
+     */
+    public function validator($input)
     {
-        return;
+        return $input;
     }
 
     /**
@@ -36,18 +60,23 @@ class FormMPFormPageSwitch extends FormSubmit
 
         $form = \FormModel::findByPk($this->pid);
         $manager = new MPFormsFormManager(
-            \FormFieldModel::findPublishedByPid($form->id)
+            \FormFieldModel::findPublishedByPid($form->id),
+            $form->id,
+            $form->mp_forms_getParam
         );
-        $getParam = $form->mp_forms_getParam ?: 'step';
-        $currentStep = (int) \Input::get($getParam);
 
-        $this->current = $currentStep + 1;
-        $this->total = $manager->getNumberOfSteps() + 1;
-        $this->percentage = ($currentStep + 1) / ($manager->getNumberOfSteps() + 1) * 100;
-        $this->numbers    = ($currentStep + 1) . ' / ' . ($manager->getNumberOfSteps() + 1);
+        $this->canGoBack = !$manager->isFirstStep();
 
-        $buffer = parent::parse($attributes);
+        return parent::parse($attributes);
+    }
 
-        return $buffer . $this->mp_forms_afterSubmit;
+    /**
+     * Old generate() method that must be implemented due to abstract declaration.
+     *
+     * @throws \BadMethodCallException
+     */
+    public function generate()
+    {
+        throw new BadMethodCallException('Calling generate() has been deprecated, you must use parse() instead!');
     }
 }

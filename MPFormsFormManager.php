@@ -11,9 +11,21 @@
 class MPFormsFormManager
 {
     /**
-     * @var FormFieldModel[]
+     * @var \FormFieldModel[]
      */
     private $formFieldModels;
+
+    /**
+     * Form id
+     * @var int
+     */
+    private $formId;
+
+    /**
+     * Get param
+     * @var string
+     */
+    private $getParam = 'step';
 
     /**
      * Array containing the fields per step
@@ -22,14 +34,49 @@ class MPFormsFormManager
     private $formFieldsPerStep = [];
 
     /**
+     * True if last form field is a page break type
+     * @var bool
+     */
+    private $lastFormFieldIsPageBreak = false;
+
+    /**
      * Create a new form manager
      *
-     * @param   FormFieldModel[] $formFieldModels
+     * @param FormFieldModel[] $formFieldModels
+     * @param int              $formId
+     * @param string           $getParam
      */
-    function __construct($formFieldModels)
+    function __construct($formFieldModels, $formId, $getParam)
     {
         $this->formFieldModels = $formFieldModels;
+        $this->formId = $formId;
+
+        if (is_string($getParam) && strlen($getParam) >= 1) {
+            $this->getParam = $getParam;
+        }
+
         $this->splitFormFieldsToSteps();
+    }
+
+    /**
+     * Checks if the combination is valid.
+     *
+     * @return bool
+     */
+    public function isValidFormFieldCombination()
+    {
+        return $this->lastFormFieldIsPageBreak
+            && $this->getNumberOfSteps() > 1;
+    }
+
+    /**
+     * Gets the GET param.
+     *
+     * @return string
+     */
+    public function getGetParam()
+    {
+        return $this->getParam;
     }
 
     /**
@@ -55,7 +102,7 @@ class MPFormsFormManager
     }
 
     /**
-     * Get the fields for a given step
+     * Get the fields for a given step.
      *
      * @param int $step
      *
@@ -73,17 +120,180 @@ class MPFormsFormManager
     }
 
     /**
+     * Get the fields without the page breaks.
+     *
+     * @return FormFieldModel[]
+     */
+    public function getFieldsWithoutPageBreaks()
+    {
+        $formFields = $this->formFieldModels;
+
+        foreach ($formFields as $k => $formField) {
+            if ('mp_form_pageswitch' === $formField->type) {
+                unset ($formFields[$k]);
+            }
+        }
+
+        return $formFields;
+    }
+
+    /**
+     * Gets the current step.
+     *
+     * @return int
+     */
+    public function getCurrentStep()
+    {
+        return (int) \Input::get($this->getParam);
+    }
+
+    /**
+     * Gets the previous step.
+     *
+     * @return int
+     */
+    public function getPreviousStep()
+    {
+        $previous = $this->getCurrentStep() - 1;
+
+        if ($previous < 0) {
+            $previous = 0;
+        }
+
+        return $previous;
+    }
+
+    /**
+     * Gets the next step.
+     *
+     * @return int
+     */
+    public function getNextStep()
+    {
+        $next = $this->getCurrentStep() + 1;
+
+        if ($next > $this->getNumberOfSteps()) {
+            $next = $this->getNumberOfSteps();
+        }
+
+        return $next;
+    }
+
+    /**
+     * Check if current step is the first.
+     *
+     * @return bool
+     */
+    public function isFirstStep()
+    {
+        if (0 === $this->getCurrentStep()) {
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if current step is the last.
+     *
+     * @return bool
+     */
+    public function isLastStep()
+    {
+        if ($this->getCurrentStep() >= ($this->getNumberOfSteps() - 1)) {
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Store data.
+     *
+     * @param array $submitted
+     * @param array $labels
+     */
+    public function storeData(array $submitted, array $labels)
+    {
+        $_SESSION['MPFORMSTORAGE'][$this->formId][$this->getCurrentStep()] = [
+            'submitted' => $submitted,
+            'labels'    => $labels
+        ];
+    }
+
+    /**
+     * Get data of current step.
+     *
+     * @return array
+     */
+    public function getDataOfCurrentStep()
+    {
+        return (array) $_SESSION['MPFORMSTORAGE'][$this->formId][$this->getCurrentStep()];
+    }
+
+    /**
+     * Get data of all steps merged into one array.
+     *
+     * @return array
+     */
+    public function getDataOfAllSteps()
+    {
+        $submitted = [];
+        $labels = [];
+
+        foreach ((array) $_SESSION['MPFORMSTORAGE'][$this->formId] as $stepData) {
+            $submitted = array_merge($submitted, (array) $stepData['submitted']);
+            $labels    = array_merge($labels, (array) $stepData['labels']);
+        }
+
+        return [
+            'submitted' => $submitted,
+            'labels'    => $labels
+        ];
+    }
+
+    /**
+     * Reset the data.
+     */
+    public function resetData()
+    {
+        unset($_SESSION['MPFORMSTORAGE'][$this->formId]);
+    }
+
+    /**
      * Prepare an array that splits up the fields into steps
      */
     private function splitFormFieldsToSteps()
     {
         $i = 0;
+        $lastType = '';
         foreach ($this->formFieldModels as $formField) {
             $this->formFieldsPerStep[$i][] = $formField;
 
-            if ($formField->type === 'mp_form_pageswitch') {
+            // Fetch value from session (if one switches back)
+            if (isset($this->getDataOfCurrentStep()['submitted'])
+                && array_key_exists($formField->name, $this->getDataOfCurrentStep()['submitted'])
+            ) {
+                $formField->value = $this->getDataOfCurrentStep()['submitted'][$formField->name];
+            }
+
+            $lastType = $formField->type;
+
+            if ('mp_form_pageswitch' === $formField->type) {
+                // Set the name on the model, otherwise one has to enter it
+                // in the back end every time
+                $formField->name = $formField->type;
+
+                // Increase counter
                 $i++;
             }
+        }
+
+        // Ensure the very last form field is a pageswitch too
+        if ('mp_form_pageswitch' === $lastType) {
+            $this->lastFormFieldIsPageBreak = true;
         }
     }
 }

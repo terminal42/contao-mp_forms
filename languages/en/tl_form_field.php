@@ -16,4 +16,4 @@ $GLOBALS['TL_LANG']['FFL']['mp_form_pageswitch'] = ['Page break', 'Separates the
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_afterSubmit'] = ['HTML Code after button', 'You can define HTML code that gets inserted right after the button but before the page break.'];
+$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_backButton'] = ['Back button label', 'Please enter the label of the back button.'];

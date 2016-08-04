@@ -1,0 +1,11 @@
+<?php $this->extend('form_row'); ?>
+
+<?php $this->block('field'); ?>
+
+<?php if ($this->canGoBack): ?>
+<button type="submit" name="<?= $this->name ?>" value="back"><?= $this->mp_forms_backButton ?></button>
+<?php endif; ?>
+
+<button type="submit" name="<?= $this->name ?>" value="continue"><?= $this->slabel ?></button>
+
+<?php $this->endblock(); ?>

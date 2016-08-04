@@ -16,4 +16,4 @@ $GLOBALS['TL_LANG']['FFL']['mp_form_pageswitch'] = ['Seitenumbruch', 'Trennt die
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_afterSubmit'] = ['Eigener HTML-Code nach Button', 'Hier können Sie eigenen HTML-Code eingeben, welcher noch nach dem Button aber vor dem Seitenumbruch ausgegeben wird.'];
+$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_backButton'] = ['Bezeichnung der Zurück-Schaltfläche', 'Bitte geben Sie die Bezeichnung der Zurück-Schaltfläche ein.'];
