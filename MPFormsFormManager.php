@@ -23,12 +23,14 @@ class MPFormsFormManager
 
     /**
      * Array containing the fields per step
+     *
      * @var array
      */
     private $formFieldsPerStep = [];
 
     /**
      * True if last form field is a page break type
+     *
      * @var bool
      */
     private $lastFormFieldIsPageBreak = false;
@@ -235,7 +237,7 @@ class MPFormsFormManager
         if (0 === $step) {
             $url = \Haste\Util\Url::removeQueryString([$this->getGetParam()]);
         } else {
-            $url = \Haste\Util\Url::addQueryString($this->getGetParam()  . '=' . $step);
+            $url = \Haste\Util\Url::addQueryString($this->getGetParam() . '=' . $step);
         }
 
         return $url;
