@@ -34,16 +34,10 @@ class MPForms
         }
 
         // Validate previous steps data
-        // Do not validate if we are on the first step (there's no previous data)
-        $stepsToValidate = $manager->isFirstStep() ?
-            [] :
-            range(0, $manager->getCurrentStep() - 1);
-
-        foreach ($stepsToValidate as $step) {
-            foreach ($manager->getFieldsForStep($step) as $formField) {
-                if (!$this->validateWidget($formField, $formId, $form)) {
-                    $this->redirectToStep($manager, $step);
-                }
+        if (!$manager->isFirstStep()) {
+            $vResult = $manager->validateSteps(0, $manager->getCurrentStep());
+            if (true !== $vResult) {
+                $this->redirectToStep($manager, $vResult);
             }
         }
 
@@ -124,49 +118,6 @@ class MPForms
             case 'numbers':
                 return ($manager->getCurrentStep() + 1) . ' / ' . ($manager->getNumberOfSteps());
         }
-    }
-
-
-    /**
-     * Validate widget.
-     *
-     * @param string $formField
-     * @param string $formId
-     * @param \Form  $form
-     *
-     * @return bool
-     */
-    private function validateWidget($formField, $formId, \Form $form)
-    {
-        $class = $GLOBALS['TL_FFL'][$formField->type];
-
-        if (!class_exists($class)) {
-            return true;
-        }
-
-        $widget = new $class($formField->row());
-        $widget->required = $formField->mandatory ? true : false;
-
-        // HOOK: load form field callback
-        if (isset($GLOBALS['TL_HOOKS']['loadFormField']) && is_array($GLOBALS['TL_HOOKS']['loadFormField'])) {
-            foreach ($GLOBALS['TL_HOOKS']['loadFormField'] as $callback) {
-                $objCallback = \System::importStatic($callback[0]);
-                $widget = $objCallback->$callback[1]($widget, $formId, $form->arrData, $form);
-            }
-        }
-
-        $widget->validate();
-
-        // HOOK: validate form field callback
-        if (isset($GLOBALS['TL_HOOKS']['validateFormField']) && is_array($GLOBALS['TL_HOOKS']['validateFormField'])) {
-            foreach ($GLOBALS['TL_HOOKS']['validateFormField'] as $callback) {
-
-                $objCallback = \System::importStatic($callback[0]);
-                $widget = $objCallback->$callback[1]($widget, $formId, $form->arrData, $form);
-            }
-        }
-
-        return !$widget->hasErrors();
     }
 
     /**

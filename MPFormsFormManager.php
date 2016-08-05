@@ -273,6 +273,102 @@ class MPFormsFormManager
     {
         unset($_SESSION['MPFORMSTORAGE'][$this->formModel->id]);
     }
+
+    /**
+     * Validates all steps, optionally accepting custom from -> to ranges
+     * to validate only a subset of steps.
+     *
+     * @param null $stepFrom
+     * @param null $stepTo
+     *
+     * @return true|int True if all steps valid, otherwise the step that failed
+     *                  validation
+     */
+    public function validateSteps($stepFrom = null, $stepTo = null)
+    {
+        if (null === $stepFrom) {
+            $stepFrom = 0;
+        }
+
+        if (null === $stepTo) {
+            $stepTo = $this->getNumberOfSteps();
+        }
+
+        $steps = range($stepFrom, $stepTo);
+        foreach ($steps as $step) {
+            if (false === $this->validateStep($step)) {
+
+                return $step;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates a step.
+     *
+     * @param $step
+     *
+     * @return bool
+     */
+    public function validateStep($step)
+    {
+        $formFields = $this->getFieldsForStep($step);
+
+        foreach ($formFields as $formField) {
+            if (false === $this->validateField($formField)) {
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates a field.
+     *
+     * @param \FormFieldModel $formField
+     *
+     * @return bool
+     */
+    public function validateField(\FormFieldModel $formField)
+    {
+        $class = $GLOBALS['TL_FFL'][$formField->type];
+
+        if (!class_exists($class)) {
+            return true;
+        }
+
+        /** @var \Widget $widget */
+        $widget = new $class($formField->row());
+        $widget->required = $formField->mandatory ? true : false;
+
+        // Needed for the hook
+        $form = new \Form($this->formModel);
+        $formId = ($form->formID != '') ? 'auto_'.$form->formID : 'auto_form_' . $form->id;
+
+        // HOOK: load form field callback
+        if (isset($GLOBALS['TL_HOOKS']['loadFormField']) && is_array($GLOBALS['TL_HOOKS']['loadFormField'])) {
+            foreach ($GLOBALS['TL_HOOKS']['loadFormField'] as $callback) {
+                $objCallback = \System::importStatic($callback[0]);
+                $widget = $objCallback->$callback[1]($widget, $formId, $this->formModel->row(), $form);
+            }
+        }
+
+        $widget->validate();
+
+        // HOOK: validate form field callback
+        if (isset($GLOBALS['TL_HOOKS']['validateFormField']) && is_array($GLOBALS['TL_HOOKS']['validateFormField'])) {
+            foreach ($GLOBALS['TL_HOOKS']['validateFormField'] as $callback) {
+
+                $objCallback = \System::importStatic($callback[0]);
+                $widget = $objCallback->$callback[1]($widget, $formId, $this->formModel->row(), $form);
+            }
+        }
+
+        return !$widget->hasErrors();
     }
 
     /**
