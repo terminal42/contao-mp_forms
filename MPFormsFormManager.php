@@ -77,6 +77,18 @@ class MPFormsFormManager
     }
 
     /**
+     * Gets the form generator form id.
+     *
+     * @return string
+     */
+    public function getFormId()
+    {
+        return ('' !== $this->formModel->formID) ?
+            'auto_' . $this->formModel->formID :
+            'auto_form_' . $this->formModel->id;
+    }
+
+    /**
      * Get the number of steps of the form
      *
      * @return int number of steps
@@ -377,13 +389,12 @@ class MPFormsFormManager
 
         // Needed for the hook
         $form = new \Form($this->formModel);
-        $formId = ($form->formID != '') ? 'auto_' . $form->formID : 'auto_form_' . $form->id;
 
         // HOOK: load form field callback
         if (isset($GLOBALS['TL_HOOKS']['loadFormField']) && is_array($GLOBALS['TL_HOOKS']['loadFormField'])) {
             foreach ($GLOBALS['TL_HOOKS']['loadFormField'] as $callback) {
                 $objCallback = \System::importStatic($callback[0]);
-                $widget = $objCallback->$callback[1]($widget, $formId, $this->formModel->row(), $form);
+                $widget = $objCallback->$callback[1]($widget, $this->getFormId(), $this->formModel->row(), $form);
             }
         }
 
@@ -414,7 +425,7 @@ class MPFormsFormManager
             foreach ($GLOBALS['TL_HOOKS']['validateFormField'] as $callback) {
 
                 $objCallback = \System::importStatic($callback[0]);
-                $widget = $objCallback->$callback[1]($widget, $formId, $this->formModel->row(), $form);
+                $widget = $objCallback->$callback[1]($widget, $this->getFormId(), $this->formModel->row(), $form);
             }
         }
 
