@@ -433,6 +433,32 @@ class MPFormsFormManager
     }
 
     /**
+     * Stores if some previous step was invalid into the session.
+     */
+    public function setPreviousStepsWereInvalid()
+    {
+        $_SESSION['MPFORMSTORAGE_PSWI'][$this->formModel->id] = true;
+    }
+
+    /**
+     * Checks if some previous step was invalid from the session.
+     *
+     * @return bool
+     */
+    public function getPreviousStepsWereInvalid()
+    {
+        return true === $_SESSION['MPFORMSTORAGE_PSWI'][$this->formModel->id];
+    }
+
+    /**
+     * Resets the session for the previous step check.
+     */
+    public function resetPreviousStepsWereInvalid()
+    {
+        unset($_SESSION['MPFORMSTORAGE_PSWI'][$this->formModel->id]);
+    }
+
+    /**
      * Prepare an array that splits up the fields into steps
      */
     private function splitFormFieldsToSteps()

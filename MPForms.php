@@ -38,8 +38,16 @@ class MPForms
         if (!$manager->isFirstStep()) {
             $vResult = $manager->validateSteps(0, $manager->getCurrentStep() - 1);
             if (true !== $vResult) {
+                $manager->setPreviousStepsWereInvalid();
                 $this->redirectToStep($manager, $vResult);
             }
+        }
+
+        // If someone wanted to skip the page, fake form submission so fields
+        // are validated and show the error message.
+        if ($manager->getPreviousStepsWereInvalid()) {
+            \Input::setPost('FORM_SUBMIT', $manager->getFormId());
+            $manager->resetPreviousStepsWereInvalid();
         }
 
         return $manager->getFieldsForStep($manager->getCurrentStep());
