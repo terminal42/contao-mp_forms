@@ -367,7 +367,7 @@ class MPFormsFormManager
 
         // Needed for the hook
         $form = new \Form($this->formModel);
-        $formId = ($form->formID != '') ? 'auto_'.$form->formID : 'auto_form_' . $form->id;
+        $formId = ($form->formID != '') ? 'auto_' . $form->formID : 'auto_form_' . $form->id;
 
         // HOOK: load form field callback
         if (isset($GLOBALS['TL_HOOKS']['loadFormField']) && is_array($GLOBALS['TL_HOOKS']['loadFormField'])) {
