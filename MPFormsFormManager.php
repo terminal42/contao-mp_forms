@@ -148,7 +148,7 @@ class MPFormsFormManager
             }
         }
 
-        return 'Step ' . $step;
+        return 'Step ' . ($step + 1);
     }
 
     /**
