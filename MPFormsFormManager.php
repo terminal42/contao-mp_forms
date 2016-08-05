@@ -246,12 +246,14 @@ class MPFormsFormManager
      *
      * @param array $submitted
      * @param array $labels
+     * @param array $files
      */
-    public function storeData(array $submitted, array $labels)
+    public function storeData(array $submitted, array $labels, array $files)
     {
         $_SESSION['MPFORMSTORAGE'][$this->formModel->id][$this->getCurrentStep()] = [
             'submitted' => $submitted,
-            'labels'    => $labels
+            'labels'    => $labels,
+            'files'     => $files
         ];
     }
 
@@ -273,16 +275,19 @@ class MPFormsFormManager
     public function getDataOfAllSteps()
     {
         $submitted = [];
-        $labels = [];
+        $labels    = [];
+        $files     = [];
 
         foreach ((array) $_SESSION['MPFORMSTORAGE'][$this->formModel->id] as $stepData) {
             $submitted = array_merge($submitted, (array) $stepData['submitted']);
             $labels    = array_merge($labels, (array) $stepData['labels']);
+            $files     = array_merge($files, (array) $stepData['files']);
         }
 
         return [
             'submitted' => $submitted,
-            'labels'    => $labels
+            'labels'    => $labels,
+            'files'     => $files,
         ];
     }
 
@@ -378,6 +383,12 @@ class MPFormsFormManager
         }
 
         $widget->validate();
+
+        // Special hack for upload fields because they delete $_FILES and thus
+        // multiple validation calls will fail - sigh
+        if ($widget instanceof \uploadable && isset($_SESSION['FILES'][$widget->name])) {
+            $_FILES[$widget->name] = $_SESSION['FILES'][$widget->name];
+        }
 
         // HOOK: validate form field callback
         if (isset($GLOBALS['TL_HOOKS']['validateFormField']) && is_array($GLOBALS['TL_HOOKS']['validateFormField'])) {

@@ -64,7 +64,7 @@ class MPForms
         }
 
         // Store data in session
-        $manager->storeData($submitted, $labels);
+        $manager->storeData($submitted, $labels, (array) $_SESSION['FILES']);
 
         // Want to go back or continue?
         $direction = 'back' === $submitted['mp_form_pageswitch'] ? 'back' : 'continue';
@@ -77,8 +77,9 @@ class MPForms
 
             // Replace data by reference and then return so the default Contao
             // routine kicks in
-            $submitted = $allData['submitted'];
-            $labels = $allData['labels'];
+            $submitted          = $allData['submitted'];
+            $labels             = $allData['labels'];
+            $_SESSION['FILES']  = $allData['files'];
 
             // Clear session
             $manager->resetData();
