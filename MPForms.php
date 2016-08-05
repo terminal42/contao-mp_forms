@@ -42,7 +42,7 @@ class MPForms
         foreach ($stepsToValidate as $step) {
             foreach ($manager->getFieldsForStep($step) as $formField) {
                 if (!$this->validateWidget($formField, $formId, $form)) {
-                    $this->redirectToStep($manager->getGetParam(), $step);
+                    $this->redirectToStep($manager, $step);
                 }
             }
         }
@@ -90,7 +90,7 @@ class MPForms
             return;
         }
 
-        $this->redirectToStep($manager->getGetParam(), $nextStep);
+        $this->redirectToStep($manager, $nextStep);
     }
 
     /**
@@ -172,17 +172,11 @@ class MPForms
     /**
      * Redirect to step.
      *
-     * @param string $getParam
-     * @param int    $step
+     * @param MPFormsFormManager $manager
+     * @param int                $step
      */
-    private function redirectToStep($getParam, $step)
+    private function redirectToStep(MPFormsFormManager $manager, $step)
     {
-        if ($step === 0) {
-            $url = \Haste\Util\Url::removeQueryString([$getParam]);
-        } else {
-            $url = \Haste\Util\Url::addQueryString($getParam  . '=' . $step);
-        }
-
-        \Controller::redirect($url);
+        \Controller::redirect($manager->getUrlForStep($step));
     }
 }

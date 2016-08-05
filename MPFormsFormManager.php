@@ -204,6 +204,24 @@ class MPFormsFormManager
     }
 
     /**
+     * Generates an url for the step.
+     *
+     * @param int $step
+     *
+     * @return mixed
+     */
+    public function getUrlForStep($step)
+    {
+        if (0 === $step) {
+            $url = \Haste\Util\Url::removeQueryString([$this->getGetParam()]);
+        } else {
+            $url = \Haste\Util\Url::addQueryString($this->getGetParam()  . '=' . $step);
+        }
+
+        return $url;
+    }
+
+    /**
      * Store data.
      *
      * @param array $submitted
