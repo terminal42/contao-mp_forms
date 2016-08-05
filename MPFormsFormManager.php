@@ -292,7 +292,7 @@ class MPFormsFormManager
         }
 
         if (null === $stepTo) {
-            $stepTo = $this->getNumberOfSteps();
+            $stepTo = $this->getNumberOfSteps() - 1;
         }
 
         $steps = range($stepFrom, $stepTo);
