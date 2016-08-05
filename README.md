@@ -15,6 +15,16 @@ to step 1 (obviously, only if you had required fields on step 1).
 Note that you should not be using a regular submit form field to finish your form but use the `Page break` again. Otherwise, you
 won't have any `back` button displayed. `mp_forms` will automatically detect the last `Page break` as behaving like the form submit.
 
+## Frontend module to display a step navigation
+
+This module ships with a front end module that allows you to easily build a front end navigation for
+each of your steps.
+Unstyled it might look something like this in the end:
+
+![Example for step navigation](docs/navigation_example.png)
+
+Note that by default steps will just be named `Step x` in every language. The `Page break` form field
+label field will be used for the navigation if you provide it.
     
 ## InsertTags
 
