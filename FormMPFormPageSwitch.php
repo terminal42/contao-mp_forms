@@ -8,6 +8,7 @@
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       https://github.com/terminal42/contao-mp_forms
  */
+
 class FormMPFormPageSwitch extends \Widget
 {
     /**

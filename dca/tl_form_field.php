@@ -1,4 +1,5 @@
 <?php
+
 /**
  * mp_forms extension for Contao Open Source CMS
  *
