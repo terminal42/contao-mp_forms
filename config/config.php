@@ -15,6 +15,11 @@
 $GLOBALS['TL_FFL']['mp_form_pageswitch'] = 'FormMPFormPageSwitch';
 
 /**
+ * Front end modules
+ */
+$GLOBALS['FE_MOD']['application']['mp_form_steps'] = 'MPFormsStepsModule';
+
+/**
  * Hooks
  */
 $GLOBALS['TL_HOOKS']['replaceInsertTags'][] = ['MPForms', 'replaceTags'];

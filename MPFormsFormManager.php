@@ -133,6 +133,25 @@ class MPFormsFormManager
     }
 
     /**
+     * Gets the label for a given step.
+     *
+     * @param int $step
+     *
+     * @return string
+     */
+    public function getLabelForStep($step)
+    {
+        foreach ($this->getFieldsForStep($step) as $formField) {
+            if ($this->isPageBreak($formField) && '' !== $formField->label) {
+
+                return $formField->label;
+            }
+        }
+
+        return 'Step ' . $step;
+    }
+
+    /**
      * Gets the current step.
      *
      * @return int
