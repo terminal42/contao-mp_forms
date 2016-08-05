@@ -11,6 +11,11 @@
 /**
  * Table tl_form
  */
+$GLOBALS['TL_DCA']['tl_form']['config']['onsubmit_callback'][] = function($dc) {
+    $manager = new \MPFormsFormManager((int) $dc->id);
+    $manager->resetData();
+};
+
 $GLOBALS['TL_DCA']['tl_form']['palettes']['default'] .= ';{mp_forms_legend},mp_forms_getParam;';
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_getParam'] = [
