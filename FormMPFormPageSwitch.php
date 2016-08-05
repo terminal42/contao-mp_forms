@@ -58,12 +58,7 @@ class FormMPFormPageSwitch extends \Widget
             return $template->parse();
         }
 
-        $form = \FormModel::findByPk($this->pid);
-        $manager = new MPFormsFormManager(
-            \FormFieldModel::findPublishedByPid($form->id),
-            $form->id,
-            $form->mp_forms_getParam
-        );
+        $manager = new MPFormsFormManager($this->pid);
 
         $this->canGoBack = !$manager->isFirstStep();
 

@@ -25,11 +25,7 @@ class MPForms
             return $formFields;
         }
 
-        $manager = new MPFormsFormManager(
-            $formFields,
-            $form->id,
-            $form->mp_forms_getParam
-        );
+        $manager = new MPFormsFormManager($form->id);
 
         // Don't try to render multi page form if no valid combination
         if (!$manager->isValidFormFieldCombination()) {
@@ -120,11 +116,7 @@ class MPForms
         $value = $chunks[2];
 
         $form = \FormModel::findByPk($formId);
-        $manager = new MPFormsFormManager(
-            \FormFieldModel::findPublishedByPid($form->id),
-            $form->id,
-            $form->mp_forms_getParam
-        );
+        $manager = new MPFormsFormManager($form->id);
 
         switch ($value) {
             case 'current':

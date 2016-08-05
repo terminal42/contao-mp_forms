@@ -11,21 +11,14 @@
 class MPFormsFormManager
 {
     /**
+     * @var \FormModel
+     */
+    private $formModel;
+
+    /**
      * @var \FormFieldModel[]
      */
     private $formFieldModels;
-
-    /**
-     * Form id
-     * @var int
-     */
-    private $formId;
-
-    /**
-     * Get param
-     * @var string
-     */
-    private $getParam = 'step';
 
     /**
      * Array containing the fields per step
@@ -42,17 +35,18 @@ class MPFormsFormManager
     /**
      * Create a new form manager
      *
-     * @param FormFieldModel[] $formFieldModels
-     * @param int              $formId
-     * @param string           $getParam
+     * @param int $formGeneratorId
      */
-    function __construct($formFieldModels, $formId, $getParam)
+    function __construct($formGeneratorId)
     {
-        $this->formFieldModels = $formFieldModels;
-        $this->formId = $formId;
+        $formModel = \FormModel::findByPk($formGeneratorId);
 
-        if (is_string($getParam) && strlen($getParam) >= 1) {
-            $this->getParam = $getParam;
+        $this->formModel = $formModel;
+        $this->formFieldModels = \FormFieldModel::findPublishedByPid($formModel->id);
+
+        if (null === $this->formModel || null === $this->formFieldModels) {
+            throw new \RuntimeException('Cannot manage a form generator ID that
+            does not exist or has no published form fields.');
         }
 
         $this->splitFormFieldsToSteps();
@@ -76,7 +70,7 @@ class MPFormsFormManager
      */
     public function getGetParam()
     {
-        return $this->getParam;
+        return $this->formModel->mp_forms_getParam ?: 'step';
     }
 
     /**
@@ -144,7 +138,7 @@ class MPFormsFormManager
      */
     public function getCurrentStep()
     {
-        return (int) \Input::get($this->getParam);
+        return (int) \Input::get($this->getGetParam());
     }
 
     /**
@@ -217,7 +211,7 @@ class MPFormsFormManager
      */
     public function storeData(array $submitted, array $labels)
     {
-        $_SESSION['MPFORMSTORAGE'][$this->formId][$this->getCurrentStep()] = [
+        $_SESSION['MPFORMSTORAGE'][$this->formModel->id][$this->getCurrentStep()] = [
             'submitted' => $submitted,
             'labels'    => $labels
         ];
@@ -230,7 +224,7 @@ class MPFormsFormManager
      */
     public function getDataOfCurrentStep()
     {
-        return (array) $_SESSION['MPFORMSTORAGE'][$this->formId][$this->getCurrentStep()];
+        return (array) $_SESSION['MPFORMSTORAGE'][$this->formModel->id][$this->getCurrentStep()];
     }
 
     /**
@@ -243,7 +237,7 @@ class MPFormsFormManager
         $submitted = [];
         $labels = [];
 
-        foreach ((array) $_SESSION['MPFORMSTORAGE'][$this->formId] as $stepData) {
+        foreach ((array) $_SESSION['MPFORMSTORAGE'][$this->formModel->id] as $stepData) {
             $submitted = array_merge($submitted, (array) $stepData['submitted']);
             $labels    = array_merge($labels, (array) $stepData['labels']);
         }
@@ -259,7 +253,8 @@ class MPFormsFormManager
      */
     public function resetData()
     {
-        unset($_SESSION['MPFORMSTORAGE'][$this->formId]);
+        unset($_SESSION['MPFORMSTORAGE'][$this->formModel->id]);
+    }
     }
 
     /**
