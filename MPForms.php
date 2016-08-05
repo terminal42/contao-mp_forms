@@ -60,11 +60,7 @@ class MPForms
      */
     public function prepareFormData(&$submitted, &$labels, \Form $form)
     {
-        $manager = new MPFormsFormManager(
-            \FormFieldModel::findPublishedByPid($form->id),
-            $form->id,
-            $form->mp_forms_getParam
-        );
+        $manager = new MPFormsFormManager($form->id);
 
         // Don't do anything if not valid
         if (!$manager->isValidFormFieldCombination()) {
