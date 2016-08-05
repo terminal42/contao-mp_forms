@@ -378,7 +378,7 @@ class MPFormsFormManager
     private function splitFormFieldsToSteps()
     {
         $i = 0;
-        $lastType = '';
+        $lastField = null;
         foreach ($this->formFieldModels as $formField) {
             $this->formFieldsPerStep[$i][] = $formField;
 
@@ -389,9 +389,9 @@ class MPFormsFormManager
                 $formField->value = $this->getDataOfCurrentStep()['submitted'][$formField->name];
             }
 
-            $lastType = $formField->type;
+            $lastField = $formField;
 
-            if ('mp_form_pageswitch' === $formField->type) {
+            if ($this->isPageBreak($formField)) {
                 // Set the name on the model, otherwise one has to enter it
                 // in the back end every time
                 $formField->name = $formField->type;
@@ -402,8 +402,20 @@ class MPFormsFormManager
         }
 
         // Ensure the very last form field is a pageswitch too
-        if ('mp_form_pageswitch' === $lastType) {
+        if ($this->isPageBreak($lastField)) {
             $this->lastFormFieldIsPageBreak = true;
         }
+    }
+
+    /**
+     * Helper to check whether a formfieldmodel is of type page break.
+     *
+     * @param FormFieldModel $formField
+     *
+     * @return bool
+     */
+    private function isPageBreak(\FormFieldModel $formField)
+    {
+        return 'mp_form_pageswitch' === $formField->type;
     }
 }
