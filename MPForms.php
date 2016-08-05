@@ -34,6 +34,11 @@ class MPForms
             return $manager->getFieldsWithoutPageBreaks();
         }
 
+        // Do not let Contao validate anything if user wants to go back
+        if ('back' === $_POST['mp_form_pageswitch']) {
+            $this->redirectToStep($manager, $manager->getPreviousStep());
+        }
+
         // Validate previous steps data
         if (!$manager->isFirstStep()) {
             $vResult = $manager->validateSteps(0, $manager->getCurrentStep() - 1);
@@ -74,12 +79,8 @@ class MPForms
         // Store data in session
         $manager->storeData($submitted, $labels, (array) $_SESSION['FILES']);
 
-        // Want to go back or continue?
-        $direction = 'back' === $submitted['mp_form_pageswitch'] ? 'back' : 'continue';
-        $nextStep  = 'back' === $direction ? $manager->getPreviousStep() : $manager->getNextStep();
-
         // Submit form
-        if ($manager->isLastStep() && 'continue' === $direction) {
+        if ($manager->isLastStep() && 'continue' === $submitted['mp_form_pageswitch']) {
 
             $allData = $manager->getDataOfAllSteps();
 
@@ -98,7 +99,7 @@ class MPForms
             $_SESSION['FORM_DATA'] = [];
         }
 
-        $this->redirectToStep($manager, $nextStep);
+        $this->redirectToStep($manager, $manager->getNextStep());
     }
 
     /**
