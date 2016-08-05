@@ -36,7 +36,7 @@ class MPForms
 
         // Validate previous steps data
         if (!$manager->isFirstStep()) {
-            $vResult = $manager->validateSteps(0, $manager->getCurrentStep());
+            $vResult = $manager->validateSteps(0, $manager->getCurrentStep() - 1);
             if (true !== $vResult) {
                 $this->redirectToStep($manager, $vResult);
             }
