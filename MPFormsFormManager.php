@@ -258,13 +258,15 @@ class MPFormsFormManager
     }
 
     /**
-     * Get data of current step.
+     * Get data of given step.
+     *
+     * @param int $step
      *
      * @return array
      */
-    public function getDataOfCurrentStep()
+    public function getDataOfStep($step)
     {
-        return (array) $_SESSION['MPFORMSTORAGE'][$this->formModel->id][$this->getCurrentStep()];
+        return (array) $_SESSION['MPFORMSTORAGE'][$this->formModel->id][$step];
     }
 
     /**
@@ -342,7 +344,7 @@ class MPFormsFormManager
         $formFields = $this->getFieldsForStep($step);
 
         foreach ($formFields as $formField) {
-            if (false === $this->validateField($formField)) {
+            if (false === $this->validateField($formField, $step)) {
 
                 return false;
             }
@@ -355,10 +357,11 @@ class MPFormsFormManager
      * Validates a field.
      *
      * @param \FormFieldModel $formField
+     * @param int             $step
      *
      * @return bool
      */
-    public function validateField(\FormFieldModel $formField)
+    public function validateField(\FormFieldModel $formField, $step)
     {
         $class = $GLOBALS['TL_FFL'][$formField->type];
 
@@ -382,7 +385,21 @@ class MPFormsFormManager
             }
         }
 
+        // Fetch value from session (fake validation)
+        if (!isset($_POST[$widget->name])
+            && $this->isStoredInData($widget->name, $step)
+        ) {
+            \Input::setPost($formField->name, $this->fetchFromData($widget->name, $step));
+        }
+
         $widget->validate();
+
+        // Reset fake validation
+        if (!isset($_POST[$widget->name])
+            && $this->isStoredInData($widget->name, $step)
+        ) {
+            \Input::setPost($formField->name, null);
+        }
 
         // Special hack for upload fields because they delete $_FILES and thus
         // multiple validation calls will fail - sigh
@@ -412,11 +429,9 @@ class MPFormsFormManager
         foreach ($this->formFieldModels as $formField) {
             $this->formFieldsPerStep[$i][] = $formField;
 
-            // Fetch value from session (if one switches back)
-            if (isset($this->getDataOfCurrentStep()['submitted'])
-                && array_key_exists($formField->name, $this->getDataOfCurrentStep()['submitted'])
-            ) {
-                $formField->value = $this->getDataOfCurrentStep()['submitted'][$formField->name];
+            // Fetch value from session (displaying value in the field)
+            if ($this->isStoredInData($formField->name)) {
+                $formField->value = $this->fetchFromData($formField->name);
             }
 
             $lastField = $formField;
@@ -435,6 +450,37 @@ class MPFormsFormManager
         if ($this->isPageBreak($lastField)) {
             $this->lastFormFieldIsPageBreak = true;
         }
+    }
+
+    /**
+     * Check if there is data stored for a certain field name.
+     *
+     * @param          $fieldName
+     * @param null|int $step Current step if null
+     *
+     * @return bool
+     */
+    private function isStoredInData($fieldName, $step = null)
+    {
+        $step = null === $step ? $this->getCurrentStep() : $step;
+
+        return isset($this->getDataOfStep($step)['submitted'])
+            && array_key_exists($fieldName, $this->getDataOfStep($step)['submitted']);
+    }
+
+    /**
+     * Retrieve the value stored for a certain field name.
+     *
+     * @param          $fieldName
+     * @param null|int $step Current step if null
+     *
+     * @return mixed
+     */
+    private function fetchFromData($fieldName, $step = null)
+    {
+        $step = null === $step ? $this->getCurrentStep() : $step;
+
+        return $this->getDataOfStep($step)['submitted'][$fieldName];
     }
 
     /**

@@ -84,6 +84,10 @@ class MPForms
             // Clear session
             $manager->resetData();
             return;
+        } else {
+            // Make sure the Contao form data session handling doesn't do
+            // anything at all while we're on a multipage form
+            $_SESSION['FORM_DATA'] = [];
         }
 
         $this->redirectToStep($manager, $nextStep);
