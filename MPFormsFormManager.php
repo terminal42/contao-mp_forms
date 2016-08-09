@@ -17,7 +17,7 @@ class MPFormsFormManager
     private $formModel;
 
     /**
-     * @var \FormFieldModel[]
+     * @var \FormFieldModel|\Model\Collection[]
      */
     private $formFieldModels;
 
@@ -127,11 +127,15 @@ class MPFormsFormManager
      */
     public function getFieldsWithoutPageBreaks()
     {
-        $formFields = $this->formFieldModels;
+        if ($this->formFieldModels instanceof \Model\Collection) {
+            $formFields = $this->formFieldModels->getModels();
+        } else {
+            $formFields = $this->formFieldModels;
+        }
 
         foreach ($formFields as $k => $formField) {
             if ('mp_form_pageswitch' === $formField->type) {
-                unset ($formFields[$k]);
+                unset($formFields[$k]);
             }
         }
 
