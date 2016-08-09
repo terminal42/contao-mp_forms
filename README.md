@@ -26,14 +26,16 @@ Unstyled it might look something like this in the end:
 Note that by default steps will just be named `Step x` in every language. The `Page break` form field
 label field will be used for the navigation if you provide it.
     
-## InsertTags
+## Insert tags
 
-You can use exactly the same parameters as you have in your template also via InsertTags. However you have to pass the form ID:
+There are insert tags you can use to fetch information about the state of the form:
 
-* `{{mp_forms::<form id>::current}}`
-* `{{mp_forms::<form id>::total}}`
-* `{{mp_forms::<form id>::percentage}}`
-* `{{mp_forms::<form id>::numbers}}`
+| Insert tag  |  Description | Example  |
+|---|---|---|
+| `{{mp_forms::<form id>::current}}`  |  Contains the current step you are on | 2  |
+| `{{mp_forms::<form id>::total}}`  |  Contains the total steps of your form | 5  |
+| `{{mp_forms::<form id>::percentage}}`  |  Contains the percentage of your progress | 20  |
+| `{{mp_forms::<form id>::numbers}}` | Contains a classic `x of y` display | `2 / 5`|
 
 Note that they can be especially useful together with a `Custom HTML` front end module.
 Let's assume you want to display a progress bar for form ID `5`:
