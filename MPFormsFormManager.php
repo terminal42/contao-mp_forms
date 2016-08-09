@@ -29,11 +29,11 @@ class MPFormsFormManager
     private $formFieldsPerStep = [];
 
     /**
-     * True if last form field is a page break type
+     * True if the manager can handle this form
      *
      * @var bool
      */
-    private $lastFormFieldIsPageBreak = false;
+    private $isValidFormFieldCombination = true;
 
     /**
      * Create a new form manager
@@ -42,17 +42,9 @@ class MPFormsFormManager
      */
     function __construct($formGeneratorId)
     {
-        $formModel = \FormModel::findByPk($formGeneratorId);
+        $this->formModel = \FormModel::findByPk($formGeneratorId);
 
-        $this->formModel = $formModel;
-        $this->formFieldModels = \FormFieldModel::findPublishedByPid($formModel->id);
-
-        if (null === $this->formModel || null === $this->formFieldModels) {
-            throw new \RuntimeException('Cannot manage a form generator ID that
-            does not exist or has no published form fields.');
-        }
-
-        $this->splitFormFieldsToSteps();
+        $this->prepareFormFields();
     }
 
     /**
@@ -62,7 +54,7 @@ class MPFormsFormManager
      */
     public function isValidFormFieldCombination()
     {
-        return $this->lastFormFieldIsPageBreak
+        return $this->isValidFormFieldCombination
             && $this->getNumberOfSteps() > 1;
     }
 
@@ -461,8 +453,20 @@ class MPFormsFormManager
     /**
      * Prepare an array that splits up the fields into steps
      */
-    private function splitFormFieldsToSteps()
+    private function prepareFormFields()
     {
+        if (null === $this->formModel) {
+            $this->isValidFormFieldCombination = false;
+            return;
+        }
+
+        $this->formFieldModels = \FormFieldModel::findPublishedByPid($this->formModel->id);
+
+        if (null === $this->formFieldModels) {
+            $this->isValidFormFieldCombination = false;
+            return;
+        }
+
         $i = 0;
         $lastField = null;
         foreach ($this->formFieldModels as $formField) {
@@ -486,8 +490,8 @@ class MPFormsFormManager
         }
 
         // Ensure the very last form field is a pageswitch too
-        if ($this->isPageBreak($lastField)) {
-            $this->lastFormFieldIsPageBreak = true;
+        if (!$this->isPageBreak($lastField)) {
+            $this->isValidFormFieldCombination = false;
         }
     }
 
