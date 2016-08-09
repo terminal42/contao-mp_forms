@@ -384,7 +384,9 @@ class MPFormsFormManager
         $widget->required = $formField->mandatory ? true : false;
 
         // Needed for the hook
-        $form = new \Form($this->formModel);
+        $form = new stdClass();
+        $form->form = $this->formModel->id;
+        $form = new \Form($form);
 
         // HOOK: load form field callback
         if (isset($GLOBALS['TL_HOOKS']['loadFormField']) && is_array($GLOBALS['TL_HOOKS']['loadFormField'])) {
