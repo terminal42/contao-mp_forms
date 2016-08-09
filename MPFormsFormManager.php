@@ -392,7 +392,7 @@ class MPFormsFormManager
         if (isset($GLOBALS['TL_HOOKS']['loadFormField']) && is_array($GLOBALS['TL_HOOKS']['loadFormField'])) {
             foreach ($GLOBALS['TL_HOOKS']['loadFormField'] as $callback) {
                 $objCallback = \System::importStatic($callback[0]);
-                $widget = $objCallback->$callback[1]($widget, $this->getFormId(), $this->formModel->row(), $form);
+                $widget = $objCallback->{$callback[1]}($widget, $this->getFormId(), $this->formModel->row(), $form);
             }
         }
 
@@ -423,7 +423,7 @@ class MPFormsFormManager
             foreach ($GLOBALS['TL_HOOKS']['validateFormField'] as $callback) {
 
                 $objCallback = \System::importStatic($callback[0]);
-                $widget = $objCallback->$callback[1]($widget, $this->getFormId(), $this->formModel->row(), $form);
+                $widget = $objCallback->{$callback[1]}($widget, $this->getFormId(), $this->formModel->row(), $form);
             }
         }
 
