@@ -457,6 +457,49 @@ class MPFormsFormManager
     }
 
     /**
+     * Check if there is data stored for a certain field name.
+     *
+     * @param          $fieldName
+     * @param null|int $step Current step if null
+     *
+     * @return bool
+     */
+    public function isStoredInData($fieldName, $step = null)
+    {
+        $step = null === $step ? $this->getCurrentStep() : $step;
+
+        return isset($this->getDataOfStep($step)['submitted'])
+            && array_key_exists($fieldName, $this->getDataOfStep($step)['submitted']);
+    }
+
+    /**
+     * Retrieve the value stored for a certain field name.
+     *
+     * @param          $fieldName
+     * @param null|int $step Current step if null
+     *
+     * @return mixed
+     */
+    public function fetchFromData($fieldName, $step = null)
+    {
+        $step = null === $step ? $this->getCurrentStep() : $step;
+
+        return $this->getDataOfStep($step)['submitted'][$fieldName];
+    }
+
+    /**
+     * Helper to check whether a formfieldmodel is of type page break.
+     *
+     * @param FormFieldModel $formField
+     *
+     * @return bool
+     */
+    public function isPageBreak(\FormFieldModel $formField)
+    {
+        return 'mp_form_pageswitch' === $formField->type;
+    }
+
+    /**
      * Prepare an array that splits up the fields into steps
      */
     private function prepareFormFields()
@@ -478,11 +521,6 @@ class MPFormsFormManager
         foreach ($this->formFieldModels as $formField) {
             $this->formFieldsPerStep[$i][] = $formField;
 
-            // Fetch value from session (displaying value in the field)
-            if ($this->isStoredInData($formField->name)) {
-                $formField->value = $this->fetchFromData($formField->name);
-            }
-
             $lastField = $formField;
 
             if ($this->isPageBreak($formField)) {
@@ -499,48 +537,5 @@ class MPFormsFormManager
         if (!$this->isPageBreak($lastField)) {
             $this->isValidFormFieldCombination = false;
         }
-    }
-
-    /**
-     * Check if there is data stored for a certain field name.
-     *
-     * @param          $fieldName
-     * @param null|int $step Current step if null
-     *
-     * @return bool
-     */
-    private function isStoredInData($fieldName, $step = null)
-    {
-        $step = null === $step ? $this->getCurrentStep() : $step;
-
-        return isset($this->getDataOfStep($step)['submitted'])
-            && array_key_exists($fieldName, $this->getDataOfStep($step)['submitted']);
-    }
-
-    /**
-     * Retrieve the value stored for a certain field name.
-     *
-     * @param          $fieldName
-     * @param null|int $step Current step if null
-     *
-     * @return mixed
-     */
-    private function fetchFromData($fieldName, $step = null)
-    {
-        $step = null === $step ? $this->getCurrentStep() : $step;
-
-        return $this->getDataOfStep($step)['submitted'][$fieldName];
-    }
-
-    /**
-     * Helper to check whether a formfieldmodel is of type page break.
-     *
-     * @param FormFieldModel $formField
-     *
-     * @return bool
-     */
-    private function isPageBreak(\FormFieldModel $formField)
-    {
-        return 'mp_form_pageswitch' === $formField->type;
     }
 }

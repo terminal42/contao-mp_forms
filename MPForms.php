@@ -59,6 +59,28 @@ class MPForms
     }
 
     /**
+     * Loads the values from the session and adds it as default value to the
+     * widget.
+     *
+     * @param \Widget $widget
+     * @param string  $formId
+     * @param array   $formData
+     * @param \Form    $form
+     *
+     * @return \Widget
+     */
+    public function loadValuesFromSession($widget, $formId, $formData, \Form $form)
+    {
+        $manager = new MPFormsFormManager($form->id);
+
+        if ($manager->isStoredInData($widget->name)) {
+            $widget->value = $manager->fetchFromData($widget->name);
+        }
+
+        return $widget;
+    }
+
+    /**
      * Store the submitted data into the session and redirect to the next step
      * unless it's the last.
      *
