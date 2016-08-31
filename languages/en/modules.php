@@ -10,11 +10,6 @@
  */
 
 /**
- * Legends
+ * Front end modules
  */
-$GLOBALS['TL_LANG']['tl_form']['mp_forms_legend'] = 'Multiple page forms';
-
-/**
- * Fields
- */
-$GLOBALS['TL_LANG']['tl_form']['mp_forms_getParam'] = ['GET parameter', 'You can optionally modify the used GET parameter here.'];
+$GLOBALS['TL_LANG']['FMD']['mp_form_steps'] = ['MPForms - Steps', 'Displays a step navigation for a given multipage form.'];

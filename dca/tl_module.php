@@ -10,11 +10,11 @@
  */
 
 /**
- * Legends
+ * Table tl_module
  */
-$GLOBALS['TL_LANG']['tl_form']['mp_forms_legend'] = 'Multiple page forms';
-
-/**
- * Fields
- */
-$GLOBALS['TL_LANG']['tl_form']['mp_forms_getParam'] = ['GET parameter', 'You can optionally modify the used GET parameter here.'];
+$GLOBALS['TL_DCA']['tl_module']['palettes']['mp_form_steps'] .= '
+{title_legend},name,headline,type;
+{config_legend},form,navigationTpl;
+{template_legend:hide},customTpl;
+{protected_legend:hide},protected;
+{expert_legend:hide},guests,cssID,space';

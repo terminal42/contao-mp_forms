@@ -3,29 +3,54 @@
 /**
  * mp_forms extension for Contao Open Source CMS
  *
- * @copyright  Copyright (c) 2015, terminal42 gmbh
+ * @copyright  Copyright (c) 2015-2016, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       https://github.com/terminal42/contao-mp_forms
  */
-class FormMPFormPageSwitch extends FormSubmit
+
+class FormMPFormPageSwitch extends \Widget
 {
     /**
-     * Do not validate this form field
+     * Template
+     *
+     * @var string
      */
-    public function validate()
-    {
-        return;
-    }
+    protected $strTemplate = 'form_mp_forms_page_switch';
 
+    /**
+     * The CSS class prefix
+     *
+     * @var string
+     */
+    protected $strPrefix = 'widget widget-pagebreak';
+
+    /**
+     * Submit indicator
+     * @var boolean
+     */
+    protected $blnSubmitInput = true;
+
+    /**
+     * Do not validate this form field
+     *
+     * @param string
+     *
+     * @return string
+     */
+    public function validator($input)
+    {
+        return $input;
+    }
 
     /**
      * Add custom HTML after the widget
      *
-     * @param   array $arrAttributes
-     * @return  string
+     * @param array $attributes
+     *
+     * @return string
      */
-    public function parse($arrAttributes = null)
+    public function parse($attributes = null)
     {
         if (TL_MODE == 'BE') {
             $template = new BackendTemplate('be_wildcard');
@@ -34,20 +59,20 @@ class FormMPFormPageSwitch extends FormSubmit
             return $template->parse();
         }
 
-        $form = \FormModel::findByPk($this->pid);
-        $manager = new MPFormsFormManager(
-            \FormFieldModel::findPublishedByPid($form->id)
-        );
-        $getParam = $form->mp_forms_getParam ?: 'step';
-        $currentStep = (int) \Input::get($getParam);
+        $manager = new MPFormsFormManager($this->pid);
 
-        $this->current = $currentStep + 1;
-        $this->total = $manager->getNumberOfSteps() + 1;
-        $this->percentage = ($currentStep + 1) / ($manager->getNumberOfSteps() + 1) * 100;
-        $this->numbers    = ($currentStep + 1) . ' / ' . ($manager->getNumberOfSteps() + 1);
+        $this->canGoBack = !$manager->isFirstStep();
 
-        $buffer = parent::parse($arrAttributes);
+        return parent::parse($attributes);
+    }
 
-        return $buffer . $this->mp_forms_afterSubmit;
+    /**
+     * Old generate() method that must be implemented due to abstract declaration.
+     *
+     * @throws \BadMethodCallException
+     */
+    public function generate()
+    {
+        throw new BadMethodCallException('Calling generate() has been deprecated, you must use parse() instead!');
     }
 }
