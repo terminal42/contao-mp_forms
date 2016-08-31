@@ -17,7 +17,7 @@ class MPFormsFormManager
     private $formModel;
 
     /**
-     * @var \FormFieldModel|\Model\Collection[]
+     * @var \FormFieldModel[]
      */
     private $formFieldModels;
 
@@ -127,11 +127,7 @@ class MPFormsFormManager
      */
     public function getFieldsWithoutPageBreaks()
     {
-        if ($this->formFieldModels instanceof \Model\Collection) {
-            $formFields = $this->formFieldModels->getModels();
-        } else {
-            $formFields = $this->formFieldModels;
-        }
+        $formFields = $this->formFieldModels;
 
         foreach ($formFields as $k => $formField) {
             if ('mp_form_pageswitch' === $formField->type) {
@@ -384,9 +380,7 @@ class MPFormsFormManager
         $widget->required = $formField->mandatory ? true : false;
 
         // Needed for the hook
-        $form = new stdClass();
-        $form->form = $this->formModel->id;
-        $form = new \Form($form);
+        $form = $this->createDummyForm();
 
         // HOOK: load form field callback
         if (isset($GLOBALS['TL_HOOKS']['loadFormField']) && is_array($GLOBALS['TL_HOOKS']['loadFormField'])) {
@@ -509,9 +503,9 @@ class MPFormsFormManager
             return;
         }
 
-        $this->formFieldModels = \FormFieldModel::findPublishedByPid($this->formModel->id);
+        $this->loadFormFieldModels();
 
-        if (null === $this->formFieldModels) {
+        if (0 === count($this->formFieldModels)) {
             $this->isValidFormFieldCombination = false;
             return;
         }
@@ -537,5 +531,49 @@ class MPFormsFormManager
         if (!$this->isPageBreak($lastField)) {
             $this->isValidFormFieldCombination = false;
         }
+    }
+
+    /**
+     * Loads the form field models (calling the compileFormFields hook and ignoring itself).
+     */
+    private function loadFormFieldModels()
+    {
+        $formFieldModels = \FormFieldModel::findPublishedByPid($this->formModel->id);
+
+        if (null === $formFieldModels) {
+            $formFieldModels = [];
+        } else {
+            $formFieldModels = $formFieldModels->getModels();
+        }
+
+        // Needed for the hook
+        $form = $this->createDummyForm();
+
+        if (isset($GLOBALS['TL_HOOKS']['compileFormFields']) && is_array($GLOBALS['TL_HOOKS']['compileFormFields'])) {
+            foreach ($GLOBALS['TL_HOOKS']['compileFormFields'] as $k => $callback) {
+
+                // Do not call ourselves recursively
+                if ('MPForms' === $callback[0]) {
+                    continue;
+                }
+
+                $objCallback = \System::importStatic($callback[0]);
+                $formFieldModels = $objCallback->{$callback[1]}($formFieldModels, $this->getFormId(), $form);
+            }
+        }
+
+        $this->formFieldModels = $formFieldModels;
+    }
+
+    /**
+     * Creates a dummy form instance that is needed for the hooks.
+     *
+     * @return Form
+     */
+    private function createDummyForm()
+    {
+        $form = new stdClass();
+        $form->form = $this->formModel->id;
+        return new \Form($form);
     }
 }
