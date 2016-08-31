@@ -34,15 +34,50 @@ class MPForms
             return $manager->getFieldsWithoutPageBreaks();
         }
 
+        // Do not let Contao validate anything if user wants to go back
+        if ('back' === $_POST['mp_form_pageswitch']) {
+            $this->redirectToStep($manager, $manager->getPreviousStep());
+        }
+
         // Validate previous steps data
         if (!$manager->isFirstStep()) {
             $vResult = $manager->validateSteps(0, $manager->getCurrentStep() - 1);
             if (true !== $vResult) {
+                $manager->setPreviousStepsWereInvalid();
                 $this->redirectToStep($manager, $vResult);
             }
         }
 
+        // If someone wanted to skip the page, fake form submission so fields
+        // are validated and show the error message.
+        if ($manager->getPreviousStepsWereInvalid()) {
+            \Input::setPost('FORM_SUBMIT', $manager->getFormId());
+            $manager->resetPreviousStepsWereInvalid();
+        }
+
         return $manager->getFieldsForStep($manager->getCurrentStep());
+    }
+
+    /**
+     * Loads the values from the session and adds it as default value to the
+     * widget.
+     *
+     * @param \Widget $widget
+     * @param string  $formId
+     * @param array   $formData
+     * @param \Form    $form
+     *
+     * @return \Widget
+     */
+    public function loadValuesFromSession($widget, $formId, $formData, \Form $form)
+    {
+        $manager = new MPFormsFormManager($form->id);
+
+        if ($manager->isStoredInData($widget->name)) {
+            $widget->value = $manager->fetchFromData($widget->name);
+        }
+
+        return $widget;
     }
 
     /**
@@ -66,12 +101,8 @@ class MPForms
         // Store data in session
         $manager->storeData($submitted, $labels, (array) $_SESSION['FILES']);
 
-        // Want to go back or continue?
-        $direction = 'back' === $submitted['mp_form_pageswitch'] ? 'back' : 'continue';
-        $nextStep  = 'back' === $direction ? $manager->getPreviousStep() : $manager->getNextStep();
-
         // Submit form
-        if ($manager->isLastStep() && 'continue' === $direction) {
+        if ($manager->isLastStep() && 'continue' === $submitted['mp_form_pageswitch']) {
 
             $allData = $manager->getDataOfAllSteps();
 
@@ -84,9 +115,13 @@ class MPForms
             // Clear session
             $manager->resetData();
             return;
+        } else {
+            // Make sure the Contao form data session handling doesn't do
+            // anything at all while we're on a multipage form
+            $_SESSION['FORM_DATA'] = [];
         }
 
-        $this->redirectToStep($manager, $nextStep);
+        $this->redirectToStep($manager, $manager->getNextStep());
     }
 
     /**

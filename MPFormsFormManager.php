@@ -23,15 +23,17 @@ class MPFormsFormManager
 
     /**
      * Array containing the fields per step
+     *
      * @var array
      */
     private $formFieldsPerStep = [];
 
     /**
-     * True if last form field is a page break type
+     * True if the manager can handle this form
+     *
      * @var bool
      */
-    private $lastFormFieldIsPageBreak = false;
+    private $isValidFormFieldCombination = true;
 
     /**
      * Create a new form manager
@@ -40,17 +42,9 @@ class MPFormsFormManager
      */
     function __construct($formGeneratorId)
     {
-        $formModel = \FormModel::findByPk($formGeneratorId);
+        $this->formModel = \FormModel::findByPk($formGeneratorId);
 
-        $this->formModel = $formModel;
-        $this->formFieldModels = \FormFieldModel::findPublishedByPid($formModel->id);
-
-        if (null === $this->formModel || null === $this->formFieldModels) {
-            throw new \RuntimeException('Cannot manage a form generator ID that
-            does not exist or has no published form fields.');
-        }
-
-        $this->splitFormFieldsToSteps();
+        $this->prepareFormFields();
     }
 
     /**
@@ -60,7 +54,7 @@ class MPFormsFormManager
      */
     public function isValidFormFieldCombination()
     {
-        return $this->lastFormFieldIsPageBreak
+        return $this->isValidFormFieldCombination
             && $this->getNumberOfSteps() > 1;
     }
 
@@ -72,6 +66,18 @@ class MPFormsFormManager
     public function getGetParam()
     {
         return $this->formModel->mp_forms_getParam ?: 'step';
+    }
+
+    /**
+     * Gets the form generator form id.
+     *
+     * @return string
+     */
+    public function getFormId()
+    {
+        return ('' !== $this->formModel->formID) ?
+            'auto_' . $this->formModel->formID :
+            'auto_form_' . $this->formModel->id;
     }
 
     /**
@@ -125,7 +131,7 @@ class MPFormsFormManager
 
         foreach ($formFields as $k => $formField) {
             if ('mp_form_pageswitch' === $formField->type) {
-                unset ($formFields[$k]);
+                unset($formFields[$k]);
             }
         }
 
@@ -235,7 +241,7 @@ class MPFormsFormManager
         if (0 === $step) {
             $url = \Haste\Util\Url::removeQueryString([$this->getGetParam()]);
         } else {
-            $url = \Haste\Util\Url::addQueryString($this->getGetParam()  . '=' . $step);
+            $url = \Haste\Util\Url::addQueryString($this->getGetParam() . '=' . $step);
         }
 
         return $url;
@@ -258,13 +264,15 @@ class MPFormsFormManager
     }
 
     /**
-     * Get data of current step.
+     * Get data of given step.
+     *
+     * @param int $step
      *
      * @return array
      */
-    public function getDataOfCurrentStep()
+    public function getDataOfStep($step)
     {
-        return (array) $_SESSION['MPFORMSTORAGE'][$this->formModel->id][$this->getCurrentStep()];
+        return (array) $_SESSION['MPFORMSTORAGE'][$this->formModel->id][$step];
     }
 
     /**
@@ -342,7 +350,7 @@ class MPFormsFormManager
         $formFields = $this->getFieldsForStep($step);
 
         foreach ($formFields as $formField) {
-            if (false === $this->validateField($formField)) {
+            if (false === $this->validateField($formField, $step)) {
 
                 return false;
             }
@@ -355,10 +363,11 @@ class MPFormsFormManager
      * Validates a field.
      *
      * @param \FormFieldModel $formField
+     * @param int             $step
      *
      * @return bool
      */
-    public function validateField(\FormFieldModel $formField)
+    public function validateField(\FormFieldModel $formField, $step)
     {
         $class = $GLOBALS['TL_FFL'][$formField->type];
 
@@ -371,18 +380,31 @@ class MPFormsFormManager
         $widget->required = $formField->mandatory ? true : false;
 
         // Needed for the hook
-        $form = new \Form($this->formModel);
-        $formId = ($form->formID != '') ? 'auto_' . $form->formID : 'auto_form_' . $form->id;
+        $form = $this->createDummyForm();
 
         // HOOK: load form field callback
         if (isset($GLOBALS['TL_HOOKS']['loadFormField']) && is_array($GLOBALS['TL_HOOKS']['loadFormField'])) {
             foreach ($GLOBALS['TL_HOOKS']['loadFormField'] as $callback) {
                 $objCallback = \System::importStatic($callback[0]);
-                $widget = $objCallback->$callback[1]($widget, $formId, $this->formModel->row(), $form);
+                $widget = $objCallback->{$callback[1]}($widget, $this->getFormId(), $this->formModel->row(), $form);
             }
         }
 
+        // Fetch value from session (fake validation)
+        if (!isset($_POST[$widget->name])
+            && $this->isStoredInData($widget->name, $step)
+        ) {
+            \Input::setPost($formField->name, $this->fetchFromData($widget->name, $step));
+        }
+
         $widget->validate();
+
+        // Reset fake validation
+        if (!isset($_POST[$widget->name])
+            && $this->isStoredInData($widget->name, $step)
+        ) {
+            \Input::setPost($formField->name, null);
+        }
 
         // Special hack for upload fields because they delete $_FILES and thus
         // multiple validation calls will fail - sigh
@@ -395,7 +417,7 @@ class MPFormsFormManager
             foreach ($GLOBALS['TL_HOOKS']['validateFormField'] as $callback) {
 
                 $objCallback = \System::importStatic($callback[0]);
-                $widget = $objCallback->$callback[1]($widget, $formId, $this->formModel->row(), $form);
+                $widget = $objCallback->{$callback[1]}($widget, $this->getFormId(), $this->formModel->row(), $form);
             }
         }
 
@@ -403,21 +425,95 @@ class MPFormsFormManager
     }
 
     /**
+     * Stores if some previous step was invalid into the session.
+     */
+    public function setPreviousStepsWereInvalid()
+    {
+        $_SESSION['MPFORMSTORAGE_PSWI'][$this->formModel->id] = true;
+    }
+
+    /**
+     * Checks if some previous step was invalid from the session.
+     *
+     * @return bool
+     */
+    public function getPreviousStepsWereInvalid()
+    {
+        return true === $_SESSION['MPFORMSTORAGE_PSWI'][$this->formModel->id];
+    }
+
+    /**
+     * Resets the session for the previous step check.
+     */
+    public function resetPreviousStepsWereInvalid()
+    {
+        unset($_SESSION['MPFORMSTORAGE_PSWI'][$this->formModel->id]);
+    }
+
+    /**
+     * Check if there is data stored for a certain field name.
+     *
+     * @param          $fieldName
+     * @param null|int $step Current step if null
+     *
+     * @return bool
+     */
+    public function isStoredInData($fieldName, $step = null)
+    {
+        $step = null === $step ? $this->getCurrentStep() : $step;
+
+        return isset($this->getDataOfStep($step)['submitted'])
+            && array_key_exists($fieldName, $this->getDataOfStep($step)['submitted']);
+    }
+
+    /**
+     * Retrieve the value stored for a certain field name.
+     *
+     * @param          $fieldName
+     * @param null|int $step Current step if null
+     *
+     * @return mixed
+     */
+    public function fetchFromData($fieldName, $step = null)
+    {
+        $step = null === $step ? $this->getCurrentStep() : $step;
+
+        return $this->getDataOfStep($step)['submitted'][$fieldName];
+    }
+
+    /**
+     * Helper to check whether a formfieldmodel is of type page break.
+     *
+     * @param FormFieldModel $formField
+     *
+     * @return bool
+     */
+    public function isPageBreak(\FormFieldModel $formField)
+    {
+        return 'mp_form_pageswitch' === $formField->type;
+    }
+
+    /**
      * Prepare an array that splits up the fields into steps
      */
-    private function splitFormFieldsToSteps()
+    private function prepareFormFields()
     {
+        if (null === $this->formModel) {
+            $this->isValidFormFieldCombination = false;
+            return;
+        }
+
+        $this->loadFormFieldModels();
+
+        if (0 === count($this->formFieldModels)) {
+            $this->isValidFormFieldCombination = false;
+            return;
+        }
+
         $i = 0;
         $lastField = null;
         foreach ($this->formFieldModels as $formField) {
             $this->formFieldsPerStep[$i][] = $formField;
-
-            // Fetch value from session (if one switches back)
-            if (isset($this->getDataOfCurrentStep()['submitted'])
-                && array_key_exists($formField->name, $this->getDataOfCurrentStep()['submitted'])
-            ) {
-                $formField->value = $this->getDataOfCurrentStep()['submitted'][$formField->name];
-            }
 
             $lastField = $formField;
 
@@ -432,20 +528,52 @@ class MPFormsFormManager
         }
 
         // Ensure the very last form field is a pageswitch too
-        if ($this->isPageBreak($lastField)) {
-            $this->lastFormFieldIsPageBreak = true;
+        if (!$this->isPageBreak($lastField)) {
+            $this->isValidFormFieldCombination = false;
         }
     }
 
     /**
-     * Helper to check whether a formfieldmodel is of type page break.
-     *
-     * @param FormFieldModel $formField
-     *
-     * @return bool
+     * Loads the form field models (calling the compileFormFields hook and ignoring itself).
      */
-    private function isPageBreak(\FormFieldModel $formField)
+    private function loadFormFieldModels()
     {
-        return 'mp_form_pageswitch' === $formField->type;
+        $formFieldModels = \FormFieldModel::findPublishedByPid($this->formModel->id);
+
+        if (null === $formFieldModels) {
+            $formFieldModels = [];
+        } else {
+            $formFieldModels = $formFieldModels->getModels();
+        }
+
+        // Needed for the hook
+        $form = $this->createDummyForm();
+
+        if (isset($GLOBALS['TL_HOOKS']['compileFormFields']) && is_array($GLOBALS['TL_HOOKS']['compileFormFields'])) {
+            foreach ($GLOBALS['TL_HOOKS']['compileFormFields'] as $k => $callback) {
+
+                // Do not call ourselves recursively
+                if ('MPForms' === $callback[0]) {
+                    continue;
+                }
+
+                $objCallback = \System::importStatic($callback[0]);
+                $formFieldModels = $objCallback->{$callback[1]}($formFieldModels, $this->getFormId(), $form);
+            }
+        }
+
+        $this->formFieldModels = $formFieldModels;
+    }
+
+    /**
+     * Creates a dummy form instance that is needed for the hooks.
+     *
+     * @return Form
+     */
+    private function createDummyForm()
+    {
+        $form = new stdClass();
+        $form->form = $this->formModel->id;
+        return new \Form($form);
     }
 }

@@ -3,7 +3,7 @@
 <?php $this->block('field'); ?>
 
 <?php if ($this->canGoBack): ?>
-<button type="submit" name="<?= $this->name ?>" value="back"><?= $this->mp_forms_backButton ?></button>
+<button type="submit" name="<?= $this->name ?>" value="back" formnovalidate><?= $this->mp_forms_backButton ?></button>
 <?php endif; ?>
 
 <button type="submit" name="<?= $this->name ?>" value="continue"><?= $this->slabel ?></button>
