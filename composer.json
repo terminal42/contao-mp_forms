@@ -12,8 +12,8 @@
   ],
   "require":{
     "php":">=5.4",
-    "contao/core":"^3.5",
-    "contao-community-alliance/composer-plugin":"2.*",
+    "contao/core-bundle":"^3.5 || ~4.2",
+    "contao-community-alliance/composer-plugin":"~2.4 || ~3.0",
     "codefog/contao-haste": "~4.3"
   },
   "extra":{
