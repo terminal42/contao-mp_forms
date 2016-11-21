@@ -86,10 +86,14 @@ class MPForms
      *
      * @param array $submitted
      * @param array $labels
-     * @param \Form $form
+     * @param $fieldsOrForm
+     * @param $formOrFields
      */
-    public function prepareFormData(&$submitted, &$labels, \Form $form)
+    public function prepareFormData(&$submitted, &$labels, $fieldsOrForm, $formOrFields)
     {
+        // Compat with Contao 4 and 3.5
+        $form = $fieldsOrForm instanceof \Form ? $fieldsOrForm : $formOrFields;
+
         $manager = new MPFormsFormManager($form->id);
 
         // Don't do anything if not valid
