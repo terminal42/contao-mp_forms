@@ -390,19 +390,29 @@ class MPFormsFormManager
             }
         }
 
-        // Fetch value from session (fake validation)
-        if (!isset($_POST[$widget->name])
-            && $this->isStoredInData($widget->name, $step)
-        ) {
-            \Input::setPost($formField->name, $this->fetchFromData($widget->name, $step));
+        // Validation (needs to set POST values because the widget class searches
+        // only in POST values :-(
+        // This should only happen if value is not currently submitted and if
+        // the value is neither submitted in POST nor in the session, we have
+        // to default it to an empty string so the widget validates for mandatory
+        // fields
+        $fakeValidation = false;
+
+        if (!isset($_POST[$widget->name])) {
+            if ($this->isStoredInData($widget->name, $step)) {
+                $value = $this->fetchFromData($widget->name, $step);
+            } else {
+                $value = '';
+            }
+
+            \Input::setPost($formField->name, $value);
+            $fakeValidation = true;
         }
 
         $widget->validate();
 
         // Reset fake validation
-        if (!isset($_POST[$widget->name])
-            && $this->isStoredInData($widget->name, $step)
-        ) {
+        if ($fakeValidation) {
             \Input::setPost($formField->name, null);
         }
 
