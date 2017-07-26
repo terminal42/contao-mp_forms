@@ -5,6 +5,7 @@
  *
  * @copyright  Copyright (c) 2015-2016, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
+ * @author     Ingolf Steinhardt <info@e-spin.de>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       https://github.com/terminal42/contao-mp_forms
  */
@@ -109,6 +110,9 @@ class MPForms
         if ($manager->isLastStep() && 'continue' === $submitted['mp_form_pageswitch']) {
 
             $allData = $manager->getDataOfAllSteps();
+
+            // Delete helper key.
+            unset($allData['submitted']['mp_form_pageswitch']);
 
             // Replace data by reference and then return so the default Contao
             // routine kicks in
