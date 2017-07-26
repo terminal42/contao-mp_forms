@@ -5,6 +5,7 @@
  *
  * @copyright  Copyright (c) 2015-2016, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
+ * @author     Ingolf Steinhardt <info@e-spin.de>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       https://github.com/terminal42/contao-mp_forms
  */
@@ -115,6 +116,8 @@ class MPForms
             $submitted          = $allData['submitted'];
             $labels             = $allData['labels'];
             $_SESSION['FILES']  = $allData['files'];
+            // Store data to add FORM_DATA.
+            $_POST              = $submitted;
 
             // Clear session
             $manager->resetData();
