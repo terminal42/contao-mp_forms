@@ -35,12 +35,17 @@ class MPForms
         }
 
         // Do not let Contao validate anything if user wants to go back
+        // but still save data already added to the input fields so it is
+        // there when they come back to the current step
         if ('back' === $_POST['mp_form_pageswitch']) {
+
+            $manager->storeData($_POST, [], (array) $_SESSION['FILES']);
             $this->redirectToStep($manager, $manager->getPreviousStep());
         }
 
-        // Validate previous steps data
-        if (!$manager->isFirstStep()) {
+        // Validate previous steps data but only if not POST present
+        // which means data is submitted and you're moving on to the next page
+        if (!$manager->isFirstStep() && !$_POST) {
             $vResult = $manager->validateSteps(0, $manager->getCurrentStep() - 1);
             if (true !== $vResult) {
                 $manager->setPreviousStepsWereInvalid();
@@ -102,11 +107,14 @@ class MPForms
             return;
         }
 
+        $pageSwitchValue = $submitted['mp_form_pageswitch'];
+        unset($submitted['mp_form_pageswitch']);
+
         // Store data in session
         $manager->storeData($submitted, $labels, (array) $_SESSION['FILES']);
 
         // Submit form
-        if ($manager->isLastStep() && 'continue' === $submitted['mp_form_pageswitch']) {
+        if ($manager->isLastStep() && 'continue' === $pageSwitchValue) {
 
             $allData = $manager->getDataOfAllSteps();
 
@@ -115,6 +123,14 @@ class MPForms
             $submitted          = $allData['submitted'];
             $labels             = $allData['labels'];
             $_SESSION['FILES']  = $allData['files'];
+
+            // Override $_POST so Contao handles special cases like "email"
+            // too if the data was submitted in a previous step
+            $_POST = $submitted;
+
+            // Override $_SESSION['FORM_DATA'] so it contains the data of
+            // previous steps as well
+            $_SESSION['FORM_DATA'] = $submitted;
 
             // Clear session
             $manager->resetData();
