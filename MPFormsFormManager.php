@@ -398,7 +398,7 @@ class MPFormsFormManager
         // fields
         $fakeValidation = false;
 
-        if (!isset($_POST[$widget->name])) {
+        if (!$this->checkWidgetSubmittedInCurrentStep($widget)) {
             if ($this->isStoredInData($widget->name, $step)) {
                 $value = $this->fetchFromData($widget->name, $step);
             } else {
@@ -501,6 +501,25 @@ class MPFormsFormManager
     public function isPageBreak(\FormFieldModel $formField)
     {
         return 'mp_form_pageswitch' === $formField->type;
+    }
+
+    /**
+     * Checks if a widget was submitted in current step handling some
+     * exceptions.
+     *
+     * @return bool
+     */
+    private function checkWidgetSubmittedInCurrentStep(\Widget $widget)
+    {
+        // Special handling for captcha field
+        if ($widget instanceof \FormCaptcha) {
+            $session = \Session::getInstance();
+            $captcha = $session->get('captcha_' . $widget->id);
+
+            return isset($_POST[$captcha['key']]);
+        }
+
+        return isset($_POST[$widget->name]);
     }
 
     /**
