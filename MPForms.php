@@ -39,8 +39,9 @@ class MPForms
             $this->redirectToStep($manager, $manager->getPreviousStep());
         }
 
-        // Validate previous steps data
-        if (!$manager->isFirstStep()) {
+        // Validate previous steps data but only if not POST present
+        // which means data is submitted and you're moving on to the next page
+        if (!$manager->isFirstStep() && !$_POST) {
             $vResult = $manager->validateSteps(0, $manager->getCurrentStep() - 1);
             if (true !== $vResult) {
                 $manager->setPreviousStepsWereInvalid();
