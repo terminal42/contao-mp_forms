@@ -102,11 +102,14 @@ class MPForms
             return;
         }
 
+        $pageSwitchValue = $submitted['mp_form_pageswitch'];
+        unset($submitted['mp_form_pageswitch']);
+
         // Store data in session
         $manager->storeData($submitted, $labels, (array) $_SESSION['FILES']);
 
         // Submit form
-        if ($manager->isLastStep() && 'continue' === $submitted['mp_form_pageswitch']) {
+        if ($manager->isLastStep() && 'continue' === $pageSwitchValue) {
 
             $allData = $manager->getDataOfAllSteps();
 
