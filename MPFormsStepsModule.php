@@ -65,7 +65,9 @@ class MPFormsStepsModule extends \Module
 
         $steps = range(0, $manager->getNumberOfSteps() - 1);
         $items = [];
-        $firstFailingStep = $manager->validateSteps();
+
+        // Never validate the very last step
+        $firstFailingStep = $manager->validateSteps(0, $manager->getNumberOfSteps() - 2);
 
         foreach ($steps as $step) {
 
