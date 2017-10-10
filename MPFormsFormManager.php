@@ -378,6 +378,7 @@ class MPFormsFormManager
         /** @var \Widget $widget */
         $widget = new $class($formField->row());
         $widget->required = $formField->mandatory ? true : false;
+        $widget->decodeEntities = true; // Always decode entities
 
         // Needed for the hook
         $form = $this->createDummyForm();
