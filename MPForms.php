@@ -120,6 +120,14 @@ class MPForms
             $labels             = $allData['labels'];
             $_SESSION['FILES']  = $allData['files'];
 
+            // Override $_POST so Contao handles special cases like "email"
+            // too if the data was submitted in a previous step
+            $_POST = $submitted;
+
+            // Override $_SESSION['FORM_DATA'] so it contains the data of
+            // previous steps as well
+            $_SESSION['FORM_DATA'] = $submitted;
+
             // Clear session
             $manager->resetData();
             return;
