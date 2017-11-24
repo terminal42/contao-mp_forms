@@ -298,18 +298,15 @@ class MPFormsFormManager
     {
         $submitted = [];
         $labels    = [];
-        $files     = [];
 
         foreach ((array) $_SESSION['MPFORMSTORAGE'][$this->formModel->id] as $stepData) {
             $submitted = array_merge($submitted, (array) $stepData['submitted']);
             $labels    = array_merge($labels, (array) $stepData['labels']);
-            $files     = array_merge($files, (array) $stepData['files']);
         }
 
         return [
             'submitted' => $submitted,
             'labels'    => $labels,
-            'files'     => $files,
         ];
     }
 
