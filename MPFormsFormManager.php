@@ -426,11 +426,6 @@ class MPFormsFormManager
 
         $widget->validate();
 
-        // Reset fake validation
-        if ($fakeValidation) {
-            \Input::setPost($formField->name, null);
-        }
-
         // Special hack for upload fields because they delete $_FILES and thus
         // multiple validation calls will fail - sigh
         if ($widget instanceof \uploadable && isset($_SESSION['FILES'][$widget->name])) {
@@ -444,6 +439,11 @@ class MPFormsFormManager
                 $objCallback = \System::importStatic($callback[0]);
                 $widget = $objCallback->{$callback[1]}($widget, $this->getFormId(), $this->formModel->row(), $form);
             }
+        }
+        
+        // Reset fake validation
+        if ($fakeValidation) {
+            \Input::setPost($formField->name, null);
         }
 
         return !$widget->hasErrors();
