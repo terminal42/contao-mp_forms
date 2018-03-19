@@ -9,7 +9,9 @@
  * @link       https://github.com/terminal42/contao-mp_forms
  */
 
-class FormMPFormPageSwitch extends \Widget
+use Contao\Widget;
+
+class FormMPFormPageSwitch extends Widget
 {
     /**
      * Template
