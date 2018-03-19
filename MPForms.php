@@ -9,16 +9,23 @@
  * @link       https://github.com/terminal42/contao-mp_forms
  */
 
+use Contao\Controller;
+use Contao\Form;
+use Contao\FormFieldModel;
+use Contao\FormModel;
+use Contao\Input;
+use Contao\Widget;
+
 class MPForms
 {
     /**
      * Adjust form fields to given page.
      *
-     * @param \FormFieldModel[] $formFields
-     * @param string            $formId
-     * @param \Form             $form
+     * @param FormFieldModel[] $formFields
+     * @param string           $formId
+     * @param Form             $form
      */
-    public function compileFormFields($formFields, $formId, \Form $form)
+    public function compileFormFields($formFields, $formId, Form $form)
     {
         // Make sure empty form fields arrays are skipped
         if (0 === count($formFields)) {
@@ -56,7 +63,7 @@ class MPForms
         // If someone wanted to skip the page, fake form submission so fields
         // are validated and show the error message.
         if ($manager->getPreviousStepsWereInvalid()) {
-            \Input::setPost('FORM_SUBMIT', $manager->getFormId());
+            Input::setPost('FORM_SUBMIT', $manager->getFormId());
             $manager->resetPreviousStepsWereInvalid();
         }
 
@@ -67,14 +74,14 @@ class MPForms
      * Loads the values from the session and adds it as default value to the
      * widget.
      *
-     * @param \Widget $widget
-     * @param string  $formId
-     * @param array   $formData
-     * @param \Form    $form
+     * @param Widget $widget
+     * @param string $formId
+     * @param array  $formData
+     * @param Form   $form
      *
-     * @return \Widget
+     * @return Widget
      */
-    public function loadValuesFromSession($widget, $formId, $formData, \Form $form)
+    public function loadValuesFromSession(Widget $widget, $formId, $formData, Form $form)
     {
         $manager = new MPFormsFormManager($form->id);
 
@@ -97,7 +104,7 @@ class MPForms
     public function prepareFormData(&$submitted, &$labels, $fieldsOrForm, $formOrFields)
     {
         // Compat with Contao 4 and 3.5
-        $form = $fieldsOrForm instanceof \Form ? $fieldsOrForm : $formOrFields;
+        $form = $fieldsOrForm instanceof Form ? $fieldsOrForm : $formOrFields;
 
         $manager = new MPFormsFormManager($form->id);
 
@@ -161,7 +168,7 @@ class MPForms
         $formId = $chunks[1];
         $value = $chunks[2];
 
-        $form = \FormModel::findByPk($formId);
+        $form = FormModel::findByPk($formId);
         $manager = new MPFormsFormManager($form->id);
 
         switch ($value) {
@@ -184,6 +191,6 @@ class MPForms
      */
     private function redirectToStep(MPFormsFormManager $manager, $step)
     {
-        \Controller::redirect($manager->getUrlForStep($step));
+        Controller::redirect($manager->getUrlForStep($step));
     }
 }

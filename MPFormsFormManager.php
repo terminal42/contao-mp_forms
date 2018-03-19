@@ -9,15 +9,25 @@
  * @link       https://github.com/terminal42/contao-mp_forms
  */
 
+use Contao\Form;
+use Contao\FormCaptcha;
+use Contao\FormFieldModel;
+use Contao\FormModel;
+use Contao\Input;
+use Contao\Session;
+use Contao\System;
+use Contao\Widget;
+use Haste\Util\Url;
+
 class MPFormsFormManager
 {
     /**
-     * @var \FormModel
+     * @var FormModel
      */
     private $formModel;
 
     /**
-     * @var \FormFieldModel[]
+     * @var FormFieldModel[]
      */
     private $formFieldModels;
 
@@ -42,7 +52,7 @@ class MPFormsFormManager
      */
     function __construct($formGeneratorId)
     {
-        $this->formModel = \FormModel::findByPk($formGeneratorId);
+        $this->formModel = FormModel::findByPk($formGeneratorId);
 
         $this->prepareFormFields();
     }
@@ -164,7 +174,7 @@ class MPFormsFormManager
      */
     public function getCurrentStep()
     {
-        return (int) \Input::get($this->getGetParam());
+        return (int) Input::get($this->getGetParam());
     }
 
     /**
@@ -239,9 +249,9 @@ class MPFormsFormManager
     public function getUrlForStep($step)
     {
         if (0 === $step) {
-            $url = \Haste\Util\Url::removeQueryString([$this->getGetParam()]);
+            $url = Url::removeQueryString([$this->getGetParam()]);
         } else {
-            $url = \Haste\Util\Url::addQueryString($this->getGetParam() . '=' . $step);
+            $url = Url::addQueryString($this->getGetParam() . '=' . $step);
         }
 
         return $url;
@@ -373,12 +383,12 @@ class MPFormsFormManager
     /**
      * Validates a field.
      *
-     * @param \FormFieldModel $formField
+     * @param FormFieldModel $formField
      * @param int             $step
      *
      * @return bool
      */
-    public function validateField(\FormFieldModel $formField, $step)
+    public function validateField(FormFieldModel $formField, $step)
     {
         $class = $GLOBALS['TL_FFL'][$formField->type];
 
@@ -386,7 +396,7 @@ class MPFormsFormManager
             return true;
         }
 
-        /** @var \Widget $widget */
+        /** @var Widget $widget */
         $widget = new $class($formField->row());
         $widget->required = $formField->mandatory ? true : false;
         $widget->decodeEntities = true; // Always decode entities
@@ -397,7 +407,7 @@ class MPFormsFormManager
         // HOOK: load form field callback
         if (isset($GLOBALS['TL_HOOKS']['loadFormField']) && is_array($GLOBALS['TL_HOOKS']['loadFormField'])) {
             foreach ($GLOBALS['TL_HOOKS']['loadFormField'] as $callback) {
-                $objCallback = \System::importStatic($callback[0]);
+                $objCallback = System::importStatic($callback[0]);
                 $widget = $objCallback->{$callback[1]}($widget, $this->getFormId(), $this->formModel->row(), $form);
             }
         }
@@ -417,7 +427,7 @@ class MPFormsFormManager
                 $value = '';
             }
 
-            \Input::setPost($formField->name, $value);
+            Input::setPost($formField->name, $value);
             $fakeValidation = true;
         }
 
@@ -425,7 +435,7 @@ class MPFormsFormManager
 
         // Reset fake validation
         if ($fakeValidation) {
-            \Input::setPost($formField->name, null);
+            Input::setPost($formField->name, null);
         }
 
         // Special hack for upload fields because they delete $_FILES and thus
@@ -438,7 +448,7 @@ class MPFormsFormManager
         if (isset($GLOBALS['TL_HOOKS']['validateFormField']) && is_array($GLOBALS['TL_HOOKS']['validateFormField'])) {
             foreach ($GLOBALS['TL_HOOKS']['validateFormField'] as $callback) {
 
-                $objCallback = \System::importStatic($callback[0]);
+                $objCallback = System::importStatic($callback[0]);
                 $widget = $objCallback->{$callback[1]}($widget, $this->getFormId(), $this->formModel->row(), $form);
             }
         }
@@ -510,7 +520,7 @@ class MPFormsFormManager
      *
      * @return bool
      */
-    public function isPageBreak(\FormFieldModel $formField)
+    public function isPageBreak(FormFieldModel $formField)
     {
         return 'mp_form_pageswitch' === $formField->type;
     }
@@ -521,11 +531,11 @@ class MPFormsFormManager
      *
      * @return bool
      */
-    private function checkWidgetSubmittedInCurrentStep(\Widget $widget)
+    private function checkWidgetSubmittedInCurrentStep(Widget $widget)
     {
         // Special handling for captcha field
-        if ($widget instanceof \FormCaptcha) {
-            $session = \Session::getInstance();
+        if ($widget instanceof FormCaptcha) {
+            $session = Session::getInstance();
             $captcha = $session->get('captcha_' . $widget->id);
 
             return isset($_POST[$captcha['key']]);
@@ -579,7 +589,7 @@ class MPFormsFormManager
      */
     private function loadFormFieldModels()
     {
-        $formFieldModels = \FormFieldModel::findPublishedByPid($this->formModel->id);
+        $formFieldModels = FormFieldModel::findPublishedByPid($this->formModel->id);
 
         if (null === $formFieldModels) {
             $formFieldModels = [];
@@ -598,7 +608,7 @@ class MPFormsFormManager
                     continue;
                 }
 
-                $objCallback = \System::importStatic($callback[0]);
+                $objCallback = System::importStatic($callback[0]);
                 $formFieldModels = $objCallback->{$callback[1]}($formFieldModels, $this->getFormId(), $form);
             }
         }
@@ -615,6 +625,6 @@ class MPFormsFormManager
     {
         $form = new stdClass();
         $form->form = $this->formModel->id;
-        return new \Form($form);
+        return new Form($form);
     }
 }
