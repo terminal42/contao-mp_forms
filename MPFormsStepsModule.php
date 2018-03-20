@@ -9,7 +9,12 @@
  * @link       https://github.com/terminal42/contao-mp_forms
  */
 
-class MPFormsStepsModule extends \Module
+use Contao\Module;
+use Contao\BackendTemplate;
+use Contao\FrontendTemplate;
+use Haste\Generator\RowClass;
+
+class MPFormsStepsModule extends Module
 {
 
     /**
@@ -27,8 +32,8 @@ class MPFormsStepsModule extends \Module
     public function generate()
     {
         if (TL_MODE == 'BE') {
-            /** @var \BackendTemplate|object $objTemplate */
-            $objTemplate = new \BackendTemplate('be_wildcard');
+            /** @var BackendTemplate|object $objTemplate */
+            $objTemplate = new BackendTemplate('be_wildcard');
 
             $objTemplate->wildcard = '### ' . utf8_strtoupper($GLOBALS['TL_LANG']['FMD']['mp_form_steps'][0]) . ' ###';
             $objTemplate->title = $this->headline;
@@ -48,7 +53,7 @@ class MPFormsStepsModule extends \Module
      */
     protected function compile()
     {
-        $navTpl = new \FrontendTemplate($this->navigationTpl ?: 'nav_default');
+        $navTpl = new FrontendTemplate($this->navigationTpl ?: 'nav_default');
         $navTpl->level = 0;
         $navTpl->items = $this->buildNavigationItems();
         $this->Template->navigation = $navTpl->parse();
@@ -88,7 +93,7 @@ class MPFormsStepsModule extends \Module
             ];
         }
 
-        \Haste\Generator\RowClass::withKey('class')
+        RowClass::withKey('class')
             ->addFirstLast()
             ->addEvenOdd()
             ->applyTo($items);
