@@ -433,17 +433,6 @@ class MPFormsFormManager
 
         $widget->validate();
 
-        // Reset fake validation
-        if ($fakeValidation) {
-            Input::setPost($formField->name, null);
-        }
-
-        // Special hack for upload fields because they delete $_FILES and thus
-        // multiple validation calls will fail - sigh
-        if ($widget instanceof \uploadable && isset($_SESSION['FILES'][$widget->name])) {
-            $_FILES[$widget->name] = $_SESSION['FILES'][$widget->name];
-        }
-
         // HOOK: validate form field callback
         if (isset($GLOBALS['TL_HOOKS']['validateFormField']) && is_array($GLOBALS['TL_HOOKS']['validateFormField'])) {
             foreach ($GLOBALS['TL_HOOKS']['validateFormField'] as $callback) {
@@ -452,6 +441,17 @@ class MPFormsFormManager
                 $widget = $objCallback->{$callback[1]}($widget, $this->getFormId(), $this->formModel->row(), $form);
             }
         }
+
+        // Reset fake validation
+        if ($fakeValidation) {
+            Input::setPost($formField->name, null);
+        }
+        
+        // Special hack for upload fields because they delete $_FILES and thus
+        // multiple validation calls will fail - sigh
+        if ($widget instanceof \uploadable && isset($_SESSION['FILES'][$widget->name])) {
+            $_FILES[$widget->name] = $_SESSION['FILES'][$widget->name];
+        }       
 
         return !$widget->hasErrors();
     }
