@@ -17,7 +17,7 @@ $GLOBALS['TL_DCA']['tl_form']['config']['onsubmit_callback'][] = function($dc) {
     $manager->resetData();
 };
 
-$GLOBALS['TL_DCA']['tl_form']['palettes']['default'] .= ';{mp_forms_legend},mp_forms_getParam;';
+$GLOBALS['TL_DCA']['tl_form']['palettes']['default'] .= ';{mp_forms_legend},mp_forms_getParam';
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_getParam'] = [
     'label'     => &$GLOBALS['TL_LANG']['tl_form']['mp_forms_getParam'],
