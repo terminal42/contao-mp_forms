@@ -278,7 +278,7 @@ class MPFormsFormManager
                     basename($file['tmp_name'])
                 );
                 move_uploaded_file($file['tmp_name'], $target);
-                $_SESSION['FILES'][$k]['tmp_name'] = $target;
+                $files[$k]['tmp_name'] = $target;
             }
         }
 
