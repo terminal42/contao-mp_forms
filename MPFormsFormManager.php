@@ -426,13 +426,19 @@ class MPFormsFormManager
         $fakeValidation = false;
 
         if (!$this->checkWidgetSubmittedInCurrentStep($widget)) {
+
+            // Handle regular fields
             if ($this->isStoredInData($widget->name, $step)) {
-                $value = $this->fetchFromData($widget->name, $step);
+                Input::setPost($formField->name, $this->fetchFromData($widget->name, $step));
             } else {
-                $value = '';
+                Input::setPost($formField->name, '');
             }
 
-            Input::setPost($formField->name, $value);
+            // Handle files
+            if ($this->isStoredInData($widget->name, $step, 'files')) {
+                $_FILES[$widget->name] = $this->fetchFromData($widget->name, $step, 'files');
+            }
+
             $fakeValidation = true;
         }
 
@@ -492,15 +498,16 @@ class MPFormsFormManager
      *
      * @param          $fieldName
      * @param null|int $step Current step if null
+     * @param string   $key
      *
      * @return bool
      */
-    public function isStoredInData($fieldName, $step = null)
+    public function isStoredInData($fieldName, $step = null, $key = 'submitted')
     {
         $step = null === $step ? $this->getCurrentStep() : $step;
 
-        return isset($this->getDataOfStep($step)['submitted'])
-            && array_key_exists($fieldName, $this->getDataOfStep($step)['submitted']);
+        return isset($this->getDataOfStep($step)[$key])
+            && array_key_exists($fieldName, $this->getDataOfStep($step)[$key]);
     }
 
     /**
@@ -508,14 +515,15 @@ class MPFormsFormManager
      *
      * @param          $fieldName
      * @param null|int $step Current step if null
+     * @param string   $key
      *
      * @return mixed
      */
-    public function fetchFromData($fieldName, $step = null)
+    public function fetchFromData($fieldName, $step = null, $key = 'submitted')
     {
         $step = null === $step ? $this->getCurrentStep() : $step;
 
-        return $this->getDataOfStep($step)['submitted'][$fieldName];
+        return $this->getDataOfStep($step)[$key][$fieldName];
     }
 
     /**
