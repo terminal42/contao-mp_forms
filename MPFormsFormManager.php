@@ -262,12 +262,13 @@ class MPFormsFormManager
      *
      * @param array $submitted
      * @param array $labels
+     * @param array $files
      */
-    public function storeData(array $submitted, array $labels)
+    public function storeData(array $submitted, array $labels, array $files)
     {
         // Make sure files are moved to our own tmp directory so they are
         // kept across php processes
-        foreach ((array) $_SESSION['FILES'] as $k => $file) {
+        foreach ($files as $k => $file) {
             // If the user marked the form field to upload the file into
             // a certain directory, this check will return false and thus
             // we won't move anything.
@@ -284,6 +285,7 @@ class MPFormsFormManager
         $_SESSION['MPFORMSTORAGE'][$this->formModel->id][$this->getCurrentStep()] = [
             'submitted' => $submitted,
             'labels'    => $labels,
+            'files'     => $files,
         ];
     }
 
@@ -308,15 +310,18 @@ class MPFormsFormManager
     {
         $submitted = [];
         $labels    = [];
+        $files     = [];
 
         foreach ((array) $_SESSION['MPFORMSTORAGE'][$this->formModel->id] as $stepData) {
             $submitted = array_merge($submitted, (array) $stepData['submitted']);
             $labels    = array_merge($labels, (array) $stepData['labels']);
+            $files     = array_merge($files, (array) $stepData['files']);
         }
 
         return [
             'submitted' => $submitted,
             'labels'    => $labels,
+            'files'     => $files,
         ];
     }
 

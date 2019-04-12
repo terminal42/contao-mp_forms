@@ -46,7 +46,7 @@ class MPForms
         // there when they come back to the current step
         if ('back' === $_POST['mp_form_pageswitch']) {
 
-            $manager->storeData($_POST, []);
+            $manager->storeData($_POST, [], (array) $_SESSION['FILES']);
             $this->redirectToStep($manager, $manager->getPreviousStep());
         }
 
@@ -118,7 +118,7 @@ class MPForms
         unset($submitted['mp_form_pageswitch']);
 
         // Store data in session
-        $manager->storeData($submitted, $labels);
+        $manager->storeData($submitted, $labels, (array) $_SESSION['FILES']);
 
         // Submit form
         if ($manager->isLastStep() && 'continue' === $pageSwitchValue) {
@@ -129,6 +129,7 @@ class MPForms
             // routine kicks in
             $submitted          = $allData['submitted'];
             $labels             = $allData['labels'];
+            $_SESSION['FILES']  = $allData['files'];
 
             // Override $_POST so Contao handles special cases like "email"
             // too if the data was submitted in a previous step
