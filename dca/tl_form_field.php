@@ -16,12 +16,12 @@ $GLOBALS['TL_DCA']['tl_form_field']['config']['onsubmit_callback'][] = function(
     $manager = new \MPFormsFormManager((int) $dc->activeRecord->pid);
     $manager->resetData();
 };
-$GLOBALS['TL_DCA']['tl_form_field']['palettes']['mp_form_pageswitch'] = '{type_legend},type,mp_forms_backButton,slabel,label;{image_legend:hide},imageSubmit;{expert_legend:hide},class,accesskey,tabindex;{template_legend:hide},customTpl';
+$GLOBALS['TL_DCA']['tl_form_field']['palettes']['mp_form_pageswitch'] = '{type_legend},type,mp_forms_backButton,slabel;{image_legend:hide},imageSubmit;{expert_legend:hide},class,accesskey,tabindex;{template_legend:hide},customTpl';
 
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['mp_forms_backButton'] = [
     'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_backButton'],
     'exclude'   => true,
     'inputType' => 'text',
-    'eval'      => ['tl_class' => 'clr', 'maxlength' => 255, 'mandatory' => true],
+    'eval'      => ['tl_class' => 'w50 clr', 'maxlength' => 255, 'mandatory' => true],
     'sql'       => "varchar(255) NOT NULL default ''"
 ];
