@@ -13,6 +13,7 @@
  * Form fields
  */
 $GLOBALS['TL_LANG']['FFL']['mp_form_pageswitch'] = ['Page break', 'Separates the form fields into different pages/steps.'];
+$GLOBALS['TL_LANG']['FFL']['mp_form_placeholder'] = ['Summary', 'Allows the output of the form data of the previous page(s).'];
 
 /**
  * Fields

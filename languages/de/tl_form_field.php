@@ -13,6 +13,7 @@
  * Form fields
  */
 $GLOBALS['TL_LANG']['FFL']['mp_form_pageswitch'] = ['Seitenumbruch', 'Trennt die Felder in mehrere Seiten.'];
+$GLOBALS['TL_LANG']['FFL']['mp_form_placeholder'] = ['Zusammenfassung', 'Erlaubt die Ausgabe von Daten der vorderen Seite(n).'];
 
 /**
  * Fields

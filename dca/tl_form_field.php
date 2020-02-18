@@ -16,7 +16,8 @@ $GLOBALS['TL_DCA']['tl_form_field']['config']['onsubmit_callback'][] = function(
     $manager = new \MPFormsFormManager((int) $dc->activeRecord->pid);
     $manager->resetData();
 };
-$GLOBALS['TL_DCA']['tl_form_field']['palettes']['mp_form_pageswitch'] = '{type_legend},type,mp_forms_backButton,slabel;{image_legend:hide},imageSubmit;{expert_legend:hide},class,accesskey,tabindex;{template_legend:hide},customTpl';
+$GLOBALS['TL_DCA']['tl_form_field']['palettes']['mp_form_pageswitch'] = '{type_legend},type,mp_forms_backButton,slabel;{image_legend:hide},imageSubmit;{expert_legend:hide},class,accesskey,tabindex;{template_legend:hide},customTpl,{invisible_legend:hide},invisible';
+$GLOBALS['TL_DCA']['tl_form_field']['palettes']['mp_form_placeholder'] = '{type_legend},type;{text_legend},html;{template_legend:hide},customTpl;{invisible_legend:hide},invisible';
 
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['mp_forms_backButton'] = [
     'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_backButton'],

@@ -1,9 +1,9 @@
 # mp_forms
 
-This is a Contao 3.5+ extension that finally allows you to create real forms over multiple pages.
+This is a Contao 4.4+ extension that finally allows you to create real forms over multiple pages.
 
 After installing the module, you have a new setting in the form definitions where you can define the GET parameter
- you want the extension to work with. By default, this is `step` so it will generate `step=1`, `step=2` etc. in the URL.
+you want the extension to work with. By default, this is `step` so it will generate `step=1`, `step=2` etc. in the URL.
 If, for whatever reason `step` is already in use on your webpage, you can change the settings there.
 
 Moreover, you'll get a new form field called `Page break`. Every time you use this form field, the module will insert a
@@ -12,14 +12,26 @@ page break in the form.
 `mp_forms` validates if a user manually wants to go to step 3 and did not fill in step 1 or 2. I this case the user will be redirected
 to step 1 (obviously, only if you had required fields on step 1).
 
-Note that you should not be using a regular submit form field to finish your form but use the `Page break` again. Otherwise, you
-won't have any `back` button displayed. `mp_forms` will automatically detect the last `Page break` as behaving like the form submit.
+:warning: **Your final form field must be of type `Page break`**:
+> Note that you must not be using a regular submit form field to finish your form but use the `Page break` again. Otherwise, you
+> won't have any `back` button displayed. `mp_forms` will automatically detect the last `Page break` as behaving like the form submit.
+> If you do not use the `Page break` element as your last form field, `mp_forms` is completely disabled and you won't have
+> any steps!
+
+## The `Summary` element
+
+A typical use case of forms that are split into multiple steps is to summarize data that was previously entered.
+This might be on the final step before the data is submitted but it can also happen in between.
+You can use this special form field type to display the data.
+Accessing the data can be done via the "Simple Token" technology that is typical for Contao.
+All the form fields of previous steps are passed on using the `##form_*##` notation.
+You can simply add `##debug_tokens##` to the output to see which tokens you can use.
 
 ## Frontend module to display a step navigation
 
 This module ships with a front end module that allows you to easily build a front end navigation for
 each of your steps.
-Unstyled it might look something like this in the end:
+Not styled at all, it might look something like this in the end:
 
 ![Example for step navigation](docs/navigation_example.png)
 
