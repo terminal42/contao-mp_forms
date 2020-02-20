@@ -23,6 +23,6 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['mp_forms_backButton'] = [
     'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_backButton'],
     'exclude'   => true,
     'inputType' => 'text',
-    'eval'      => ['tl_class' => 'w50 clr', 'maxlength' => 255, 'mandatory' => true],
+    'eval'      => ['tl_class' => 'w50 clr', 'maxlength' => 255],
     'sql'       => "varchar(255) NOT NULL default ''"
 ];
