@@ -576,11 +576,8 @@ class MPFormsFormManager
         }
 
         $i = 0;
-        $lastField = null;
         foreach ($this->formFieldModels as $formField) {
             $this->formFieldsPerStep[$i][] = $formField;
-
-            $lastField = $formField;
 
             if ($this->isPageBreak($formField)) {
                 // Set the name on the model, otherwise one has to enter it
@@ -590,11 +587,11 @@ class MPFormsFormManager
                 // Increase counter
                 $i++;
             }
-        }
 
-        // Ensure the very last form field is a pageswitch too
-        if (!$this->isPageBreak($lastField)) {
-            $this->isValidFormFieldCombination = false;
+            // If we have a regular submit form field, that's a misconfiguration
+            if ('submit' === $formField->type) {
+                $this->isValidFormFieldCombination = false;
+            }
         }
     }
 

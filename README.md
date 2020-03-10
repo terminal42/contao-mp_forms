@@ -12,10 +12,10 @@ page break in the form.
 `mp_forms` validates if a user manually wants to go to step 3 and did not fill in step 1 or 2. I this case the user will be redirected
 to step 1 (obviously, only if you had required fields on step 1).
 
-:warning: **Your final form field must be of type `Page break`**:
-> Note that you must not be using a regular submit form field to finish your form but use the `Page break` again. Otherwise, you
+:warning: **You may not use the regular submit form field element**:
+> Note that you must not be using a regular submit form field but use the `Page break` again. Otherwise, you
 > won't have any `back` button displayed. `mp_forms` will automatically detect the last `Page break` as behaving like the form submit.
-> If you do not use the `Page break` element as your last form field, `mp_forms` is completely disabled and you won't have
+> If you use the regular submit form field anywhere in your form, `mp_forms` is completely disabled and you won't have
 > any steps!
 
 ## The `Summary` element
