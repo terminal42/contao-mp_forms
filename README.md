@@ -25,7 +25,19 @@ This might be on the final step before the data is submitted but it can also hap
 You can use this special form field type to display the data.
 Accessing the data can be done via the "Simple Token" technology that is typical for Contao.
 All the form fields of previous steps are passed on using the `##form_*##` notation.
-You can simply add `##debug_tokens##` to the output to see which tokens you can use.
+You may also access the labels using `##formlabel_*##`.
+
+Files are handled a bit differently because there is more than just one value to a file.
+You may use `extension`, `size`, `mime` as well as a `download_url` which is generated for you.
+To make things simple, the default token for the file (e.g. if the form field was named `upload` that would be `##form_upload##`)
+contains the HTML rendered using the `ce_download` template.
+
+A simple summary for all the submitted fields, encapsulated in simple `<div>` elements can be displayed using
+the `##mp_forms_summary##` token.
+
+Because trying things out yourself is usually easier and so you don't have to remember all the tokens that can be
+used, you may simply place the `##mp_forms_debug##` token  which will show you all the available tokens with their
+content.
 
 ## Frontend module to display a step navigation
 

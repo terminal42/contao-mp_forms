@@ -9,7 +9,14 @@
  * @link       https://github.com/terminal42/contao-mp_forms
  */
 
+use Contao\Image;
 use Contao\Widget;
+use Contao\BackendTemplate;
+use Contao\File;
+use Contao\StringUtil as ContaoStringUtil;
+use Contao\System;
+use Haste\Util\StringUtil as HasteStringUtil;
+use Haste\Util\Url;
 
 class FormMPFormPlaceholder extends Widget
 {
@@ -53,7 +60,7 @@ class FormMPFormPlaceholder extends Widget
             return $template->parse();
         }
 
-        $this->content = nl2br(\Contao\StringUtil::parseSimpleTokens($this->html, $this->generateTokens()));
+        $this->content = nl2br(ContaoStringUtil::parseSimpleTokens($this->html, $this->generateTokens()));
 
         return parent::parse($attributes);
     }
@@ -65,20 +72,76 @@ class FormMPFormPlaceholder extends Widget
      */
     public function generate()
     {
-        throw new BadMethodCallException('Calling generate() has been deprecated, you must use parse() instead!');
+        throw new \BadMethodCallException('Calling generate() has been deprecated, you must use parse() instead!');
     }
 
     private function generateTokens(): array
     {
         $tokens = [];
+        $summaryTokens = [];
 
-        $manager = new MPFormsFormManager($this->pid);
+        $manager = new \MPFormsFormManager($this->pid);
         $data = $manager->getDataOfAllSteps();
 
-        // TODO: can we support files here?
         foreach ($data['submitted'] as $k => $v) {
-            \Haste\Util\StringUtil::flatten($v, 'form_'.$k, $tokens);
+            HasteStringUtil::flatten($v, 'form_'.$k, $tokens);
+            $summaryTokens[$k]['value'] = $tokens['form_'.$k];
         }
+
+        foreach ($data['labels'] as $k => $v) {
+            HasteStringUtil::flatten($v, 'formlabel_'.$k, $tokens);
+
+            $summaryTokens[$k]['label'] = $tokens['formlabel_'.$k];
+        }
+
+        $rootDir = \System::getContainer()->getParameter('kernel.project_dir');
+
+        foreach ($data['files'] as $k => $v) {
+            $fileTokens = [];
+
+            $file = new File(ContaoStringUtil::stripRootDir($v['tmp_name']));
+
+            if ($k === $_GET['summary_download']) {
+                $file->sendToBrowser($v['name']);
+            }
+
+            $fileTokens['download_url'] = Url::addQueryString('summary_download=' .$k);
+            $fileTokens['extension'] = $file->extension;
+            $fileTokens['mime'] = $file->mime;
+            $fileTokens['size'] = $file->filesize;
+
+            foreach ($fileTokens as $kk => $vv) {
+                HasteStringUtil::flatten($vv, 'file_'.$k.'_'.$kk, $tokens);
+            }
+
+            // Generate a general HTML output using the download template
+            $tpl = new \Contao\FrontendTemplate('ce_download'); // TODO: make configurable in form field settings?
+            $tpl->link = $file->basename;
+            $tpl->title = ContaoStringUtil::specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['download'], $file->basename));
+            $tpl->href = $fileTokens['download_url'];
+            $tpl->filesize = System::getReadableSize($file->filesize);
+            $tpl->icon = Image::getPath($file->icon);
+            $tpl->mime = $file->mime;
+            $tpl->extension = $file->extension;
+            $tpl->path = $file->dirname;
+
+            HasteStringUtil::flatten($tpl->parse(), 'file_'.$k, $tokens);
+
+            $summaryTokens[$k]['value'] = $tokens['file_'.$k];
+        }
+
+        // Add a simple summary token that outputs label plus value for everything that was submitted
+        $summaryToken = '';
+        foreach ($summaryTokens as $k => $v) {
+            if (!$v['value']) {
+                continue;
+            }
+
+            $summaryToken .= sprintf('<div class="label">%s</div>', $v['label']);
+            $summaryToken .= sprintf('<div class="value">%s</div>', $v['value']);
+        }
+
+        $tokens['mp_forms_summary'] = $summaryToken;
 
         // Add a debug token to help answering the question "Which tokens are available?"
         $debugTokens = ['You can use the following tokens:'];
@@ -86,7 +149,7 @@ class FormMPFormPlaceholder extends Widget
             $debugTokens[] = sprintf('##%s##: %s', $k, $v);
         }
 
-        $tokens['debug_tokens'] = implode("\n", $debugTokens);
+        $tokens['mp_forms_debug'] = implode("\n", $debugTokens);
 
         return $tokens;
     }

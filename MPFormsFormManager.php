@@ -273,9 +273,10 @@ class MPFormsFormManager
             // a certain directory, this check will return false and thus
             // we won't move anything.
             if (is_uploaded_file($file['tmp_name'])) {
-                $target = sprintf('%s/system/tmp/mp_forms_%s',
+                $target = sprintf('%s/system/tmp/mp_forms_%s.%s',
                     TL_ROOT,
-                    basename($file['tmp_name'])
+                    basename($file['tmp_name']),
+                    $this->guessFileExtension($file)
                 );
                 move_uploaded_file($file['tmp_name'], $target);
                 $files[$k]['tmp_name'] = $target;
@@ -639,5 +640,24 @@ class MPFormsFormManager
         $form = new stdClass();
         $form->form = $this->formModel->id;
         return new Form($form);
+    }
+
+    private function guessFileExtension(array $file)
+    {
+        $extension = 'unknown';
+
+        if (!isset($file['type'])) {
+            return $extension;
+        }
+
+        foreach ($GLOBALS['TL_MIME'] as $ext => $data) {
+            if ($data[0] === $file['type']) {
+                $extension = $ext;
+                break;
+
+            }
+        }
+
+        return $extension;
     }
 }
