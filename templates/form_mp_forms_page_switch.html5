@@ -2,10 +2,10 @@
 
 <?php $this->block('field'); ?>
 
-<?php if ($this->canGoBack && $this->mp_forms_backButton): ?>
-<button type="submit" name="<?= $this->name ?>" value="back" formnovalidate><?= $this->mp_forms_backButton ?></button>
-<?php endif; ?>
-
 <button type="submit" name="<?= $this->name ?>" value="continue"><?= $this->slabel ?></button>
+
+<?php if ($this->canGoBack && $this->mp_forms_backButton): ?>
+    <button type="submit" name="<?= $this->name ?>" value="back" formnovalidate><?= $this->mp_forms_backButton ?></button>
+<?php endif; ?>
 
 <?php $this->endblock(); ?>
