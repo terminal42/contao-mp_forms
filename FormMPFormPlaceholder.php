@@ -17,6 +17,8 @@ use Contao\StringUtil as ContaoStringUtil;
 use Contao\System;
 use Haste\Util\StringUtil as HasteStringUtil;
 use Haste\Util\Url;
+use Symfony\Component\VarDumper\Cloner\VarCloner;
+use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 
 class FormMPFormPlaceholder extends Widget
 {
@@ -60,7 +62,7 @@ class FormMPFormPlaceholder extends Widget
             return $template->parse();
         }
 
-        $this->content = nl2br(ContaoStringUtil::parseSimpleTokens($this->html, $this->generateTokens()));
+        $this->content = ContaoStringUtil::parseSimpleTokens($this->html, $this->generateTokens());
 
         return parent::parse($attributes);
     }
@@ -131,25 +133,36 @@ class FormMPFormPlaceholder extends Widget
         }
 
         // Add a simple summary token that outputs label plus value for everything that was submitted
-        $summaryToken = '';
+        $summaryToken = [];
         foreach ($summaryTokens as $k => $v) {
             if (!$v['value']) {
                 continue;
             }
 
-            $summaryToken .= sprintf('<div class="label">%s</div>', $v['label']);
-            $summaryToken .= sprintf('<div class="value">%s</div>', $v['value']);
+            // Also skip Contao internal tokens and the page switch element
+            if (in_array($k, ['REQUEST_TOKEN', 'FORM_SUBMIT', 'mp_form_pageswitch'])) {
+                continue;
+            }
+
+            $summaryToken[] = sprintf('<div class="label">%s</div>', $v['label']);
+            $summaryToken[] = sprintf('<div class="value">%s</div>', $v['value']);
         }
 
-        $tokens['mp_forms_summary'] = $summaryToken;
+        $tokens['mp_forms_summary'] = implode("\n", $summaryToken);
 
         // Add a debug token to help answering the question "Which tokens are available?"
-        $debugTokens = ['You can use the following tokens:'];
+        $debugTokens = [];
         foreach($tokens as $k => $v) {
-            $debugTokens[] = sprintf('##%s##: %s', $k, $v);
+            $debugTokens[sprintf('##%s##', $k)] = $v;
         }
 
-        $tokens['mp_forms_debug'] = implode("\n", $debugTokens);
+        $cloner = new VarCloner();
+        $dumper = new HtmlDumper();
+        $output = fopen('php://memory', 'r+b');
+        $dumper->dump($cloner->cloneVar($debugTokens), $output);
+        $output = stream_get_contents($output, -1, 0);
+
+        $tokens['mp_forms_debug'] = $output;
 
         return $tokens;
     }
