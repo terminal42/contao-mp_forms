@@ -56,10 +56,11 @@ There are insert tags you can use to fetch information about the state of the fo
 
 | Insert tag  |  Description | Example  |
 |---|---|---|
-| `{{mp_forms::<form id>::current}}`  |  Contains the current step you are on | 2  |
-| `{{mp_forms::<form id>::total}}`  |  Contains the total steps of your form | 5  |
-| `{{mp_forms::<form id>::percentage}}`  |  Contains the percentage of your progress | 20  |
-| `{{mp_forms::<form id>::numbers}}` | Contains a classic `x of y` display | `2 / 5`|
+| `{{mp_forms::<form id>::step::current}}`  |  Contains the current step you are on | 2  |
+| `{{mp_forms::<form id>::step::total}}`  |  Contains the total steps of your form | 5  |
+| `{{mp_forms::<form id>::step::percentage}}`  |  Contains the percentage of your progress | 20  |
+| `{{mp_forms::<form id>::step::numbers}}` | Contains a classic `x of y` display | `2 / 5`|
+| `{{mp_forms::<form id>::field_value::<field_name>}}` | Contains the submitted value of a previous field |
 
 Note that they can be especially useful together with a `Custom HTML` front end module.
 Let's assume you want to display a progress bar for form ID `5`:
