@@ -14,6 +14,7 @@
  */
 ClassLoader::addClasses([
     'FormMPFormPageSwitch'   => 'system/modules/mp_forms/FormMPFormPageSwitch.php',
+    'FormMPFormPlaceholder'  => 'system/modules/mp_forms/FormMPFormPlaceholder.php',
     'MPForms'                => 'system/modules/mp_forms/MPForms.php',
     'MPFormsFormManager'     => 'system/modules/mp_forms/MPFormsFormManager.php',
     'MPFormsStepsModule'     => 'system/modules/mp_forms/MPFormsStepsModule.php',
@@ -24,5 +25,6 @@ ClassLoader::addClasses([
  */
 TemplateLoader::addFiles([
     'form_mp_forms_page_switch' => 'system/modules/mp_forms/templates',
+    'form_mp_forms_placeholder' => 'system/modules/mp_forms/templates',
     'mod_mp_forms_steps'        => 'system/modules/mp_forms/templates',
 ]);

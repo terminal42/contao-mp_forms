@@ -13,6 +13,7 @@
  * Form fields
  */
 $GLOBALS['TL_FFL']['mp_form_pageswitch'] = 'FormMPFormPageSwitch';
+$GLOBALS['TL_FFL']['mp_form_placeholder'] = 'FormMPFormPlaceholder';
 
 /**
  * Front end modules

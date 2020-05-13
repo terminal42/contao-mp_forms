@@ -1,24 +1,25 @@
 {
-  "name":"terminal42/contao-mp_forms",
-  "description":"mp_forms extension for Contao Open Source CMS",
-  "keywords":["contao", "forms", "multi", "multipage"],
-  "type":"contao-module",
-  "license":"LGPL-3.0+",
+  "name": "terminal42/contao-mp_forms",
+  "description": "mp_forms extension for Contao Open Source CMS",
+  "keywords": ["contao", "forms", "multi", "multipage"],
+  "type": "contao-module",
+  "license": "LGPL-3.0+",
   "authors":[
     {
       "name":"terminal42 gmbh",
       "homepage":"http://terminal42.ch"
     }
   ],
-  "require":{
-    "php":">=5.4",
-    "contao/core-bundle":"^3.5 || ~4.2",
-    "contao-community-alliance/composer-plugin":"~2.4 || ~3.0",
-    "codefog/contao-haste": "~4.3"
+  "require": {
+    "php": "^7.1",
+    "contao/core-bundle": "~4.4",
+    "contao-community-alliance/composer-plugin": "~2.4 || ~3.0",
+    "codefog/contao-haste": "~4.18",
+    "symfony/var-dumper": "^3.4 || ^4.4 || ^5.0"
   },
-  "extra":{
+  "extra": {
     "contao": {
-      "sources":{
+      "sources": {
         "": "system/modules/mp_forms"
       }
     }

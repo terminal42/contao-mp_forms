@@ -167,11 +167,31 @@ class MPForms
 
         $chunks = explode('::', $tag);
         $formId = $chunks[1];
-        $value = $chunks[2];
+        $type = $chunks[2];
+        $value = $chunks[3] ?? '';
 
         $form = FormModel::findByPk($formId);
         $manager = new MPFormsFormManager($form->id);
 
+        // BC
+        if (\in_array($type, ['current', 'total', 'percentage', 'numbers'], true)) {
+            $value = $type;
+            $type = 'step';
+        }
+
+        switch ($type) {
+            case 'step':
+                return $this->getStepValue($manager, $value);
+            case 'field_value':
+                $allData = $manager->getDataOfAllSteps();
+                return $allData['submitted'][$value] ?? '';
+        }
+
+        return '';
+    }
+
+    private function getStepValue(MPFormsFormManager $manager, $value)
+    {
         switch ($value) {
             case 'current':
                 return (int) $manager->getCurrentStep() + 1;
@@ -182,6 +202,8 @@ class MPForms
             case 'numbers':
                 return ($manager->getCurrentStep() + 1) . ' / ' . ($manager->getNumberOfSteps());
         }
+
+        return '';
     }
 
     /**
