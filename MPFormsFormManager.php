@@ -190,6 +190,10 @@ class MPFormsFormManager
             }
         }
 
+        if ('' !== $this->formModel->{$key}) {
+            return $this->formModel->{$key};
+        }
+
         return '';
     }
 
