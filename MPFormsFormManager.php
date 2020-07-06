@@ -168,6 +168,36 @@ class MPFormsFormManager
     }
 
     /**
+     * Gets the url fragment for a given step
+     *
+     * @param int    $step
+     * @param string $mode ("next" or "back")
+     *
+     * @return string
+     */
+    public function getFragmentForStep($step, $mode)
+    {
+        if (!\in_array($mode, ['back', 'next'], true)) {
+            throw new \InvalidArgumentException('Mode must be either "back" or "next".');
+        }
+
+        $key = sprintf('mp_forms_%sFragment', $mode);
+
+        foreach ($this->getFieldsForStep($step) as $formField) {
+            if ($this->isPageBreak($formField) && '' !== $formField->{$key}) {
+
+                return $formField->{$key};
+            }
+        }
+
+        if ('' !== $this->formModel->{$key}) {
+            return $this->formModel->{$key};
+        }
+
+        return '';
+    }
+
+    /**
      * Gets the current step.
      *
      * @return int
@@ -252,6 +282,16 @@ class MPFormsFormManager
             $url = Url::removeQueryString([$this->getGetParam()]);
         } else {
             $url = Url::addQueryString($this->getGetParam() . '=' . $step);
+        }
+
+        if ($step > $this->getCurrentStep()) {
+            $fragment = $this->getFragmentForStep($step, 'next');
+        } else {
+            $fragment = $this->getFragmentForStep($this->getCurrentStep(), 'back');
+        }
+
+        if ($fragment) {
+            $url .= '#' . $fragment;
         }
 
         return $url;
