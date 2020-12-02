@@ -12,6 +12,9 @@ page break in the form.
 `mp_forms` validates if a user manually wants to go to step 3 and did not fill in step 1 or 2. I this case the user will be redirected
 to step 1 (obviously, only if you had required fields on step 1).
 
+In case you don't want your users to be redirected but prefer to have some Ajax magic, you may combine this extension
+with our [ajaxform](https://github.com/terminal42/contao-ajaxform) one. They work perfectly well together!
+
 :warning: **You may not use the regular submit form field element**:
 > Note that you must not be using a regular submit form field but use the `Page break` again. Otherwise, you
 > won't have any `back` button displayed. `mp_forms` will automatically detect the last `Page break` as behaving like the form submit.
