@@ -3,7 +3,7 @@
 /**
  * mp_forms extension for Contao Open Source CMS
  *
- * @copyright  Copyright (c) 2015-2016, terminal42 gmbh
+ * @copyright  Copyright (c) 2015-2021, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       https://github.com/terminal42/contao-mp_forms
@@ -14,6 +14,7 @@ use Contao\Form;
 use Contao\FormFieldModel;
 use Contao\FormModel;
 use Contao\Input;
+use Contao\StringUtil;
 use Contao\Widget;
 
 class MPForms
@@ -185,6 +186,27 @@ class MPForms
             case 'field_value':
                 $allData = $manager->getDataOfAllSteps();
                 return $allData['submitted'][$value] ?? '';
+            case 'field_option_label':
+                $fields = FormFieldModel::findByPid($formId);
+
+                if (null === $fields) {
+                    return '';
+                }
+
+                foreach ($fields->fetchAll() as $field) {
+                    if ($value === $field['name']) {
+                        $allData = $manager->getDataOfAllSteps();
+                        $options = StringUtil::deserialize($field['options']);
+                        foreach ((array) $options as $option) {
+                            if ($allData['submitted'][$value] === $option['value']) {
+                                return $option['label'];
+                            }
+                        }
+
+                        return '';
+                    }
+                }
+                return '';
         }
 
         return '';
