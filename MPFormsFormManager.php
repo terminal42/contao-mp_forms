@@ -482,9 +482,16 @@ class MPFormsFormManager
 
             // Handle regular fields
             if ($this->isStoredInData($widget->name, $step)) {
-                Input::setPost($formField->name, $this->fetchFromData($widget->name, $step));
+                $value = $this->fetchFromData($widget->name, $step);
+
+                if ($widget->useRawRequestData) {
+                    $request = System::getContainer()->get('request_stack')->getCurrentRequest();
+                    $request->request->set($widget->name, $value);
+                } else {
+                    Input::setPost($widget->name, $value);
+                }
             } else {
-                Input::setPost($formField->name, '');
+                Input::setPost($widget->name, '');
             }
 
             // Handle files
