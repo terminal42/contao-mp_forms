@@ -50,7 +50,7 @@ class MPFormsFormManager
      *
      * @param int $formGeneratorId
      */
-    function __construct($formGeneratorId)
+    public function __construct($formGeneratorId)
     {
         $this->formModel = FormModel::findByPk($formGeneratorId);
 
@@ -297,6 +297,25 @@ class MPFormsFormManager
         return $url;
     }
 
+    public function setPostData(array $postData = null)
+    {
+        if (null === $postData) {
+            $_SESSION['MPFORMSTORAGE_POSTDATA'][$this->formModel->id][$this->getCurrentStep()] = [];
+
+            return $this;
+        }
+
+        if (isset($_SESSION['MPFORMSTORAGE_POSTDATA'][$this->formModel->id][$this->getCurrentStep()])
+            && 0 !== \count($_SESSION['MPFORMSTORAGE_POSTDATA'][$this->formModel->id][$this->getCurrentStep()])
+        ) {
+            return $this;
+        }
+
+        $_SESSION['MPFORMSTORAGE_POSTDATA'][$this->formModel->id][$this->getCurrentStep()] = $postData;
+
+        return $this;
+    }
+
     /**
      * Store data.
      *
@@ -324,9 +343,10 @@ class MPFormsFormManager
         }
 
         $_SESSION['MPFORMSTORAGE'][$this->formModel->id][$this->getCurrentStep()] = [
-            'submitted' => $submitted,
-            'labels'    => $labels,
-            'files'     => $files,
+            'submitted'         => $submitted,
+            'labels'            => $labels,
+            'files'             => $files,
+            'originalPostData'  => $_SESSION['MPFORMSTORAGE_POSTDATA'][$this->formModel->id][$this->getCurrentStep()] ?? [],
         ];
     }
 
@@ -349,20 +369,23 @@ class MPFormsFormManager
      */
     public function getDataOfAllSteps()
     {
-        $submitted = [];
-        $labels    = [];
-        $files     = [];
+        $submitted        = [];
+        $labels           = [];
+        $files            = [];
+        $originalPostData = [];
 
         foreach ((array) $_SESSION['MPFORMSTORAGE'][$this->formModel->id] as $stepData) {
-            $submitted = array_merge($submitted, (array) $stepData['submitted']);
-            $labels    = array_merge($labels, (array) $stepData['labels']);
-            $files     = array_merge($files, (array) $stepData['files']);
+            $submitted        = array_merge($submitted, (array) $stepData['submitted']);
+            $labels           = array_merge($labels, (array) $stepData['labels']);
+            $files            = array_merge($files, (array) $stepData['files']);
+            $originalPostData = array_merge($files, (array) $stepData['originalPostData']);
         }
 
         return [
-            'submitted' => $submitted,
-            'labels'    => $labels,
-            'files'     => $files,
+            'submitted'        => $submitted,
+            'labels'           => $labels,
+            'files'            => $files,
+            'originalPostData' => $originalPostData,
         ];
     }
 
@@ -372,6 +395,7 @@ class MPFormsFormManager
     public function resetData()
     {
         unset($_SESSION['MPFORMSTORAGE'][$this->formModel->id]);
+        unset($_SESSION['MPFORMSTORAGE_POSTDATA'][$this->formModel->id]);
     }
 
     /**
@@ -489,6 +513,11 @@ class MPFormsFormManager
         if (isset($GLOBALS['TL_HOOKS']['validateFormField']) && is_array($GLOBALS['TL_HOOKS']['validateFormField'])) {
             foreach ($GLOBALS['TL_HOOKS']['validateFormField'] as $callback) {
 
+                // Do not call ourselves recursively
+                if ('MPForms' === $callback[0]) {
+                    continue;
+                }
+
                 $objCallback = System::importStatic($callback[0]);
                 $widget = $objCallback->{$callback[1]}($widget, $this->getFormId(), $this->formModel->row(), $form);
             }
@@ -560,7 +589,7 @@ class MPFormsFormManager
      *
      * @return mixed
      */
-    public function fetchFromData($fieldName, $step = null, $key = 'submitted')
+    public function fetchFromData($fieldName, $step = null, $key = 'originalPostData')
     {
         $step = null === $step ? $this->getCurrentStep() : $step;
 
