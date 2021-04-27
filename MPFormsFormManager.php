@@ -487,6 +487,11 @@ class MPFormsFormManager
                 if ($widget->useRawRequestData) {
                     $request = System::getContainer()->get('request_stack')->getCurrentRequest();
                     $request->request->set($widget->name, $value);
+
+                    // Special handling for FormPassword (must have already been correct once so we can reuse the submitted value)
+                    if ($widget instanceof \Contao\FormPassword) {
+                        $request->request->set($widget->name . '_confirm', $value);
+                    }
                 } else {
                     Input::setPost($widget->name, $value);
                 }
