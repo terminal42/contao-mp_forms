@@ -82,6 +82,14 @@ class MPForms
         $manager = new MPFormsFormManager($form->id);
         $manager->setPostData($_POST);
 
+        foreach ($GLOBALS['TL_HOOKS']['validateFormField'] as $k => $callback) {
+
+            // Do not call ourselves recursively as we'd keep resetting our own data
+            if ('MPForms' === $callback[0]) {
+                unset($GLOBALS['TL_HOOKS']['validateFormField'][$k]);
+            }
+        }
+
         return $objWidget;
     }
 

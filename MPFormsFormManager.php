@@ -297,20 +297,8 @@ class MPFormsFormManager
         return $url;
     }
 
-    public function setPostData(array $postData = null)
+    public function setPostData(array $postData)
     {
-        if (null === $postData) {
-            $_SESSION['MPFORMSTORAGE_POSTDATA'][$this->formModel->id][$this->getCurrentStep()] = [];
-
-            return $this;
-        }
-
-        if (isset($_SESSION['MPFORMSTORAGE_POSTDATA'][$this->formModel->id][$this->getCurrentStep()])
-            && 0 !== \count($_SESSION['MPFORMSTORAGE_POSTDATA'][$this->formModel->id][$this->getCurrentStep()])
-        ) {
-            return $this;
-        }
-
         $_SESSION['MPFORMSTORAGE_POSTDATA'][$this->formModel->id][$this->getCurrentStep()] = $postData;
 
         return $this;
