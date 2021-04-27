@@ -18,7 +18,7 @@ class FormMPFormPageSwitch extends Widget
      *
      * @var string
      */
-    protected $strTemplate = 'form_mp_forms_page_switch';
+    protected $strTemplate = 'form_mp_form_page_switch';
 
     /**
      * The CSS class prefix

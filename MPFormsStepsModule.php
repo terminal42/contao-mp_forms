@@ -21,7 +21,7 @@ class MPFormsStepsModule extends Module
      * Template
      * @var string
      */
-    protected $strTemplate = 'mod_mp_forms_steps';
+    protected $strTemplate = 'mod_mp_form_steps';
 
 
     /**

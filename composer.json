@@ -17,6 +17,15 @@
     "codefog/contao-haste": "~4.18",
     "symfony/var-dumper": "^3.4 || ^4.4 || ^5.0"
   },
+  "autoload": {
+    "files": [
+      "FormMPFormPageSwitch.php",
+      "FormMPFormPlaceholder.php",
+      "MPForms.php",
+      "MPFormsFormManager.php",
+      "MPFormsStepsModule.php"
+    ]
+  },
   "extra": {
     "contao": {
       "sources": {
