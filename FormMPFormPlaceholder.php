@@ -27,7 +27,7 @@ class FormMPFormPlaceholder extends Widget
      *
      * @var string
      */
-    protected $strTemplate = 'form_mp_forms_placeholder';
+    protected $strTemplate = 'form_mp_form_placeholder';
 
     /**
      * The CSS class prefix
