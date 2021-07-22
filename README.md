@@ -71,8 +71,8 @@ Let's assume you want to display a progress bar for form ID `5`:
 ````html
 <div class="progress">
     <div class="progress-bar">
-        <div class="progress-bar-inner" style="width:{{mp_forms::5::percentage}}%"></div>
+        <div class="progress-bar-inner" style="width:{{mp_forms::5::step::percentage}}%"></div>
     </div>
-    <div class="numbers">{{mp_forms::5::numbers}}</div>
+    <div class="numbers">{{mp_forms::5::step::numbers}}</div>
 </div>
 ```
