@@ -118,8 +118,8 @@ class FormMPFormPlaceholder extends Widget
 
             // Generate a general HTML output using the download template
             $tpl = new \Contao\FrontendTemplate('ce_download'); // TODO: make configurable in form field settings?
-            $tpl->link = $file->basename;
-            $tpl->title = ContaoStringUtil::specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['download'], $file->basename));
+            $tpl->link = $v['name'];
+            $tpl->title = ContaoStringUtil::specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['download'], $v['name']));
             $tpl->href = $fileTokens['download_url'];
             $tpl->filesize = System::getReadableSize($file->filesize);
             $tpl->icon = Image::getPath($file->icon);
