@@ -32,7 +32,7 @@ You may also access the labels using `##formlabel_*##`.
 
 Files are handled a bit differently because there is more than just one value to a file.
 You may use `extension`, `size`, `mime` as well as a `download_url` which is generated for you.
-To make things simple, the default token for the file (e.g. if the form field was named `upload` that would be `##form_upload##`)
+To make things simple, the default token for the file (e.g. if the form field was named `upload` that would be `##file_upload##`)
 contains the HTML rendered using the `ce_download` template.
 
 A simple summary for all the submitted fields, encapsulated in simple `<div>` elements can be displayed using
