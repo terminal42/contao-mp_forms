@@ -144,8 +144,8 @@ class FormMPFormPlaceholder extends Widget
                 continue;
             }
 
-            $summaryToken[] = sprintf('<div data-ff-name="%s" class="label">%s</div>', $k, $v['label']);
-            $summaryToken[] = sprintf('<div data-ff-name="%s" class="value">%s</div>', $k, $v['value']);
+            $summaryToken[] = sprintf('<div data-ff-name="%s" class="label">%s</div>', htmlspecialchars($k), $v['label']);
+            $summaryToken[] = sprintf('<div data-ff-name="%s" class="value">%s</div>', htmlspecialchars($k), $v['value']);
         }
 
         $tokens['mp_forms_summary'] = implode("\n", $summaryToken);
