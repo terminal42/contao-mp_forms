@@ -18,3 +18,5 @@ $GLOBALS['TL_LANG']['tl_form']['mp_forms_legend'] = 'Multiple page forms';
  * Fields
  */
 $GLOBALS['TL_LANG']['tl_form']['mp_forms_getParam'] = ['GET parameter', 'You can optionally modify the used GET parameter here.'];
+$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_backFragment'] = ['Back button URL fragment', 'You may enter an optional URL fragment here which will be added to the URL when hitting the back button (e.g. for anchor links). Omit the "#" here.'];
+$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_nextFragment'] = ['Continue button URL fragment', 'You may enter an optional URL fragment here which will be added to the URL when hitting the continue button (e.g. for anchor links). Omit the "#" here.'];

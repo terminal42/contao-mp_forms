@@ -18,3 +18,5 @@ $GLOBALS['TL_LANG']['tl_form']['mp_forms_legend'] = '複数ページのフォー
  * Fields
  */
 $GLOBALS['TL_LANG']['tl_form']['mp_forms_getParam'] = ['GETパラメーター', 'GETに使用するパラメーターを変更できます。'];
+$GLOBALS['TL_LANG']['tl_form']['mp_forms_backFragment'] = ['戻るボタンのURLの断片', '戻るボタンをクリックしたときのURLに付加するURLの断片(例えば、アンカーのリンク)を入力できます。"#"とすると省略できます。'];
+$GLOBALS['TL_LANG']['tl_form']['mp_forms_nextFragment'] = ['続けるボタンのURLの断片', '続けるボタンをクリックしたときのURLに付加するURLの断片(例えば、アンカーのリンク)を入力できます。"#"とすると省略できます。'];

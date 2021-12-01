@@ -12,9 +12,6 @@
 /**
  * Table tl_form
  */
-$GLOBALS['TL_DCA']['tl_form']['config']['onload_callback'][] = function() {
-    \Contao\System::loadLanguageFile('tl_form_field');
-};
 $GLOBALS['TL_DCA']['tl_form']['config']['onsubmit_callback'][] = function($dc) {
     $manager = new \MPFormsFormManager((int) $dc->id);
     $manager->resetData();
@@ -23,7 +20,6 @@ $GLOBALS['TL_DCA']['tl_form']['config']['onsubmit_callback'][] = function($dc) {
 $GLOBALS['TL_DCA']['tl_form']['palettes']['default'] .= ';{mp_forms_legend},mp_forms_getParam,mp_forms_backFragment,mp_forms_nextFragment';
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_getParam'] = [
-    'label'     => &$GLOBALS['TL_LANG']['tl_form']['mp_forms_getParam'],
     'exclude'   => true,
     'default'   => 'step',
     'inputType' => 'text',
@@ -32,7 +28,6 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_getParam'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_backFragment'] = [
-    'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_backFragment'],
     'exclude'   => true,
     'inputType' => 'text',
     'eval'      => ['tl_class' => 'w50 clr', 'maxlength' => 255],
@@ -40,7 +35,6 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_backFragment'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_nextFragment'] = [
-    'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_nextFragment'],
     'exclude'   => true,
     'inputType' => 'text',
     'eval'      => ['tl_class' => 'w50', 'maxlength' => 255],
