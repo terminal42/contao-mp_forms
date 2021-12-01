@@ -96,8 +96,6 @@ class FormMPFormPlaceholder extends Widget
             $summaryTokens[$k]['label'] = $tokens['formlabel_'.$k];
         }
 
-        $rootDir = \System::getContainer()->getParameter('kernel.project_dir');
-
         foreach ($data['files'] as $k => $v) {
             $fileTokens = [];
 
