@@ -319,14 +319,18 @@ class MPFormsFormManager
             // If the user marked the form field to upload the file into
             // a certain directory, this check will return false and thus
             // we won't move anything.
+
             if (is_uploaded_file($file['tmp_name'])) {
-                $target = sprintf('%s/system/tmp/mp_forms_%s.%s',
-                    TL_ROOT,
+                $target = sprintf('%s/mp_forms_%s.%s',
+                    sys_get_temp_dir(),
                     basename($file['tmp_name']),
                     $this->guessFileExtension($file)
                 );
                 move_uploaded_file($file['tmp_name'], $target);
                 $files[$k]['tmp_name'] = $target;
+
+                // Compatibility with notification center
+                $files[$k]['uploaded'] = true;
             }
         }
 
