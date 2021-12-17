@@ -17,7 +17,7 @@ $GLOBALS['TL_DCA']['tl_form']['config']['onsubmit_callback'][] = function($dc) {
     $manager->resetData();
 };
 
-$GLOBALS['TL_DCA']['tl_form']['palettes']['default'] .= ';{mp_forms_legend},mp_forms_getParam,mp_forms_backFragment,mp_forms_nextFragment';
+$GLOBALS['TL_DCA']['tl_form']['palettes']['default'] .= ';{mp_forms_legend},mp_forms_getParam,mp_forms_sessionRefParam,mp_forms_backFragment,mp_forms_nextFragment';
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_getParam'] = [
     'exclude'   => true,
@@ -27,10 +27,18 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_getParam'] = [
     'sql'       => "varchar(255) NOT NULL default 'step'"
 ];
 
+$GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_sessionRefParam'] = [
+    'exclude'   => true,
+    'default'   => 'step',
+    'inputType' => 'text',
+    'eval'      => ['tl_class' => 'w50', 'maxlength' => 255],
+    'sql'       => "varchar(255) NOT NULL default 'ref'"
+];
+
 $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_backFragment'] = [
     'exclude'   => true,
     'inputType' => 'text',
-    'eval'      => ['tl_class' => 'w50 clr', 'maxlength' => 255],
+    'eval'      => ['tl_class' => 'w50', 'maxlength' => 255],
     'sql'       => "varchar(255) NOT NULL default ''"
 ];
 
