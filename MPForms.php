@@ -41,11 +41,15 @@ class MPForms
             return $manager->getFieldsWithoutPageBreaks();
         }
 
+        // If there is form data submitted in this step, store the original values here no matter if we're going back or if we continue.
+        if ($_POST) {
+            $manager->setPostData($_POST);
+        }
+
         // Do not let Contao validate anything if user wants to go back
         // but still save data already added to the input fields so it is
         // there when they come back to the current step
         if ('back' === $_POST['mp_form_pageswitch']) {
-
             $manager->storeData($_POST, [], (array) $_SESSION['FILES']);
             $this->redirectToStep($manager, $manager->getPreviousStep());
         }
@@ -68,29 +72,6 @@ class MPForms
         }
 
         return $manager->getFieldsForStep($manager->getCurrentStep());
-    }
-
-    /**
-     * Contao unsets $_POST unfortunately so we have to save them for later use for us.
-     */
-    public function savePostValues($objWidget, $formId, $data, Form $form)
-    {
-        if (!$_POST) {
-            return $objWidget;
-        }
-
-        $manager = new MPFormsFormManager($form->id);
-        $manager->setPostData($_POST);
-
-        foreach ($GLOBALS['TL_HOOKS']['validateFormField'] as $k => $callback) {
-
-            // Do not call ourselves recursively as we'd keep resetting our own data
-            if ('MPForms' === $callback[0]) {
-                unset($GLOBALS['TL_HOOKS']['validateFormField'][$k]);
-            }
-        }
-
-        return $objWidget;
     }
 
     /**
