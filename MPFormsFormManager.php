@@ -18,6 +18,7 @@ use Contao\Session;
 use Contao\System;
 use Contao\Widget;
 use Haste\Util\Url;
+use Symfony\Component\HttpFoundation\Request;
 
 class MPFormsFormManager
 {
@@ -25,6 +26,11 @@ class MPFormsFormManager
      * @var FormModel
      */
     private $formModel;
+
+    /**
+     * @var Request
+     */
+    private $request;
 
     /**
      * @var FormFieldModel[]
@@ -46,13 +52,12 @@ class MPFormsFormManager
     private $isValidFormFieldCombination = true;
 
     /**
-     * Create a new form manager
-     *
      * @param int $formGeneratorId
      */
     public function __construct($formGeneratorId)
     {
         $this->formModel = FormModel::findByPk($formGeneratorId);
+        $this->request = System::getContainer()->get('request_stack')->getCurrentRequest();
 
         $this->prepareFormFields();
     }
@@ -69,13 +74,23 @@ class MPFormsFormManager
     }
 
     /**
-     * Gets the GET param.
+     * Gets the GET param for the steps.
      *
      * @return string
      */
     public function getGetParam()
     {
         return $this->formModel->mp_forms_getParam ?: 'step';
+    }
+
+    /**
+     * Gets the GET param for the session reference.
+     *
+     * @return string
+     */
+    public function getGetParamForSessionReference()
+    {
+        return $this->formModel->mp_forms_sessionRefParam ?: 'ref';
     }
 
     /**
@@ -204,7 +219,7 @@ class MPFormsFormManager
      */
     public function getCurrentStep()
     {
-        return (int) Input::get($this->getGetParam());
+        return $this->request->query->getInt($this->getGetParam());
     }
 
     /**
@@ -274,7 +289,7 @@ class MPFormsFormManager
      *
      * @param int $step
      *
-     * @return mixed
+     * @return string
      */
     public function getUrlForStep($step)
     {
@@ -283,6 +298,8 @@ class MPFormsFormManager
         } else {
             $url = Url::addQueryString($this->getGetParam() . '=' . $step);
         }
+
+        $url = Url::addQueryString($this->getGetParamForSessionReference() . '=' . $this->getSessionRef(), $url);
 
         if ($step > $this->getCurrentStep()) {
             $fragment = $this->getFragmentForStep($step, 'next');
@@ -299,7 +316,7 @@ class MPFormsFormManager
 
     public function setPostData(array $postData)
     {
-        $_SESSION['MPFORMSTORAGE_POSTDATA'][$this->formModel->id][$this->getCurrentStep()] = $postData;
+        $_SESSION['MPFORMSTORAGE_POSTDATA'][$this->getSessionIdentifier()][$this->getCurrentStep()] = $postData;
 
         return $this;
     }
@@ -319,22 +336,26 @@ class MPFormsFormManager
             // If the user marked the form field to upload the file into
             // a certain directory, this check will return false and thus
             // we won't move anything.
+
             if (is_uploaded_file($file['tmp_name'])) {
-                $target = sprintf('%s/system/tmp/mp_forms_%s.%s',
-                    TL_ROOT,
+                $target = sprintf('%s/mp_forms_%s.%s',
+                    sys_get_temp_dir(),
                     basename($file['tmp_name']),
                     $this->guessFileExtension($file)
                 );
                 move_uploaded_file($file['tmp_name'], $target);
                 $files[$k]['tmp_name'] = $target;
+
+                // Compatibility with notification center
+                $files[$k]['uploaded'] = true;
             }
         }
 
-        $_SESSION['MPFORMSTORAGE'][$this->formModel->id][$this->getCurrentStep()] = [
+        $_SESSION['MPFORMSTORAGE'][$this->getSessionIdentifier()][$this->getCurrentStep()] = [
             'submitted'         => $submitted,
             'labels'            => $labels,
             'files'             => $files,
-            'originalPostData'  => $_SESSION['MPFORMSTORAGE_POSTDATA'][$this->formModel->id][$this->getCurrentStep()] ?? [],
+            'originalPostData'  => $_SESSION['MPFORMSTORAGE_POSTDATA'][$this->getSessionIdentifier()][$this->getCurrentStep()] ?? [],
         ];
     }
 
@@ -347,7 +368,7 @@ class MPFormsFormManager
      */
     public function getDataOfStep($step)
     {
-        return (array) $_SESSION['MPFORMSTORAGE'][$this->formModel->id][$step];
+        return (array) $_SESSION['MPFORMSTORAGE'][$this->getSessionIdentifier()][$step];
     }
 
     /**
@@ -362,7 +383,7 @@ class MPFormsFormManager
         $files            = [];
         $originalPostData = [];
 
-        foreach ((array) $_SESSION['MPFORMSTORAGE'][$this->formModel->id] as $stepData) {
+        foreach ((array) $_SESSION['MPFORMSTORAGE'][$this->getSessionIdentifier()] as $stepData) {
             $submitted        = array_merge($submitted, (array) $stepData['submitted']);
             $labels           = array_merge($labels, (array) $stepData['labels']);
             $files            = array_merge($files, (array) $stepData['files']);
@@ -377,13 +398,15 @@ class MPFormsFormManager
         ];
     }
 
-    /**
-     * Reset the data.
-     */
     public function resetData()
     {
-        unset($_SESSION['MPFORMSTORAGE'][$this->formModel->id]);
-        unset($_SESSION['MPFORMSTORAGE_POSTDATA'][$this->formModel->id]);
+        foreach (['MPFORMSTORAGE', 'MPFORMSTORAGE_POSTDATA', 'MPFORMSTORAGE_PSWI'] as $sessionKey) {
+            foreach (array_keys((array) $_SESSION[$sessionKey]) as $sessionIdentifier) {
+                if (0 === strncmp($sessionIdentifier, $this->formModel->id, \strlen($this->formModel->id))) {
+                    unset($_SESSION[$sessionKey][$sessionIdentifier]);
+                }
+            }
+        }
     }
 
     /**
@@ -485,12 +508,11 @@ class MPFormsFormManager
                 $value = $this->fetchFromData($widget->name, $step);
 
                 if ($widget->useRawRequestData) {
-                    $request = System::getContainer()->get('request_stack')->getCurrentRequest();
-                    $request->request->set($widget->name, $value);
+                    $this->request->request->set($widget->name, $value);
 
                     // Special handling for FormPassword (must have already been correct once so we can reuse the submitted value)
                     if ($widget instanceof \Contao\FormPassword) {
-                        $request->request->set($widget->name . '_confirm', $value);
+                        $this->request->request->set($widget->name . '_confirm', $value);
                     }
                 } else {
                     Input::setPost($widget->name, $value);
@@ -542,7 +564,7 @@ class MPFormsFormManager
      */
     public function setPreviousStepsWereInvalid()
     {
-        $_SESSION['MPFORMSTORAGE_PSWI'][$this->formModel->id] = true;
+        $_SESSION['MPFORMSTORAGE_PSWI'][$this->getSessionIdentifier()] = true;
     }
 
     /**
@@ -552,7 +574,7 @@ class MPFormsFormManager
      */
     public function getPreviousStepsWereInvalid()
     {
-        return true === $_SESSION['MPFORMSTORAGE_PSWI'][$this->formModel->id];
+        return true === $_SESSION['MPFORMSTORAGE_PSWI'][$this->getSessionIdentifier()];
     }
 
     /**
@@ -560,7 +582,7 @@ class MPFormsFormManager
      */
     public function resetPreviousStepsWereInvalid()
     {
-        unset($_SESSION['MPFORMSTORAGE_PSWI'][$this->formModel->id]);
+        unset($_SESSION['MPFORMSTORAGE_PSWI'][$this->getSessionIdentifier()]);
     }
 
     /**
@@ -606,6 +628,35 @@ class MPFormsFormManager
     public function isPageBreak(FormFieldModel $formField)
     {
         return 'mp_form_pageswitch' === $formField->type;
+    }
+
+    /**
+     * @return string
+     */
+    private function getSessionIdentifier()
+    {
+        return $this->formModel->id . '__' . $this->getSessionRef();
+    }
+
+    /**
+     * Cannot make this a class property because people use `new MPFormsFormManager()` all over the place.
+     * We can only introduce proper handling here once there's a completely new version of this extension
+     * using DI.
+     *
+     * @return string
+     */
+    private function getSessionRef()
+    {
+        static $sessionRef;
+
+        if (null !== $sessionRef) {
+            return $sessionRef;
+        }
+
+        return $sessionRef = $this->request->query->get(
+            $this->getGetParamForSessionReference(),
+            bin2hex(random_bytes(16))
+        );
     }
 
     /**

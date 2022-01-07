@@ -25,6 +25,5 @@ $GLOBALS['FE_MOD']['application']['mp_form_steps'] = 'MPFormsStepsModule';
  */
 $GLOBALS['TL_HOOKS']['replaceInsertTags'][] = ['MPForms', 'replaceTags'];
 $GLOBALS['TL_HOOKS']['compileFormFields'][] = ['MPForms', 'compileFormFields'];
-$GLOBALS['TL_HOOKS']['validateFormField'][] = ['MPForms', 'savePostValues'];
 $GLOBALS['TL_HOOKS']['loadFormField'][]     = ['MPForms', 'loadValuesFromSession'];
 $GLOBALS['TL_HOOKS']['prepareFormData'][]   = ['MPForms', 'prepareFormData'];
