@@ -14,14 +14,16 @@ use Contao\FormCaptcha;
 use Contao\FormFieldModel;
 use Contao\FormModel;
 use Contao\Input;
-use Contao\Session;
 use Contao\System;
 use Contao\Widget;
 use Haste\Util\Url;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PropertyAccess\PropertyAccessorBuilder;
 
 class MPFormsFormManager
 {
+    public const SESSION_KEY = 'contao.mp_forms';
+
     /**
      * @var FormModel
      */
@@ -316,7 +318,10 @@ class MPFormsFormManager
 
     public function setPostData(array $postData)
     {
-        $_SESSION['MPFORMSTORAGE_POSTDATA'][$this->getSessionIdentifier()][$this->getCurrentStep()] = $postData;
+        $this->writeToSession(sprintf('[MPFORMSTORAGE_POSTDATA][%s][%d]',
+            $this->getSessionIdentifier(),
+            $this->getCurrentStep()
+        ), $postData);
 
         return $this;
     }
@@ -351,12 +356,18 @@ class MPFormsFormManager
             }
         }
 
-        $_SESSION['MPFORMSTORAGE'][$this->getSessionIdentifier()][$this->getCurrentStep()] = [
+        $this->writeToSession(sprintf('[MPFORMSTORAGE][%s][%d]',
+            $this->getSessionIdentifier(),
+            $this->getCurrentStep()
+        ), [
             'submitted'         => $submitted,
             'labels'            => $labels,
             'files'             => $files,
-            'originalPostData'  => $_SESSION['MPFORMSTORAGE_POSTDATA'][$this->getSessionIdentifier()][$this->getCurrentStep()] ?? [],
-        ];
+            'originalPostData'  => $this->readFromSession(sprintf('[MPFORMSTORAGE_POSTDATA][%s][%d]',
+                    $this->getSessionIdentifier(),
+                    $this->getCurrentStep()
+                )) ?? [],
+        ]);
     }
 
     /**
@@ -368,7 +379,10 @@ class MPFormsFormManager
      */
     public function getDataOfStep($step)
     {
-        return (array) $_SESSION['MPFORMSTORAGE'][$this->getSessionIdentifier()][$step];
+        return (array) $this->readFromSession(sprintf('[MPFORMSTORAGE][%s][%d]',
+                $this->getSessionIdentifier(),
+                $step
+            ));
     }
 
     /**
@@ -383,7 +397,7 @@ class MPFormsFormManager
         $files            = [];
         $originalPostData = [];
 
-        foreach ((array) $_SESSION['MPFORMSTORAGE'][$this->getSessionIdentifier()] as $stepData) {
+        foreach ((array) $this->readFromSession(sprintf('[MPFORMSTORAGE][%s]', $this->getSessionIdentifier())) as $stepData) {
             $submitted        = array_merge($submitted, (array) $stepData['submitted']);
             $labels           = array_merge($labels, (array) $stepData['labels']);
             $files            = array_merge($files, (array) $stepData['files']);
@@ -401,9 +415,11 @@ class MPFormsFormManager
     public function resetData()
     {
         foreach (['MPFORMSTORAGE', 'MPFORMSTORAGE_POSTDATA', 'MPFORMSTORAGE_PSWI'] as $sessionKey) {
-            foreach (array_keys((array) $_SESSION[$sessionKey]) as $sessionIdentifier) {
+            $data = $this->readFromSession(sprintf('[%s]', $sessionKey));
+
+            foreach (array_keys((array) $data) as $sessionIdentifier) {
                 if (0 === strncmp($sessionIdentifier, $this->formModel->id, \strlen($this->formModel->id))) {
-                    unset($_SESSION[$sessionKey][$sessionIdentifier]);
+                    $this->writeToSession(sprintf('[%s][%s]', $sessionKey, $sessionIdentifier), []);
                 }
             }
         }
@@ -564,7 +580,9 @@ class MPFormsFormManager
      */
     public function setPreviousStepsWereInvalid()
     {
-        $_SESSION['MPFORMSTORAGE_PSWI'][$this->getSessionIdentifier()] = true;
+        $this->writeToSession(sprintf('[MPFORMSTORAGE_PSWI][%s]',
+            $this->getSessionIdentifier()
+        ), true);
     }
 
     /**
@@ -574,7 +592,9 @@ class MPFormsFormManager
      */
     public function getPreviousStepsWereInvalid()
     {
-        return true === $_SESSION['MPFORMSTORAGE_PSWI'][$this->getSessionIdentifier()];
+        return true === $this->readFromSession(sprintf('[MPFORMSTORAGE_PSWI][%s]',
+            $this->getSessionIdentifier()
+        ));
     }
 
     /**
@@ -582,7 +602,9 @@ class MPFormsFormManager
      */
     public function resetPreviousStepsWereInvalid()
     {
-        unset($_SESSION['MPFORMSTORAGE_PSWI'][$this->getSessionIdentifier()]);
+        $this->writeToSession(sprintf('[MPFORMSTORAGE_PSWI][%s]',
+            $this->getSessionIdentifier()
+        ), []);
     }
 
     /**
@@ -669,10 +691,7 @@ class MPFormsFormManager
     {
         // Special handling for captcha field
         if ($widget instanceof FormCaptcha) {
-            $session = Session::getInstance();
-            $captcha = $session->get('captcha_' . $widget->id);
-
-            return isset($_POST[$captcha['key']]);
+            return isset($_POST[$captcha['captcha_' . $widget->id]]);
         }
 
         return isset($_POST[$widget->name]);
@@ -776,5 +795,37 @@ class MPFormsFormManager
         }
 
         return $extension;
+    }
+
+    private function writeToSession(string $propertyPath, $value)
+    {
+        if (!$this->request->hasSession()) {
+            return;
+        }
+
+        $data = $this->request->getSession()->get(self::SESSION_KEY, []);
+
+        $pa = (new PropertyAccessorBuilder())->getPropertyAccessor();
+
+        $pa->setValue($data, $propertyPath, $value);
+
+        $this->request->getSession()->set(self::SESSION_KEY, $data);
+    }
+
+    private function readFromSession(string $propertyPath)
+    {
+        if (!$this->request->hasPreviousSession()) {
+            return null;
+        }
+
+        if (!$this->request->hasSession()) {
+            return null;
+        }
+
+        $data = $this->request->getSession()->get(self::SESSION_KEY, []);
+
+        $pa = (new PropertyAccessorBuilder())->getPropertyAccessor();
+
+        return $pa->getValue($data, $propertyPath);
     }
 }
