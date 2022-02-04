@@ -9,16 +9,19 @@
  * @link       https://github.com/terminal42/contao-mp_forms
  */
 
+use Contao\CoreBundle\Exception\ResponseException;
 use Contao\Image;
 use Contao\Widget;
 use Contao\BackendTemplate;
-use Contao\File;
 use Contao\StringUtil as ContaoStringUtil;
 use Contao\System;
 use Haste\Util\StringUtil as HasteStringUtil;
 use Haste\Util\Url;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
+use Symfony\Component\HttpFoundation\File\File;
 
 class FormMPFormPlaceholder extends Widget
 {
@@ -99,16 +102,20 @@ class FormMPFormPlaceholder extends Widget
         foreach ($data['files'] as $k => $v) {
             $fileTokens = [];
 
-            $file = new File(ContaoStringUtil::stripRootDir($v['tmp_name']));
+            try{
+                $file = new File($v['tmp_name']);
+            } catch (FileNotFoundException $e) {
+                continue;
+            }
 
             if ($k === $_GET['summary_download']) {
-                $file->sendToBrowser($v['name']);
+                throw new ResponseException(new BinaryFileResponse($file));
             }
 
             $fileTokens['download_url'] = Url::addQueryString('summary_download=' .$k);
-            $fileTokens['extension'] = $file->extension;
-            $fileTokens['mime'] = $file->mime;
-            $fileTokens['size'] = $file->filesize;
+            $fileTokens['extension'] = $file->getExtension();
+            $fileTokens['mime'] = $file->getMimeType();
+            $fileTokens['size'] = $file->getSize();
 
             foreach ($fileTokens as $kk => $vv) {
                 HasteStringUtil::flatten($vv, 'file_'.$k.'_'.$kk, $tokens);
@@ -116,14 +123,12 @@ class FormMPFormPlaceholder extends Widget
 
             // Generate a general HTML output using the download template
             $tpl = new \Contao\FrontendTemplate('ce_download'); // TODO: make configurable in form field settings?
-            $tpl->link = $file->basename;
-            $tpl->title = ContaoStringUtil::specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['download'], $file->basename));
+            $tpl->link = $file->getBasename($file->getExtension());
+            $tpl->title = ContaoStringUtil::specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['download'], $file->getBasename($file->getExtension())));
             $tpl->href = $fileTokens['download_url'];
-            $tpl->filesize = System::getReadableSize($file->filesize);
-            $tpl->icon = Image::getPath($file->icon);
-            $tpl->mime = $file->mime;
-            $tpl->extension = $file->extension;
-            $tpl->path = $file->dirname;
+            $tpl->filesize = System::getReadableSize($file->getSize());
+            $tpl->mime = $file->getMimeType();
+            $tpl->extension = $file->getExtension();
 
             HasteStringUtil::flatten($tpl->parse(), 'file_'.$k, $tokens);
 
