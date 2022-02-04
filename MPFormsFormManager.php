@@ -18,6 +18,7 @@ use Contao\System;
 use Contao\Widget;
 use Haste\Util\Url;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorBuilder;
 
 class MPFormsFormManager
@@ -356,6 +357,10 @@ class MPFormsFormManager
             }
         }
 
+        // If the current step is 0, we don't want to check for hasPreviousSession(), as this is false on initial page
+        // load (in case there is no previous session of course)
+        $checkPreviousSessionForPostData = $this->getCurrentStep() !== 0;
+
         $this->writeToSession(sprintf('[MPFORMSTORAGE][%s][%d]',
             $this->getSessionIdentifier(),
             $this->getCurrentStep()
@@ -366,7 +371,7 @@ class MPFormsFormManager
             'originalPostData'  => $this->readFromSession(sprintf('[MPFORMSTORAGE_POSTDATA][%s][%d]',
                     $this->getSessionIdentifier(),
                     $this->getCurrentStep()
-                )) ?? [],
+                ), $checkPreviousSessionForPostData) ?? [],
         ]);
     }
 
@@ -797,24 +802,37 @@ class MPFormsFormManager
         return $extension;
     }
 
-    private function writeToSession(string $propertyPath, $value)
+    private function writeToSession(string $propertyPath, $value): void
     {
-        if (!$this->request->hasSession()) {
+        if (null === ($session = $this->getSession())) {
             return;
         }
 
-        $data = $this->request->getSession()->get(self::SESSION_KEY, []);
+        $data = $session->get(self::SESSION_KEY, []);
 
         $pa = (new PropertyAccessorBuilder())->getPropertyAccessor();
 
         $pa->setValue($data, $propertyPath, $value);
 
-        $this->request->getSession()->set(self::SESSION_KEY, $data);
+        $session->set(self::SESSION_KEY, $data);
     }
 
-    private function readFromSession(string $propertyPath)
+    private function readFromSession(string $propertyPath, bool $checkPrevious = false)
     {
-        if (!$this->request->hasPreviousSession()) {
+        if (null === ($session = $this->getSession($checkPrevious))) {
+            return null;
+        }
+
+        $data = $session->get(self::SESSION_KEY, []);
+
+        $pa = (new PropertyAccessorBuilder())->getPropertyAccessor();
+
+        return $pa->getValue($data, $propertyPath);
+    }
+
+    private function getSession(bool $checkPrevious = false): ?SessionInterface
+    {
+        if ($checkPrevious && !$this->request->hasPreviousSession()) {
             return null;
         }
 
@@ -822,10 +840,6 @@ class MPFormsFormManager
             return null;
         }
 
-        $data = $this->request->getSession()->get(self::SESSION_KEY, []);
-
-        $pa = (new PropertyAccessorBuilder())->getPropertyAccessor();
-
-        return $pa->getValue($data, $propertyPath);
+        return $this->request->getSession();
     }
 }
