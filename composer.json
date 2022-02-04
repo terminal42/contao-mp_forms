@@ -33,13 +33,5 @@
         "": "system/modules/mp_forms"
       }
     }
-  },
-  "config": {
-    "allow-plugins": {
-      "contao-community-alliance/composer-plugin": true,
-      "contao-components/installer": true,
-      "composer/package-versions-deprecated": true,
-      "ocramius/package-versions": true
-    }
   }
 }
