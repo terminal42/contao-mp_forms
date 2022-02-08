@@ -1,6 +1,6 @@
 # mp_forms
 
-This is a Contao 4.4+ extension that finally allows you to create real forms over multiple pages.
+This is a Contao extension that allows you to create real forms over multiple pages.
 
 After installing the module, you have a new setting in the form definitions where you can define the GET parameter
 you want the extension to work with. By default, this is `step` so it will generate `step=1`, `step=2` etc. in the URL.
