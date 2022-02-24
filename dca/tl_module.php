@@ -12,7 +12,7 @@
 /**
  * Table tl_module
  */
-$GLOBALS['TL_DCA']['tl_module']['palettes']['mp_form_steps'] .= '
+$GLOBALS['TL_DCA']['tl_module']['palettes']['mp_form_steps'] = '
 {title_legend},name,headline,type;
 {config_legend},form,navigationTpl;
 {template_legend:hide},customTpl;
