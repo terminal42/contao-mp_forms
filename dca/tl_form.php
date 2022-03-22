@@ -29,7 +29,7 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_getParam'] = [
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_sessionRefParam'] = [
     'exclude'   => true,
-    'default'   => 'step',
+    'default'   => 'ref',
     'inputType' => 'text',
     'eval'      => ['tl_class' => 'w50', 'maxlength' => 255],
     'sql'       => "varchar(255) NOT NULL default 'ref'"
