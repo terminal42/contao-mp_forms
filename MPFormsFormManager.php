@@ -570,12 +570,12 @@ class MPFormsFormManager
         if ($fakeValidation) {
             Input::setPost($formField->name, null);
         }
-        
+
         // Special hack for upload fields because they delete $_FILES and thus
         // multiple validation calls will fail - sigh
         if ($widget instanceof \uploadable && isset($_SESSION['FILES'][$widget->name])) {
             $_FILES[$widget->name] = $_SESSION['FILES'][$widget->name];
-        }       
+        }
 
         return !$widget->hasErrors();
     }
@@ -780,6 +780,12 @@ class MPFormsFormManager
     {
         $form = new stdClass();
         $form->form = $this->formModel->id;
+
+        // Set properties to avoid a warning "Undefined property: stdClass::$variable"
+        $form->headline = null;
+        $form->typePrefix = null;
+        $form->cssID = null;
+
         return new Form($form);
     }
 
