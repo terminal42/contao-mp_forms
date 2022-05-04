@@ -54,9 +54,11 @@ class MPForms
             $this->redirectToStep($manager, $manager->getPreviousStep());
         }
 
-        // Validate previous steps data but only if not POST present
-        // which means data is submitted and you're moving on to the next page
-        if (!$manager->isFirstStep() && !$_POST) {
+        // Validate previous form data if we're not on the first step. This has to be done
+        // no matter if we're in a POST request right now or not as otherwise you can submit
+        // a POST request without any previous step data (e.g. by deleting the session cookie
+        // manually)
+        if (!$manager->isFirstStep()) {
             $vResult = $manager->validateSteps(0, $manager->getCurrentStep() - 1);
             if (true !== $vResult) {
                 $manager->setPreviousStepsWereInvalid();
