@@ -642,7 +642,7 @@ class MPFormsFormManager
     {
         $step = null === $step ? $this->getCurrentStep() : $step;
 
-        return $this->getDataOfStep($step)[$key][$fieldName];
+        return $this->getDataOfStep($step)[$key][$fieldName] ?? null;
     }
 
     /**
