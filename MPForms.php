@@ -50,7 +50,7 @@ class MPForms
         // but still save data already added to the input fields so it is
         // there when they come back to the current step
         if ('back' === ($_POST['mp_form_pageswitch'] ?? null)) {
-            $manager->storeData($_POST, [], (array) $_SESSION['FILES']);
+            $manager->storeData($_POST, [], (array) ($_SESSION['FILES'] ?? []));
             $this->redirectToStep($manager, $manager->getPreviousStep());
         }
 
