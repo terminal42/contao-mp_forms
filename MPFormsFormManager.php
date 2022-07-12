@@ -18,8 +18,6 @@ use Contao\System;
 use Contao\Widget;
 use Haste\Util\Url;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\PropertyAccess\PropertyAccessorBuilder;
 
 class MPFormsFormManager
 {
@@ -34,6 +32,11 @@ class MPFormsFormManager
      * @var Request
      */
     private $request;
+
+    /**
+     * @var MPFormsSessionManager
+     */
+    private $sessionManager;
 
     /**
      * @var FormFieldModel[]
@@ -61,6 +64,7 @@ class MPFormsFormManager
     {
         $this->formModel = FormModel::findByPk($formGeneratorId);
         $this->request = System::getContainer()->get('request_stack')->getCurrentRequest();
+        $this->sessionManager = new MPFormsSessionManager($formGeneratorId);
 
         $this->prepareFormFields();
     }
@@ -83,7 +87,7 @@ class MPFormsFormManager
      */
     public function getGetParam()
     {
-        return $this->formModel->mp_forms_getParam ?: 'step';
+        return $this->sessionManager->getGetParam();
     }
 
     /**
@@ -93,7 +97,7 @@ class MPFormsFormManager
      */
     public function getGetParamForSessionReference()
     {
-        return $this->formModel->mp_forms_sessionRefParam ?: 'ref';
+        return $this->sessionManager->getGetParamForSessionReference();
     }
 
     /**
@@ -302,7 +306,7 @@ class MPFormsFormManager
             $url = Url::addQueryString($this->getGetParam() . '=' . $step);
         }
 
-        $url = Url::addQueryString($this->getGetParamForSessionReference() . '=' . $this->getSessionRef(), $url);
+        $url = Url::addQueryString($this->sessionManager->getGetParamForSessionReference() . '=' . $this->sessionManager->getSessionRef(), $url);
 
         if ($step > $this->getCurrentStep()) {
             $fragment = $this->getFragmentForStep($step, 'next');
@@ -317,12 +321,9 @@ class MPFormsFormManager
         return $url;
     }
 
-    public function setPostData(array $postData)
+    public function setPostData(array $postData): self
     {
-        $this->writeToSession(sprintf('[MPFORMSTORAGE_POSTDATA][%s][%d]',
-            $this->getSessionIdentifier(),
-            $this->getCurrentStep()
-        ), $postData);
+        $this->sessionManager->setPostData($postData);
 
         return $this;
     }
@@ -334,45 +335,9 @@ class MPFormsFormManager
      * @param array $labels
      * @param array $files
      */
-    public function storeData(array $submitted, array $labels, array $files)
+    public function storeData(array $submitted, array $labels, array $files): void
     {
-        // Make sure files are moved to our own tmp directory so they are
-        // kept across php processes
-        foreach ($files as $k => $file) {
-            // If the user marked the form field to upload the file into
-            // a certain directory, this check will return false and thus
-            // we won't move anything.
-
-            if (is_uploaded_file($file['tmp_name'])) {
-                $target = sprintf('%s/mp_forms_%s.%s',
-                    sys_get_temp_dir(),
-                    basename($file['tmp_name']),
-                    $this->guessFileExtension($file)
-                );
-                move_uploaded_file($file['tmp_name'], $target);
-                $files[$k]['tmp_name'] = $target;
-
-                // Compatibility with notification center
-                $files[$k]['uploaded'] = true;
-            }
-        }
-
-        // If the current step is 0, we don't want to check for hasPreviousSession(), as this is false on initial page
-        // load (in case there is no previous session of course)
-        $checkPreviousSessionForPostData = $this->getCurrentStep() !== 0;
-
-        $this->writeToSession(sprintf('[MPFORMSTORAGE][%s][%d]',
-            $this->getSessionIdentifier(),
-            $this->getCurrentStep()
-        ), [
-            'submitted'         => $submitted,
-            'labels'            => $labels,
-            'files'             => $files,
-            'originalPostData'  => $this->readFromSession(sprintf('[MPFORMSTORAGE_POSTDATA][%s][%d]',
-                    $this->getSessionIdentifier(),
-                    $this->getCurrentStep()
-                ), $checkPreviousSessionForPostData) ?? [],
-        ]);
+        $this->sessionManager->storeData($submitted, $labels, $files);
     }
 
     /**
@@ -384,50 +349,20 @@ class MPFormsFormManager
      */
     public function getDataOfStep($step)
     {
-        return (array) $this->readFromSession(sprintf('[MPFORMSTORAGE][%s][%d]',
-                $this->getSessionIdentifier(),
-                $step
-            ));
+        return $this->sessionManager->getDataOfStep($step);
     }
 
     /**
      * Get data of all steps merged into one array.
-     *
-     * @return array
      */
-    public function getDataOfAllSteps()
+    public function getDataOfAllSteps(): array
     {
-        $submitted        = [];
-        $labels           = [];
-        $files            = [];
-        $originalPostData = [];
-
-        foreach ((array) $this->readFromSession(sprintf('[MPFORMSTORAGE][%s]', $this->getSessionIdentifier())) as $stepData) {
-            $submitted        = array_merge($submitted, (array) $stepData['submitted']);
-            $labels           = array_merge($labels, (array) $stepData['labels']);
-            $files            = array_merge($files, (array) $stepData['files']);
-            $originalPostData = array_merge($files, (array) $stepData['originalPostData']);
-        }
-
-        return [
-            'submitted'        => $submitted,
-            'labels'           => $labels,
-            'files'            => $files,
-            'originalPostData' => $originalPostData,
-        ];
+        return $this->sessionManager->getDataOfAllSteps();
     }
 
-    public function resetData()
+    public function resetData(): void
     {
-        foreach (['MPFORMSTORAGE', 'MPFORMSTORAGE_POSTDATA', 'MPFORMSTORAGE_PSWI'] as $sessionKey) {
-            $data = $this->readFromSession(sprintf('[%s]', $sessionKey));
-
-            foreach (array_keys((array) $data) as $sessionIdentifier) {
-                if (0 === strncmp($sessionIdentifier, $this->formModel->id, \strlen($this->formModel->id))) {
-                    $this->writeToSession(sprintf('[%s][%s]', $sessionKey, $sessionIdentifier), []);
-                }
-            }
-        }
+        $this->sessionManager->resetData();
     }
 
     /**
@@ -585,9 +520,7 @@ class MPFormsFormManager
      */
     public function setPreviousStepsWereInvalid()
     {
-        $this->writeToSession(sprintf('[MPFORMSTORAGE_PSWI][%s]',
-            $this->getSessionIdentifier()
-        ), true);
+        $this->sessionManager->setPreviousStepsWereInvalid();
     }
 
     /**
@@ -597,9 +530,7 @@ class MPFormsFormManager
      */
     public function getPreviousStepsWereInvalid()
     {
-        return true === $this->readFromSession(sprintf('[MPFORMSTORAGE_PSWI][%s]',
-            $this->getSessionIdentifier()
-        ));
+        return $this->sessionManager->getPreviousStepsWereInvalid();
     }
 
     /**
@@ -607,9 +538,7 @@ class MPFormsFormManager
      */
     public function resetPreviousStepsWereInvalid()
     {
-        $this->writeToSession(sprintf('[MPFORMSTORAGE_PSWI][%s]',
-            $this->getSessionIdentifier()
-        ), []);
+        $this->sessionManager->resetPreviousStepsWereInvalid();
     }
 
     /**
@@ -623,10 +552,7 @@ class MPFormsFormManager
      */
     public function isStoredInData($fieldName, $step = null, $key = 'submitted')
     {
-        $step = null === $step ? $this->getCurrentStep() : $step;
-
-        return isset($this->getDataOfStep($step)[$key])
-            && array_key_exists($fieldName, $this->getDataOfStep($step)[$key]);
+        return $this->sessionManager->isStoredInData($fieldName, $step, $key);
     }
 
     /**
@@ -640,9 +566,7 @@ class MPFormsFormManager
      */
     public function fetchFromData($fieldName, $step = null, $key = 'originalPostData')
     {
-        $step = null === $step ? $this->getCurrentStep() : $step;
-
-        return $this->getDataOfStep($step)[$key][$fieldName] ?? null;
+        return $this->sessionManager->fetchFromData($fieldName, $step, $key);
     }
 
     /**
@@ -655,35 +579,6 @@ class MPFormsFormManager
     public function isPageBreak(FormFieldModel $formField)
     {
         return 'mp_form_pageswitch' === $formField->type;
-    }
-
-    /**
-     * @return string
-     */
-    private function getSessionIdentifier()
-    {
-        return $this->formModel->id . '__' . $this->getSessionRef();
-    }
-
-    /**
-     * Cannot make this a class property because people use `new MPFormsFormManager()` all over the place.
-     * We can only introduce proper handling here once there's a completely new version of this extension
-     * using DI.
-     *
-     * @return string
-     */
-    private function getSessionRef()
-    {
-        static $sessionRef;
-
-        if (null !== $sessionRef) {
-            return $sessionRef;
-        }
-
-        return $sessionRef = $this->request->query->get(
-            $this->getGetParamForSessionReference(),
-            bin2hex(random_bytes(16))
-        );
     }
 
     /**
@@ -787,65 +682,5 @@ class MPFormsFormManager
         $form->cssID = null;
 
         return new Form($form);
-    }
-
-    private function guessFileExtension(array $file)
-    {
-        $extension = 'unknown';
-
-        if (!isset($file['type'])) {
-            return $extension;
-        }
-
-        foreach ($GLOBALS['TL_MIME'] as $ext => $data) {
-            if ($data[0] === $file['type']) {
-                $extension = $ext;
-                break;
-
-            }
-        }
-
-        return $extension;
-    }
-
-    private function writeToSession(string $propertyPath, $value): void
-    {
-        if (null === ($session = $this->getSession())) {
-            return;
-        }
-
-        $data = $session->get(self::SESSION_KEY, []);
-
-        $pa = (new PropertyAccessorBuilder())->getPropertyAccessor();
-
-        $pa->setValue($data, $propertyPath, $value);
-
-        $session->set(self::SESSION_KEY, $data);
-    }
-
-    private function readFromSession(string $propertyPath, bool $checkPrevious = false)
-    {
-        if (null === ($session = $this->getSession($checkPrevious))) {
-            return null;
-        }
-
-        $data = $session->get(self::SESSION_KEY, []);
-
-        $pa = (new PropertyAccessorBuilder())->getPropertyAccessor();
-
-        return $pa->getValue($data, $propertyPath);
-    }
-
-    private function getSession(bool $checkPrevious = false): ?SessionInterface
-    {
-        if ($checkPrevious && !$this->request->hasPreviousSession()) {
-            return null;
-        }
-
-        if (!$this->request->hasSession()) {
-            return null;
-        }
-
-        return $this->request->getSession();
     }
 }

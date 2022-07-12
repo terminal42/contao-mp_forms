@@ -24,6 +24,7 @@
       "FormMPFormPlaceholder.php",
       "MPForms.php",
       "MPFormsFormManager.php",
+      "MPFormsSessionManager.php",
       "MPFormsStepsModule.php"
     ]
   },
