@@ -1,38 +1,60 @@
 {
   "name": "terminal42/contao-mp_forms",
-  "description": "mp_forms extension for Contao Open Source CMS",
-  "keywords": ["contao", "forms", "multi", "multipage"],
-  "type": "contao-module",
+  "description": "An extension for Contao Open Source CMS to create multi steps forms using the form generator",
+  "keywords": ["contao", "forms", "multi", "multipage", "step"],
+  "type": "contao-bundle",
   "license": "LGPL-3.0+",
   "authors":[
     {
       "name":"terminal42 gmbh",
-      "homepage":"http://terminal42.ch"
+      "homepage":"https://www.terminal42.ch"
     }
   ],
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/terminal42"
+    },
+    {
+      "type": "other",
+      "url": "https://ko-fi.com/terminal42"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/terminal42/contao-mp_forms/issues",
+    "source": "https://github.com/terminal42/contao-mp_forms",
+    "forum": "https://community.contao.org"
+  },
   "require": {
-    "php": "^7.1 || ^8.0",
-    "contao/core-bundle": "^4.9",
-    "contao-community-alliance/composer-plugin": "^2.4 || ^3.0",
-    "codefog/contao-haste": "^4.18",
-    "symfony/var-dumper": "^4.4 || ^5.0",
-    "symfony/property-access": "^4.4 || ^5.0"
+    "php": "^8.1",
+    "contao/core-bundle": "^4.13 || ^5.0",
+    "codefog/contao-haste": "^5.0",
+    "symfony/var-dumper": "^5.4 || ^6.0"
   },
   "autoload": {
-    "files": [
-      "FormMPFormPageSwitch.php",
-      "FormMPFormPlaceholder.php",
-      "MPForms.php",
-      "MPFormsFormManager.php",
-      "MPFormsSessionManager.php",
-      "MPFormsStepsModule.php"
-    ]
+    "psr-4": {
+      "Terminal42\\MultipageFormsBundle\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Terminal42\\MultipageFormsBundle\\Test\\": "tests/"
+    }
   },
   "extra": {
-    "contao": {
-      "sources": {
-        "": "system/modules/mp_forms"
-      }
+    "contao-manager-plugin": "Terminal42\\MultipageFormsBundle\\ContaoManager\\Plugin"
+  },
+  "scripts": {
+    "cs-fixer": "@php tools/ecs/vendor/bin/ecs check config/ contao/ src/ tests/ --config tools/ecs/config.php --fix --ansi",
+    "unit-tests": "@php tools/phpunit/vendor/bin/phpunit -c tools/phpunit/phpunit.xml.dist"
+  },
+  "config": {
+    "allow-plugins": {
+      "contao-components/installer": false,
+      "contao/manager-plugin": false
     }
+  },
+  "require-dev": {
+    "contao/manager-plugin": "^2.12"
   }
 }
