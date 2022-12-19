@@ -9,13 +9,13 @@ use Contao\Form;
 use Contao\FormFieldModel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Terminal42\MultipageFormsBundle\FormManagerFactory;
+use Terminal42\MultipageFormsBundle\FormManagerFactoryInterface;
 use Terminal42\MultipageFormsBundle\Step\ParameterBag;
 
 #[AsHook('compileFormFields')]
 class CompileFormFieldsListener
 {
-    public function __construct(private FormManagerFactory $formManagerFactory, private RequestStack $requestStack)
+    public function __construct(private FormManagerFactoryInterface $formManagerFactory, private RequestStack $requestStack)
     {
     }
 

@@ -8,13 +8,13 @@ use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\Form;
 use Contao\Widget;
-use Terminal42\MultipageFormsBundle\FormManagerFactory;
+use Terminal42\MultipageFormsBundle\FormManagerFactoryInterface;
 use Terminal42\MultipageFormsBundle\Step\ParameterBag;
 
 #[AsHook('prepareFormData')]
 class PrepareFomDataListener
 {
-    public function __construct(private FormManagerFactory $formManagerFactory)
+    public function __construct(private FormManagerFactoryInterface $formManagerFactory)
     {
     }
 
@@ -32,16 +32,16 @@ class PrepareFomDataListener
             return;
         }
 
-        $submitted = new ParameterBag($submitted);
-        $labels = new ParameterBag($labels);
+        $submittedBag = new ParameterBag($submitted);
+        $labelsBag = new ParameterBag($labels);
 
-        $pageSwitchValue = $submitted->get('mp_form_pageswitch', '');
-        $submitted->remove('mp_form_pageswitch');
+        $pageSwitchValue = $submittedBag->get('mp_form_pageswitch', '');
+        $submittedBag->remove('mp_form_pageswitch');
 
         // Store data in session
         $stepData = $manager->getDataOfCurrentStep();
-        $stepData = $stepData->withSubmitted($submitted);
-        $stepData = $stepData->withLabels($labels);
+        $stepData = $stepData->withSubmitted($submittedBag);
+        $stepData = $stepData->withLabels($labelsBag);
         $stepData = $stepData->withFiles($manager->getUploadedFiles());
 
         $manager->storeStepData($stepData);

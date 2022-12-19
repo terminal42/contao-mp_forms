@@ -13,12 +13,12 @@ use Contao\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Terminal42\MultipageFormsBundle\FormManager;
-use Terminal42\MultipageFormsBundle\FormManagerFactory;
+use Terminal42\MultipageFormsBundle\FormManagerFactoryInterface;
 
 #[AsFrontendModule('mp_form_steps', template: 'mod_mp_form_steps')]
 class StepsController extends AbstractFrontendModuleController
 {
-    public function __construct(private ContaoFramework $contaoFramework, private FormManagerFactory $formManagerFactory)
+    public function __construct(private ContaoFramework $contaoFramework, private FormManagerFactoryInterface $formManagerFactory)
     {
     }
 

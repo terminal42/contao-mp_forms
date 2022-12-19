@@ -7,13 +7,13 @@ namespace Terminal42\MultipageFormsBundle\EventListener;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\Form;
 use Contao\Widget;
-use Terminal42\MultipageFormsBundle\FormManagerFactory;
+use Terminal42\MultipageFormsBundle\FormManagerFactoryInterface;
 use Terminal42\MultipageFormsBundle\Step\ParameterBag;
 
 #[AsHook('loadFormField')]
 class LoadFormFieldListener
 {
-    public function __construct(private FormManagerFactory $formManagerFactory)
+    public function __construct(private FormManagerFactoryInterface $formManagerFactory)
     {
     }
 

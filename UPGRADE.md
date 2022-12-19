@@ -5,7 +5,7 @@
 ### Developers
 
 The code base received a complete rewrite from scratch. If you worked with the `MPFormsFormManager` before, go for 
-proper DI and the `FormManagerFactory` to access the `FormManager` for a given form ID:
+proper DI and the `FormManagerFactoryInterface` to access the `FormManager` for a given form ID:
 
 ```
 $manager = $this->formManagerFactory->forFormId($formId);

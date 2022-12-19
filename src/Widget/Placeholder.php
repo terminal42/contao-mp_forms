@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
-use Terminal42\MultipageFormsBundle\FormManagerFactory;
+use Terminal42\MultipageFormsBundle\FormManagerFactoryInterface;
 
 class Placeholder extends Widget
 {
@@ -84,8 +84,8 @@ class Placeholder extends Widget
         $fileTokens = [];
         $summaryTokens = [];
 
-        /** @var FormManagerFactory $factory */
-        $factory = System::getContainer()->get(FormManagerFactory::class);
+        /** @var FormManagerFactoryInterface $factory */
+        $factory = System::getContainer()->get(FormManagerFactoryInterface::class);
 
         /** @var StringParser $stringParser */
         $stringParser = System::getContainer()->get(StringParser::class);

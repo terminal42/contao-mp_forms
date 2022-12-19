@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Terminal42\MultipageFormsBundle\Step\ParameterBag;
 use Terminal42\MultipageFormsBundle\Step\StepData;
 use Terminal42\MultipageFormsBundle\Step\StepDataCollection;
+use Terminal42\MultipageFormsBundle\Storage\SessionReferenceGenerator\SessionReferenceGeneratorInterface;
+use Terminal42\MultipageFormsBundle\Storage\StorageIdentifierGenerator\StorageIdentifierGeneratorInterface;
 use Terminal42\MultipageFormsBundle\Storage\StorageInterface;
 
 class FormManager
@@ -43,6 +45,8 @@ class FormManager
         private Request $request,
         private ContaoFramework $contaoFramework,
         private StorageInterface $storage,
+        private StorageIdentifierGeneratorInterface $storageIdentifierGenerator,
+        private SessionReferenceGeneratorInterface $sessionReferenceGenerator,
         private UrlParser $urlParser,
     ) {
     }
@@ -278,6 +282,48 @@ class FormManager
     }
 
     /**
+     * Creates a dummy form instance that is needed for the hooks.
+     */
+    public static function createDummyForm(int $formId): Form
+    {
+        return new class($formId) extends Form {
+            public function __construct(int $formId)
+            {
+                // Do not call parent in order to not boot the whole system. Just mock some of it.
+                $this->id = $formId;
+                $this->headline = null;
+                $this->typePrefix = null;
+                $this->cssID = null;
+                $this->strColumn = 'main';
+            }
+        };
+    }
+
+    /**
+     * @return array<FormFieldModel>
+     */
+    public function getFormFieldModels(): array
+    {
+        $this->prepare();
+
+        return $this->formFieldModels;
+    }
+
+    public function getFormId(): string
+    {
+        return '' !== $this->formModel->formID ?
+            'auto_'.$this->formModel->formID :
+            'auto_form_'.$this->formModel->id;
+    }
+
+    public function getSessionReference(): string
+    {
+        $this->prepare();
+
+        return $this->sessionRef;
+    }
+
+    /**
      * @throws \OutOfBoundsException if the step does not exist
      */
     private function validateStep(int $step): void
@@ -299,9 +345,6 @@ class FormManager
         return 'mp_form_pageswitch' === $formField->type;
     }
 
-    /**
-     * Loads the form field models (calling the compileFormFields hook and ignoring itself).
-     */
     private function loadFormFieldModels(): void
     {
         $formFieldModels = $this->contaoFramework->getAdapter(FormFieldModel::class)->findPublishedByPid($this->formModel->id);
@@ -313,7 +356,7 @@ class FormManager
         }
 
         // Needed for the hook
-        $form = $this->createDummyForm();
+        $form = self::createDummyForm($this->formId);
 
         $systemAdapter = $this->contaoFramework->getAdapter(System::class);
 
@@ -377,33 +420,10 @@ class FormManager
         $this->initSessionReference();
 
         // Set storage identifier for storage implementations to work with
-        $this->initStorageIdentifier();
+        $this->storageIdentifier = $this->storageIdentifierGenerator->generate($this);
 
         $this->prepared = true;
         $this->preparing = false;
-    }
-
-    /**
-     * Creates a dummy form instance that is needed for the hooks.
-     */
-    private function createDummyForm(): Form
-    {
-        $form = new \stdClass();
-        $form->form = $this->formModel->id;
-
-        // Set properties to avoid a warning "Undefined property: stdClass::$variable"
-        $form->headline = null;
-        $form->typePrefix = null;
-        $form->cssID = null;
-
-        return new Form($form);
-    }
-
-    private function getFormId(): string
-    {
-        return '' !== $this->formModel->formID ?
-            'auto_'.$this->formModel->formID :
-            'auto_form_'.$this->formModel->id;
     }
 
     /**
@@ -418,12 +438,12 @@ class FormManager
         $key = sprintf('mp_forms_%sFragment', $mode);
 
         foreach ($this->getFieldsForStep($step) as $formField) {
-            if ($this->isPageBreak($formField) && '' !== $formField->{$key}) {
+            if ($this->isPageBreak($formField) && isset($formField->{$key}) && '' !== $formField->{$key}) {
                 return $formField->{$key};
             }
         }
 
-        if ('' !== $this->formModel->{$key}) {
+        if (isset($this->formModel->{$key}) && '' !== $this->formModel->{$key}) {
             return $this->formModel->{$key};
         }
 
@@ -433,28 +453,14 @@ class FormManager
     private function initSessionReference(bool $forceNew = false): void
     {
         if ($forceNew) {
-            $this->sessionRef = bin2hex(random_bytes(16));
+            $this->sessionRef = $this->sessionReferenceGenerator->generate($this);
 
             return;
         }
 
         $this->sessionRef = $this->request->query->get(
             $this->getGetParamForSessionReference(),
-            bin2hex(random_bytes(16))
+            $this->sessionReferenceGenerator->generate($this)
         );
-    }
-
-    private function initStorageIdentifier(): void
-    {
-        $info = [];
-        $info[] = $this->formId;
-        $info[] = $this->sessionRef;
-
-        // Ensure the identifier changes, when the fields are updated as the settings might change
-        foreach ($this->formFieldModels as $fieldModel) {
-            $info[] = $fieldModel->tstamp;
-        }
-
-        $this->storageIdentifier = sha1(implode(';', $info));
     }
 }

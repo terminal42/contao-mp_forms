@@ -7,7 +7,7 @@ namespace Terminal42\MultipageFormsBundle\Widget;
 use Contao\BackendTemplate;
 use Contao\System;
 use Contao\Widget;
-use Terminal42\MultipageFormsBundle\FormManagerFactory;
+use Terminal42\MultipageFormsBundle\FormManagerFactoryInterface;
 
 class PageSwitch extends Widget
 {
@@ -58,8 +58,8 @@ class PageSwitch extends Widget
             return $template->parse();
         }
 
-        /** @var FormManagerFactory $factory */
-        $factory = System::getContainer()->get(FormManagerFactory::class);
+        /** @var FormManagerFactoryInterface $factory */
+        $factory = System::getContainer()->get(FormManagerFactoryInterface::class);
 
         $manager = $factory->forFormId((int) $this->pid);
 
