@@ -55,7 +55,6 @@
     }
   },
   "require-dev": {
-    "contao/manager-plugin": "^2.12",
-    "contao/test-case": "^5.0"
+    "contao/manager-plugin": "^2.12"
   }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Terminal42\MultipageFormsBundle\Test;
 
 use Codefog\HasteBundle\UrlParser;
+use Contao\Config;
 use Contao\FormFieldModel;
 use Contao\FormModel;
 use Contao\Model\Collection;
@@ -109,6 +110,7 @@ abstract class AbstractTestCase extends ContaoTestCase
             FormModel::class => $formModelAdapter,
             FormFieldModel::class => $formFieldModel,
             System::class => $this->mockAdapter([]),
+            Config::class => '', // Not needed in our tests but required for the ContaoTestCase not to fail
         ]);
 
         $factory = new FormManagerFactory(

@@ -4,8 +4,66 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "de098541b0cfbf244e2152476853564e",
+    "content-hash": "dcbe44d954a6efea212d55f3e71f40e2",
     "packages": [
+        {
+            "name": "contao/test-case",
+            "version": "5.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/contao/test-case.git",
+                "reference": "10fcffa6237ab6cc6787430565af3ba9696938cf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/contao/test-case/zipball/10fcffa6237ab6cc6787430565af3ba9696938cf",
+                "reference": "10fcffa6237ab6cc6787430565af3ba9696938cf",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1",
+                "phpunit/phpunit": "^9.5"
+            },
+            "conflict": {
+                "phpunit/phpunit": "<8.0",
+                "roave/better-reflection": "<4.12.2 || >=6.0"
+            },
+            "require-dev": {
+                "contao/core-bundle": "self.version",
+                "doctrine/dbal": "^3.3",
+                "doctrine/orm": "^2.10",
+                "ext-pdo": "*",
+                "symfony/http-client": "^5.4 || ^6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Contao\\TestCase\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Leo Feyer",
+                    "homepage": "https://github.com/leofeyer"
+                }
+            ],
+            "description": "Contao 4 test case",
+            "support": {
+                "issues": "https://github.com/contao/test-case/issues",
+                "source": "https://github.com/contao/test-case/tree/5.0.7"
+            },
+            "funding": [
+                {
+                    "url": "https://to.contao.org/donate",
+                    "type": "custom"
+                }
+            ],
+            "time": "2022-11-14T09:51:34+00:00"
+        },
         {
             "name": "doctrine/instantiator",
             "version": "1.4.1",
