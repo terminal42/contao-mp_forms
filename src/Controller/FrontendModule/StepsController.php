@@ -7,9 +7,9 @@ namespace Terminal42\MultipageFormsBundle\Controller\FrontendModule;
 use Contao\CoreBundle\Controller\FrontendModule\AbstractFrontendModuleController;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsFrontendModule;
 use Contao\CoreBundle\Framework\ContaoFramework;
-use Contao\CoreBundle\Twig\FragmentTemplate;
 use Contao\FrontendTemplate;
 use Contao\ModuleModel;
+use Contao\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Terminal42\MultipageFormsBundle\FormManager;
@@ -22,7 +22,7 @@ class StepsController extends AbstractFrontendModuleController
     {
     }
 
-    protected function getResponse(FragmentTemplate $template, ModuleModel $model, Request $request): Response
+    protected function getResponse(Template $template, ModuleModel $model, Request $request): Response
     {
         $manager = $this->formManagerFactory->forFormId($model->form);
 
