@@ -29,12 +29,12 @@ class FormManager
     private bool $preparing = false;
 
     /**
-     * @var array<FormFieldModel>
+     * @var array<string|int, FormFieldModel>
      */
     private array $formFieldModels;
 
     /**
-     * @var array<int, FormFieldModel>
+     * @var array<int, array<string|int, FormFieldModel>>
      */
     private array $formFieldsPerStep = [];
 
@@ -347,12 +347,21 @@ class FormManager
 
     private function loadFormFieldModels(): void
     {
-        $formFieldModels = $this->contaoFramework->getAdapter(FormFieldModel::class)->findPublishedByPid($this->formModel->id);
+        $collection = $this->contaoFramework->getAdapter(FormFieldModel::class)->findPublishedByPid($this->formModel->id);
+        $formFieldModels = [];
 
-        if (null === $formFieldModels) {
-            $formFieldModels = [];
-        } else {
-            $formFieldModels = $formFieldModels->getModels();
+        if (null !== $collection) {
+            foreach ($collection as $formFieldModel) {
+                // Ignore the name of form fields which do not use a name (see contao/core-bundle #1268)
+                if (
+                    $formFieldModel->name && isset($GLOBALS['TL_DCA']['tl_form_field']['palettes'][$formFieldModel->type])
+                    && preg_match('/[,;]name[,;]/', $GLOBALS['TL_DCA']['tl_form_field']['palettes'][$formFieldModel->type])
+                ) {
+                    $formFieldModels[$formFieldModel->name] = $formFieldModel;
+                } else {
+                    $formFieldModels[] = $formFieldModel;
+                }
+            }
         }
 
         // Needed for the hook
@@ -398,8 +407,8 @@ class FormManager
 
         $i = 0;
 
-        foreach ($this->formFieldModels as $formField) {
-            $this->formFieldsPerStep[$i][] = $formField;
+        foreach ($this->formFieldModels as $k => $formField) {
+            $this->formFieldsPerStep[$i][$k] = $formField;
 
             if ($this->isPageBreak($formField)) {
                 // Set the name on the model, otherwise one has to enter it
