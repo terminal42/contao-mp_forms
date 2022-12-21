@@ -69,10 +69,11 @@ class CompileFormFieldsListener
         }
 
         // Same for file uploads
-        $files = $manager->getUploadedFiles();
-
-        if (!$files->empty()) {
-            $stepData = $stepData->withFiles($files);
+        // Although the use of this is debatable. Our own LoadFormFieldListener cannot prefill any widget with those
+        // values as the core does not support that. However, some extension might want to integrate with mp_forms and use
+        // this.
+        if ($_FILES) {
+            $stepData = $stepData->withFiles(new ParameterBag($_FILES));
             $manager->storeStepData($stepData);
         }
 

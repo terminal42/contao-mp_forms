@@ -8,13 +8,14 @@ use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\Form;
 use Contao\Widget;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Terminal42\MultipageFormsBundle\FormManagerFactoryInterface;
 use Terminal42\MultipageFormsBundle\Step\ParameterBag;
 
 #[AsHook('prepareFormData')]
 class PrepareFomDataListener
 {
-    public function __construct(private FormManagerFactoryInterface $formManagerFactory)
+    public function __construct(private FormManagerFactoryInterface $formManagerFactory, private RequestStack $reqestStack)
     {
     }
 
@@ -23,8 +24,6 @@ class PrepareFomDataListener
      */
     public function __invoke(array &$submitted, array &$labels, array $fields, Form $form, array &$files = []): void
     {
-        // TODO: check minimum version for $files which is currently not passed, see https://github.com/contao/contao/pull/5584
-
         $manager = $this->formManagerFactory->forFormId((int) $form->id);
 
         // Don't do anything if not valid
@@ -42,7 +41,9 @@ class PrepareFomDataListener
         $stepData = $manager->getDataOfCurrentStep();
         $stepData = $stepData->withSubmitted($submittedBag);
         $stepData = $stepData->withLabels($labelsBag);
-        $stepData = $stepData->withFiles($manager->getUploadedFiles());
+
+        // TODO: check minimum version for $files which is currently not passed, see https://github.com/contao/contao/pull/5584
+        $stepData = $stepData->withFiles($this->getUploadedFiles($files));
 
         $manager->storeStepData($stepData);
 
@@ -71,5 +72,26 @@ class PrepareFomDataListener
         }
 
         $manager->redirectToStep($manager->getNextStep());
+    }
+
+    private function getUploadedFiles($hook = []): ParameterBag
+    {
+        // Contao 5
+        if (0 !== \count($hook)) {
+            return new ParameterBag($hook);
+        }
+
+        // Contao 4.13
+        $request = $this->reqestStack->getCurrentRequest();
+
+        if (null === $request) {
+            return new ParameterBag();
+        }
+
+        if (!$request->getSession()->isStarted()) {
+            return new ParameterBag();
+        }
+
+        return new ParameterBag($_SESSION['FILES'] ?? []);
     }
 }

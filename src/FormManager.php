@@ -12,7 +12,6 @@ use Contao\FormFieldModel;
 use Contao\FormModel;
 use Contao\System;
 use Symfony\Component\HttpFoundation\Request;
-use Terminal42\MultipageFormsBundle\Step\ParameterBag;
 use Terminal42\MultipageFormsBundle\Step\StepData;
 use Terminal42\MultipageFormsBundle\Step\StepDataCollection;
 use Terminal42\MultipageFormsBundle\Storage\SessionReferenceGenerator\SessionReferenceGeneratorInterface;
@@ -228,21 +227,6 @@ class FormManager
         $this->validateStep($step);
 
         throw new RedirectResponseException($this->getUrlForStep($step));
-    }
-
-    public function getUploadedFiles(): ParameterBag
-    {
-        // Contao 5
-        if (0 !== \count($_FILES)) {
-            return new ParameterBag($_FILES);
-        }
-
-        // Contao 4.13
-        if (!$this->request->getSession()->isStarted()) {
-            return new ParameterBag();
-        }
-
-        return new ParameterBag($_SESSION['FILES'] ?? []);
     }
 
     public function endSession(): self

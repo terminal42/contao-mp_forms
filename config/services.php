@@ -56,6 +56,7 @@ return static function (ContainerConfigurator $container): void {
         ->set(PrepareFomDataListener::class)
         ->args([
             service(FormManagerFactoryInterface::class),
+            service('request_stack'),
         ])
     ;
 
