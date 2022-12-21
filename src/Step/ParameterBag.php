@@ -6,8 +6,13 @@ namespace Terminal42\MultipageFormsBundle\Step;
 
 class ParameterBag
 {
-    public function __construct(private array $parameters = [])
+    private array $parameters = [];
+
+    public function __construct(array $parameters = [])
     {
+        foreach ($parameters as $k => $v) {
+            $this->set($k, $v);
+        }
     }
 
     public function empty(): bool

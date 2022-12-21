@@ -114,7 +114,7 @@ class Placeholder extends Widget
                 continue;
             }
 
-            if ($k === $_GET['summary_download']) {
+            if (isset($_GET['summary_download']) && $k === $_GET['summary_download']) {
                 throw new ResponseException(new BinaryFileResponse($file));
             }
 

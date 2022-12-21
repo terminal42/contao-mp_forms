@@ -10,6 +10,7 @@ use Contao\Form;
 use Contao\Widget;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Terminal42\MultipageFormsBundle\FormManagerFactoryInterface;
+use Terminal42\MultipageFormsBundle\Step\FileParameterBag;
 use Terminal42\MultipageFormsBundle\Step\ParameterBag;
 
 #[AsHook('prepareFormData')]
@@ -74,24 +75,24 @@ class PrepareFomDataListener
         $manager->redirectToStep($manager->getNextStep());
     }
 
-    private function getUploadedFiles($hook = []): ParameterBag
+    private function getUploadedFiles($hook = []): FileParameterBag
     {
         // Contao 5
         if (0 !== \count($hook)) {
-            return new ParameterBag($hook);
+            return new FileParameterBag($hook);
         }
 
         // Contao 4.13
         $request = $this->reqestStack->getCurrentRequest();
 
         if (null === $request) {
-            return new ParameterBag();
+            return new FileParameterBag();
         }
 
         if (!$request->getSession()->isStarted()) {
-            return new ParameterBag();
+            return new FileParameterBag();
         }
 
-        return new ParameterBag($_SESSION['FILES'] ?? []);
+        return new FileParameterBag($_SESSION['FILES'] ?? []);
     }
 }

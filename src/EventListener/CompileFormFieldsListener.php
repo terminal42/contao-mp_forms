@@ -63,17 +63,12 @@ class CompileFormFieldsListener
         $stepData = $manager->getDataOfCurrentStep();
 
         // If there is form data submitted in this step, store the original values here no matter if we're going back or if we continue.
+        // Important: We do not store $_FILES here! The problem with storing $_FILES across requests is that we would need
+        // to move it from its tmp_name as PHP deletes files automatically after the request has finished. We could indeed
+        // move them here but if we did at this stage the form fields themselves would later not be able to move them
+        // to their own desired place. So we cannot store any file information at this stage.
         if ($_POST) {
             $stepData = $stepData->withOriginalPostData(new ParameterBag($_POST));
-            $manager->storeStepData($stepData);
-        }
-
-        // Same for file uploads
-        // Although the use of this is debatable. Our own LoadFormFieldListener cannot prefill any widget with those
-        // values as the core does not support that. However, some extension might want to integrate with mp_forms and use
-        // this.
-        if ($_FILES) {
-            $stepData = $stepData->withFiles(new ParameterBag($_FILES));
             $manager->storeStepData($stepData);
         }
 
