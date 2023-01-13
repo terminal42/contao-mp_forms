@@ -1,0 +1,6 @@
+{
+    "require": {
+        "phpunit/phpunit": "^9.5",
+        "contao/test-case": "^5.0"
+    }
+}
