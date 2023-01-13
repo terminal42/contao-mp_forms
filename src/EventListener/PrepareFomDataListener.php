@@ -43,7 +43,6 @@ class PrepareFomDataListener
         $stepData = $stepData->withSubmitted($submittedBag);
         $stepData = $stepData->withLabels($labelsBag);
 
-        // TODO: check minimum version for $files which is currently not passed, see https://github.com/contao/contao/pull/5584
         $stepData = $stepData->withFiles($this->getUploadedFiles($files));
 
         $manager->storeStepData($stepData);
