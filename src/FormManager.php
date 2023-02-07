@@ -379,6 +379,12 @@ class FormManager
 
         $this->formModel = $formModel;
 
+        // Set current session reference from request or generate a new one
+        $this->initSessionReference();
+
+        // Set storage identifier for storage implementations to work with
+        $this->storageIdentifier = $this->storageIdentifierGenerator->generate($this);
+
         $this->loadFormFieldModels();
 
         if (0 === \count($this->formFieldModels)) {
@@ -408,12 +414,6 @@ class FormManager
                 $this->isValidFormFieldCombination = false;
             }
         }
-
-        // Set current session reference from request or generate a new one
-        $this->initSessionReference();
-
-        // Set storage identifier for storage implementations to work with
-        $this->storageIdentifier = $this->storageIdentifierGenerator->generate($this);
 
         $this->prepared = true;
         $this->preparing = false;
