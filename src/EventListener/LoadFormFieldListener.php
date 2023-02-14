@@ -35,7 +35,12 @@ class LoadFormFieldListener
         // back to potential previous post data which has not been validated yet (e.g. you filled in the values on step 2
         // but then navigated back)
         if (!$postData->has($widget->name)) {
-            $widget->value = $stepData->getSubmitted()->get($widget->name, $stepData->getOriginalPostData()->get($widget->name));
+            $default = $stepData->getOriginalPostData()->get($widget->name);
+            if ($default === null) {
+                // If no value is found, the field may have a default value set per default.
+                $default = $widget->value;
+            }
+            $widget->value = $stepData->getSubmitted()->get($widget->name, $default);
         }
 
         return $widget;
