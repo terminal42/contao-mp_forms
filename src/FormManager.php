@@ -378,14 +378,13 @@ class FormManager
         }
 
         $this->formModel = $formModel;
+        $this->loadFormFieldModels();
 
         // Set current session reference from request or generate a new one
         $this->initSessionReference();
 
         // Set storage identifier for storage implementations to work with
         $this->storageIdentifier = $this->storageIdentifierGenerator->generate($this);
-
-        $this->loadFormFieldModels();
 
         if (0 === \count($this->formFieldModels)) {
             $this->isValidFormFieldCombination = false;
