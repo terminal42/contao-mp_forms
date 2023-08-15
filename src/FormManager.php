@@ -106,11 +106,15 @@ class FormManager
 
     public function getDataOfCurrentStep(): StepData
     {
+        $this->prepare();
+
         return $this->getDataOfStep($this->getCurrentStep());
     }
 
     public function getDataOfStep(int $step): StepData
     {
+        $this->prepare();
+
         $this->validateStep($step);
 
         $stepCollection = $this->storage->getData($this->storageIdentifier);
@@ -171,6 +175,7 @@ class FormManager
      */
     public function getFieldsForStep(int $step = 0): array
     {
+        $this->prepare();
         $this->validateStep($step);
 
         return $this->formFieldsPerStep[$step];
@@ -198,6 +203,7 @@ class FormManager
 
     public function getLabelForStep(int $step): string
     {
+        $this->prepare();
         $this->validateStep($step);
 
         foreach ($this->getFieldsForStep($step) as $formField) {
@@ -216,6 +222,8 @@ class FormManager
 
     public function getGetParamForSessionReference()
     {
+        $this->prepare();
+
         return $this->formModel->mp_forms_sessionRefParam ?: 'ref';
     }
 
@@ -224,6 +232,7 @@ class FormManager
      */
     public function redirectToStep(int $step): void
     {
+        $this->prepare();
         $this->validateStep($step);
 
         throw new RedirectResponseException($this->getUrlForStep($step));
@@ -231,6 +240,8 @@ class FormManager
 
     public function endSession(): self
     {
+        $this->prepare();
+
         // Empty storage
         $this->storage->storeData($this->storageIdentifier, new StepDataCollection());
 
@@ -242,6 +253,8 @@ class FormManager
 
     public function getUrlForStep(int $step): string
     {
+        $this->prepare();
+
         $requestUri = urldecode($this->request->getUri());
 
         if (0 === $step) {
@@ -295,6 +308,8 @@ class FormManager
 
     public function getFormId(): string
     {
+        $this->prepare();
+
         return '' !== $this->formModel->formID ?
             'auto_'.$this->formModel->formID :
             'auto_form_'.$this->formModel->id;
