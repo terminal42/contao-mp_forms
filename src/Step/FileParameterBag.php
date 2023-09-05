@@ -17,7 +17,11 @@ class FileParameterBag extends ParameterBag
      */
     public function set(string $name, mixed $value): self
     {
-        if (\array_key_exists('tmp_name', $value) && \is_string($value['tmp_name']) && is_uploaded_file($value['tmp_name'])) {
+        if (\is_array($value) &&
+            \array_key_exists('tmp_name', $value) &&
+            \is_string($value['tmp_name'])
+            && is_uploaded_file($value['tmp_name'])
+        ) {
             $target = (new Filesystem())->tempnam(sys_get_temp_dir(), 'nc');
             move_uploaded_file($value['tmp_name'], $target);
             $value['tmp_name'] = $target;
