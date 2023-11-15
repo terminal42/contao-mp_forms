@@ -17,7 +17,8 @@ class FileParameterBag extends ParameterBag
      */
     public function set(string $name, mixed $value): self
     {
-        if (\is_array($value) &&
+        if (
+            \is_array($value) &&
             \array_key_exists('tmp_name', $value) &&
             \is_string($value['tmp_name'])
             && is_uploaded_file($value['tmp_name'])

@@ -38,7 +38,8 @@ class LoadFormFieldListener
         // 3. The widget default value itself
         if (!$postData->has($widget->name)) {
             $widget->value = $stepData->getSubmitted()->get(
-                $widget->name, $stepData->getOriginalPostData()->get($widget->name, $widget->value)
+                $widget->name,
+                $stepData->getOriginalPostData()->get($widget->name, $widget->value)
             );
         }
 
