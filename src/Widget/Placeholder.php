@@ -128,7 +128,7 @@ class Placeholder extends Widget
             }
 
             // Generate a general HTML output using the download template
-            $tpl = new FrontendTemplate('ce_download'); // TODO: make configurable in form field settings?
+            $tpl = new FrontendTemplate($this->mp_forms_downloadTemplate ?? 'ce_download');
             $tpl->link = $file->getBasename($file->getExtension());
             $tpl->title = StringUtil::specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['download'], $file->getBasename($file->getExtension())));
             $tpl->href = $fileTokens['download_url'];

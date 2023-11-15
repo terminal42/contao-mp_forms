@@ -14,3 +14,4 @@ $GLOBALS['TL_LANG']['FFL']['mp_form_placeholder'] = ['Zusammenfassung', 'Erlaubt
 $GLOBALS['TL_LANG']['tl_form_field']['mp_forms_backButton'] = ['Bezeichnung der Zurück-Schaltfläche', 'Bitte geben Sie die Bezeichnung der Zurück-Schaltfläche ein.'];
 $GLOBALS['TL_LANG']['tl_form_field']['mp_forms_backFragment'] = ['URL Fragment für die Zurück-Schaltfläche', 'Hier können Sie ein optionales URL Fragment eingeben, welches der URL hinzugefügt wird (z.B. für Sprunglinks). Lassen Sie "#" weg.'];
 $GLOBALS['TL_LANG']['tl_form_field']['mp_forms_nextFragment'] = ['URL Fragment für die Weiter-Schaltfläche', 'Hier können Sie ein optionales URL Fragment eingeben, welches der URL hinzugefügt wird (z.B. für Sprunglinks). Lassen Sie "#" weg.'];
+$GLOBALS['TL_LANG']['tl_form_field']['mp_forms_downloadTemplate'] = ['Template für Download-Elemente', 'Template, das für das Rendern des Download-Links auf Zusammenfassungsseiten verwendet wird.'];
