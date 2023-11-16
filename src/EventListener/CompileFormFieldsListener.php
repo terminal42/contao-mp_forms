@@ -15,8 +15,10 @@ use Terminal42\MultipageFormsBundle\Step\ParameterBag;
 #[AsHook('compileFormFields')]
 class CompileFormFieldsListener
 {
-    public function __construct(private FormManagerFactoryInterface $formManagerFactory, private RequestStack $requestStack)
-    {
+    public function __construct(
+        private readonly FormManagerFactoryInterface $formManagerFactory,
+        private readonly RequestStack $requestStack,
+    ) {
     }
 
     /**

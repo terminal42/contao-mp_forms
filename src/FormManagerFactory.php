@@ -19,7 +19,9 @@ use Terminal42\MultipageFormsBundle\Storage\StorageInterface;
 class FormManagerFactory implements FormManagerFactoryInterface
 {
     private StorageInterface|null $storage = null;
+
     private StorageIdentifierGeneratorInterface|null $storageIdentifierGenerator = null;
+
     private SessionReferenceGeneratorInterface|null $sessionReferenceGenerator = null;
 
     /**
@@ -28,9 +30,9 @@ class FormManagerFactory implements FormManagerFactoryInterface
     private array $managers = [];
 
     public function __construct(
-        private ContaoFramework $contaoFramework,
-        private RequestStack $requestStack,
-        private UrlParser $urlParser,
+        private readonly ContaoFramework $contaoFramework,
+        private readonly RequestStack $requestStack,
+        private readonly UrlParser $urlParser,
     ) {
     }
 
@@ -78,7 +80,7 @@ class FormManagerFactory implements FormManagerFactoryInterface
             $storage,
             $storageIdentifierGenerator,
             $sessionReferenceGenerator,
-            $this->urlParser
+            $this->urlParser,
         );
 
         if ($storage instanceof FormManagerAwareInterface) {

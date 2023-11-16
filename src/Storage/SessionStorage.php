@@ -10,9 +10,9 @@ use Terminal42\MultipageFormsBundle\Step\StepDataCollection;
 
 class SessionStorage implements StorageInterface
 {
-    public const SESSION_KEY = 'contao.mp_forms';
+    final public const SESSION_KEY = 'contao.mp_forms';
 
-    public function __construct(private Request $request)
+    public function __construct(private readonly Request $request)
     {
     }
 

@@ -11,7 +11,7 @@ use Terminal42\MultipageFormsBundle\FormManagerFactoryInterface;
 #[AsHook('replaceInsertTags')]
 class InsertTagsListener
 {
-    public function __construct(private FormManagerFactoryInterface $formManagerFactory)
+    public function __construct(private readonly FormManagerFactoryInterface $formManagerFactory)
     {
     }
 
@@ -27,15 +27,11 @@ class InsertTagsListener
         $value = $chunks[3] ?? '';
 
         $manager = $this->formManagerFactory->forFormId((int) $formId);
-
-        switch ($type) {
-            case 'step':
-                return $this->getStepValue($manager, $value);
-            case 'field_value':
-                return $manager->getDataOfAllSteps()->getAllSubmitted()[$value] ?? '';
-        }
-
-        return '';
+        return match ($type) {
+            'step' => $this->getStepValue($manager, $value),
+            'field_value' => $manager->getDataOfAllSteps()->getAllSubmitted()[$value] ?? '',
+            default => '',
+        };
     }
 
     private function getStepValue(FormManager $manager, string $value): string

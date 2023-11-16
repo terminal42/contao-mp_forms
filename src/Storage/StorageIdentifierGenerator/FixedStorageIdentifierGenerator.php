@@ -8,7 +8,7 @@ use Terminal42\MultipageFormsBundle\FormManager;
 
 class FixedStorageIdentifierGenerator implements StorageIdentifierGeneratorInterface
 {
-    public function __construct(private string $identifier)
+    public function __construct(private readonly string $identifier)
     {
     }
 

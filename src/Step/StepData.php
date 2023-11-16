@@ -6,8 +6,13 @@ namespace Terminal42\MultipageFormsBundle\Step;
 
 class StepData
 {
-    private function __construct(private int $step, private ParameterBag $submitted, private ParameterBag $labels, private ParameterBag $files, private ParameterBag $originalPostData)
-    {
+    private function __construct(
+        private readonly int $step,
+        private ParameterBag $submitted,
+        private ParameterBag $labels,
+        private ParameterBag $files,
+        private ParameterBag $originalPostData,
+    ) {
     }
 
     /**
