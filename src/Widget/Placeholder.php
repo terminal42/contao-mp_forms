@@ -119,9 +119,8 @@ class Placeholder extends Widget
                 $binaryFileResponse = new BinaryFileResponse($file);
                 $binaryFileResponse->setContentDisposition(
                     $this->mp_forms_downloadInline ? ResponseHeaderBag::DISPOSITION_INLINE : ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                    $file->getBasename()
-                )
-                ;
+                    $file->getBasename(),
+                );
 
                 throw new ResponseException($binaryFileResponse);
             }
