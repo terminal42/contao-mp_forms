@@ -46,16 +46,20 @@
     "contao-manager-plugin": "Terminal42\\MultipageFormsBundle\\ContaoManager\\Plugin"
   },
   "scripts": {
-    "cs-fixer": "@php tools/ecs/vendor/bin/ecs check config/ contao/ src/ tests/ --config tools/ecs/config.php --fix --ansi",
-    "unit-tests": "@php tools/phpunit/vendor/bin/phpunit -c tools/phpunit/phpunit.xml.dist"
+    "unit-tests": "@php vendor/bin/phpunit"
   },
   "config": {
     "allow-plugins": {
       "contao-components/installer": false,
-      "contao/manager-plugin": false
+      "contao/manager-plugin": false,
+      "php-http/discovery": true,
+      "terminal42/contao-build-tools": true
     }
   },
   "require-dev": {
-    "contao/manager-plugin": "^2.12"
+    "contao/manager-plugin": "^2.12",
+    "terminal42/contao-build-tools": "@dev",
+    "phpunit/phpunit": "^9.6",
+    "contao/test-case": "^5.0"
   }
 }

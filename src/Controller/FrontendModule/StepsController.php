@@ -18,8 +18,10 @@ use Terminal42\MultipageFormsBundle\FormManagerFactoryInterface;
 #[AsFrontendModule('mp_form_steps', template: 'mod_mp_form_steps')]
 class StepsController extends AbstractFrontendModuleController
 {
-    public function __construct(private ContaoFramework $contaoFramework, private FormManagerFactoryInterface $formManagerFactory)
-    {
+    public function __construct(
+        private readonly ContaoFramework $contaoFramework,
+        private readonly FormManagerFactoryInterface $formManagerFactory,
+    ) {
     }
 
     protected function getResponse(Template $template, ModuleModel $model, Request $request): Response

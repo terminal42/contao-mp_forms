@@ -8,7 +8,7 @@ use Terminal42\MultipageFormsBundle\FormManager;
 
 class FixedSessionReferenceGenerator implements SessionReferenceGeneratorInterface
 {
-    public function __construct(private string $identifier)
+    public function __construct(private readonly string $identifier)
     {
     }
 

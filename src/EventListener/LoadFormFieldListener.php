@@ -13,7 +13,7 @@ use Terminal42\MultipageFormsBundle\Step\ParameterBag;
 #[AsHook('loadFormField')]
 class LoadFormFieldListener
 {
-    public function __construct(private FormManagerFactoryInterface $formManagerFactory)
+    public function __construct(private readonly FormManagerFactoryInterface $formManagerFactory)
     {
     }
 
@@ -38,8 +38,7 @@ class LoadFormFieldListener
         // 3. The widget default value itself
         if (!$postData->has($widget->name)) {
             $widget->value = $stepData->getSubmitted()->get(
-                $widget->name,
-                $stepData->getOriginalPostData()->get($widget->name, $widget->value)
+                $widget->name, $stepData->getOriginalPostData()->get($widget->name, $widget->value),
             );
         }
 

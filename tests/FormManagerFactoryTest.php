@@ -26,7 +26,7 @@ class FormManagerFactoryTest extends TestCase
         $factory = new FormManagerFactory(
             $this->createMock(ContaoFramework::class),
             $requestStack,
-            $this->createMock(UrlParser::class)
+            $this->createMock(UrlParser::class),
         );
 
         $manager = $factory->forFormId(42);
@@ -46,7 +46,7 @@ class FormManagerFactoryTest extends TestCase
         $factory = new FormManagerFactory(
             $this->createMock(ContaoFramework::class),
             new RequestStack(),
-            $this->createMock(UrlParser::class)
+            $this->createMock(UrlParser::class),
         );
 
         $factory->forFormId(42);
@@ -78,7 +78,7 @@ class FormManagerFactoryTest extends TestCase
         $factory = new FormManagerFactory(
             $this->createMock(ContaoFramework::class),
             $requestStack,
-            $this->createMock(UrlParser::class)
+            $this->createMock(UrlParser::class),
         );
 
         $factory->setStorage($storage);

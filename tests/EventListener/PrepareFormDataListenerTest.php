@@ -30,7 +30,7 @@ class PrepareFormDataListenerTest extends AbstractTestCase
             $this->mockClassWithProperties(FormModel::class, ['id' => 42]),
             $this->createFormFieldsForValidConfiguration(),
             $storage,
-            1 // This mocks step=1 (page 2)
+            1, // This mocks step=1 (page 2)
         );
 
         $listener = new PrepareFomDataListener($factory, $this->createMock(RequestStack::class));
@@ -45,7 +45,7 @@ class PrepareFormDataListenerTest extends AbstractTestCase
         } catch (RedirectResponseException $exception) {
             $this->assertSame(
                 'https://www.example.com/form?step=2&ref='.self::SESSION_IDENTIFIER,
-                $exception->getResponse()->headers->get('Location')
+                $exception->getResponse()->headers->get('Location'),
             );
         }
 
@@ -74,7 +74,7 @@ class PrepareFormDataListenerTest extends AbstractTestCase
             $this->mockClassWithProperties(FormModel::class, ['id' => 42]),
             $this->createFormFieldsForValidConfiguration(),
             $storage,
-            2 // This mocks step=2 (page 3 - last page)
+            2, // This mocks step=2 (page 3 - last page)
         );
 
         $listener = new PrepareFomDataListener($factory, $this->createMock(RequestStack::class));
