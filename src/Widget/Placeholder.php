@@ -16,6 +16,7 @@ use Contao\Widget;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 use Terminal42\MultipageFormsBundle\FormManagerFactoryInterface;
@@ -115,7 +116,13 @@ class Placeholder extends Widget
             }
 
             if (isset($_GET['summary_download']) && $k === $_GET['summary_download']) {
-                throw new ResponseException(new BinaryFileResponse($file));
+                $binaryFileResponse = new BinaryFileResponse($file);
+                $binaryFileResponse->setContentDisposition(
+                    $this->mp_forms_downloadInline ? ResponseHeaderBag::DISPOSITION_INLINE : ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                    $file->getBasename(),
+                );
+
+                throw new ResponseException($binaryFileResponse);
             }
 
             $fileTokens['download_url'] = $urlParser->addQueryString('summary_download='.$k);
@@ -128,7 +135,7 @@ class Placeholder extends Widget
             }
 
             // Generate a general HTML output using the download template
-            $tpl = new FrontendTemplate('ce_download'); // TODO: make configurable in form field settings?
+            $tpl = new FrontendTemplate(empty($this->mp_forms_downloadTemplate) ? 'ce_download' : $this->mp_forms_downloadTemplate);
             $tpl->link = $file->getBasename($file->getExtension());
             $tpl->title = StringUtil::specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['download'], $file->getBasename($file->getExtension())));
             $tpl->href = $fileTokens['download_url'];
