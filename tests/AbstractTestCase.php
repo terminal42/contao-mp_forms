@@ -25,6 +25,7 @@ use Terminal42\MultipageFormsBundle\Storage\StorageInterface;
 abstract class AbstractTestCase extends ContaoTestCase
 {
     protected const STORAGE_IDENTIFIER = 'storage-identifier';
+
     protected const SESSION_IDENTIFIER = 'session-identifier';
 
     protected function createFormFieldsForValidConfiguration(): Collection
@@ -71,7 +72,7 @@ abstract class AbstractTestCase extends ContaoTestCase
         return new Collection($formFieldsModels, 'tl_form_field');
     }
 
-    protected function createStorage(StepDataCollection $initialData = null): InMemoryStorage
+    protected function createStorage(StepDataCollection|null $initialData = null): InMemoryStorage
     {
         $storage = new InMemoryStorage();
 
@@ -116,7 +117,7 @@ abstract class AbstractTestCase extends ContaoTestCase
         $factory = new FormManagerFactory(
             $framework,
             $stack,
-            new UrlParser()
+            new UrlParser(),
         );
 
         $factory->setStorage($storage);

@@ -16,8 +16,10 @@ use Terminal42\MultipageFormsBundle\Step\ParameterBag;
 #[AsHook('prepareFormData')]
 class PrepareFomDataListener
 {
-    public function __construct(private FormManagerFactoryInterface $formManagerFactory, private RequestStack $reqestStack)
-    {
+    public function __construct(
+        private readonly FormManagerFactoryInterface $formManagerFactory,
+        private readonly RequestStack $reqestStack,
+    ) {
     }
 
     /**
@@ -77,7 +79,7 @@ class PrepareFomDataListener
     private function getUploadedFiles($hook = []): FileParameterBag
     {
         // Contao 5
-        if (0 !== \count($hook)) {
+        if (0 !== (is_countable($hook) ? \count($hook) : 0)) {
             return new FileParameterBag($hook);
         }
 

@@ -21,10 +21,13 @@ use Terminal42\MultipageFormsBundle\Storage\StorageInterface;
 class FormManager
 {
     private FormModel $formModel;
+
     private string $sessionRef;
+
     private string $storageIdentifier;
 
     private bool $prepared = false;
+
     private bool $preparing = false;
 
     /**
@@ -40,13 +43,13 @@ class FormManager
     private bool $isValidFormFieldCombination = true;
 
     public function __construct(
-        private int $formId,
-        private Request $request,
-        private ContaoFramework $contaoFramework,
-        private StorageInterface $storage,
-        private StorageIdentifierGeneratorInterface $storageIdentifierGenerator,
-        private SessionReferenceGeneratorInterface $sessionReferenceGenerator,
-        private UrlParser $urlParser,
+        private readonly int $formId,
+        private readonly Request $request,
+        private readonly ContaoFramework $contaoFramework,
+        private readonly StorageInterface $storage,
+        private readonly StorageIdentifierGeneratorInterface $storageIdentifierGenerator,
+        private readonly SessionReferenceGeneratorInterface $sessionReferenceGenerator,
+        private readonly UrlParser $urlParser,
     ) {
     }
 
@@ -230,7 +233,7 @@ class FormManager
     /**
      * @throws RedirectResponseException
      */
-    public function redirectToStep(int $step): void
+    public function redirectToStep(int $step): never
     {
         $this->prepare();
         $this->validateStep($step);
@@ -354,7 +357,7 @@ class FormManager
                 // Ignore the name of form fields which do not use a name (see contao/core-bundle #1268)
                 if (
                     $formFieldModel->name && isset($GLOBALS['TL_DCA']['tl_form_field']['palettes'][$formFieldModel->type])
-                    && preg_match('/[,;]name[,;]/', $GLOBALS['TL_DCA']['tl_form_field']['palettes'][$formFieldModel->type])
+                    && preg_match('/[,;]name[,;]/', (string) $GLOBALS['TL_DCA']['tl_form_field']['palettes'][$formFieldModel->type])
                 ) {
                     $formFieldModels[$formFieldModel->name] = $formFieldModel;
                 } else {
@@ -467,7 +470,7 @@ class FormManager
 
         $this->sessionRef = $this->request->query->get(
             $this->getGetParamForSessionReference(),
-            $this->sessionReferenceGenerator->generate($this)
+            $this->sessionReferenceGenerator->generate($this),
         );
     }
 }

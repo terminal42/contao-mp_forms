@@ -28,6 +28,7 @@ class FormManagerTest extends ContaoTestCase
             ->with(42)
             ->willReturn($formModel)
         ;
+
         $formFieldModelAdapter = $this->mockAdapter(['findPublishedByPid']);
         $formFieldModelAdapter
             ->expects($this->once())
@@ -50,7 +51,7 @@ class FormManagerTest extends ContaoTestCase
             $this->createMock(StorageInterface::class),
             $this->createMock(StorageIdentifierGeneratorInterface::class),
             $this->createMock(SessionReferenceGeneratorInterface::class),
-            new UrlParser()
+            new UrlParser(),
         );
 
         $this->assertSame([], $formManager->getDataOfAllSteps()->all());
