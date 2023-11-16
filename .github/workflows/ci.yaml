@@ -2,19 +2,11 @@ name: CI
 
 on:
     pull_request: ~
-    push:
-        branches:
-            - '*'
-        tags:
-            - '*'
-    schedule:
-        - cron: 0 13 * * MON
 
 jobs:
     cs:
         name: Coding Style
         runs-on: ubuntu-latest
-        if: github.event_name != 'push'
         steps:
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -22,8 +14,8 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v2
 
-            - name: Install ecs
-              run: cd tools/ecs && composer install --no-interaction --no-suggest
+            - name: Install the dependencies
+              run: composer install --no-interaction --no-suggest
                 
             - name: Run the CS fixer
               run: composer cs-fixer
@@ -31,11 +23,10 @@ jobs:
     tests:
         name: PHP ${{ matrix.php }}
         runs-on: ubuntu-latest
-        if: github.event_name != 'push'
         strategy:
             fail-fast: false
             matrix:
-                php: [8.1, 8.2]
+                php: [8.1, 8.2, 8.3]
         steps:
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -44,9 +35,6 @@ jobs:
 
             - name: Checkout
               uses: actions/checkout@v2
-
-            - name: Install phpunit
-              run: cd tools/phpunit && composer install --no-interaction --no-suggest
 
             - name: Install the dependencies
               run: composer install --no-interaction --no-suggest
@@ -57,11 +45,10 @@ jobs:
     prefer-lowest-tests:
         name: PHP ${{ matrix.php }} --prefer-lowest
         runs-on: ubuntu-latest
-        if: github.event_name != 'push'
         strategy:
             fail-fast: false
             matrix:
-                php: [8.1, 8.2]
+                php: [8.1, 8.2, 8.3]
         steps:
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -70,9 +57,6 @@ jobs:
 
             - name: Checkout
               uses: actions/checkout@v2
-
-            - name: Install phpunit
-              run: cd tools/phpunit && composer install --no-interaction --no-suggest
 
             - name: Install the dependencies
               run: composer update --prefer-lowest --prefer-stable --no-interaction --no-suggest

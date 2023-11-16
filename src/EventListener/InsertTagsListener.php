@@ -27,6 +27,7 @@ class InsertTagsListener
         $value = $chunks[3] ?? '';
 
         $manager = $this->formManagerFactory->forFormId((int) $formId);
+
         return match ($type) {
             'step' => $this->getStepValue($manager, $value),
             'field_value' => $manager->getDataOfAllSteps()->getAllSubmitted()[$value] ?? '',
