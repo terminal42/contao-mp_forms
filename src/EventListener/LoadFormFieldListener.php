@@ -23,9 +23,13 @@ class LoadFormFieldListener
             return $widget;
         }
 
-        $postData = new ParameterBag($_POST);
-
         $manager = $this->formManagerFactory->forFormId((int) $form->id);
+
+        if (!$manager->isValidFormFieldCombination()) {
+            return $widget;
+        }
+
+        $postData = new ParameterBag($_POST);
         $stepData = $manager->getDataOfCurrentStep();
 
         // We only prefill the value if it was not submitted in this step.
