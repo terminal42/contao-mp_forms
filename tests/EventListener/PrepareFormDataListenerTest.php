@@ -54,17 +54,17 @@ class PrepareFormDataListenerTest extends AbstractTestCase
 
         $manager = $factory->forFormId(42);
 
-        $this->assertSame(['submitted1' => 'foobar', 'submitted2' => 'foobar'], $manager->getDataOfAllSteps()->getAllSubmitted());
+        $this->assertSame(['submitted1' => 'foobar', 'submitted2' => 'foobar', 'mp_form_pageswitch' => 'continue'], $manager->getDataOfAllSteps()->getAllSubmitted());
         $this->assertSame(['label1' => 'foobar'], $manager->getDataOfAllSteps()->getAllLabels());
     }
 
     public function testDataIsStoredProperlyAndDoesAdjustHookParametersOnLastStep(): void
     {
         $stepData = StepData::create(0);
-        $stepData = $stepData->withSubmitted(new ParameterBag(['submitted1' => 'foobar']));
+        $stepData = $stepData->withSubmitted(new ParameterBag(['submitted1' => 'foobar', 'mp_form_pageswitch' => 'continue']));
         $stepData = $stepData->withLabels(new ParameterBag(['label1' => 'foobar']));
         $stepData2 = StepData::create(1);
-        $stepData2 = $stepData2->withSubmitted(new ParameterBag(['submitted2' => 'foobar']));
+        $stepData2 = $stepData2->withSubmitted(new ParameterBag(['submitted2' => 'foobar', 'mp_form_pageswitch' => 'continue']));
         $initialData = (new StepDataCollection())->set($stepData)->set($stepData2);
         $storage = $this->createStorage($initialData);
 
@@ -86,7 +86,7 @@ class PrepareFormDataListenerTest extends AbstractTestCase
 
         $listener($submitted, $labels, $fields, $form, $files); // Must not redirect, so no exception
 
-        // Submitted should now contain all values except for "mp_form_pageswitch"
+        // Submitted should now contain all values except for "mp_form_pageswitch" values
         $this->assertSame(['submitted1' => 'foobar', 'submitted2' => 'foobar', 'submitted3' => 'foobar'], $submitted);
         $this->assertSame(['label1' => 'foobar'], $labels); // Test we do not modify the hook parameters if not in last step
     }

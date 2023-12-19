@@ -39,14 +39,6 @@ class PrepareFomDataListener
 
         $pageSwitchValue = $submittedBag->get('mp_form_pageswitch', '');
 
-        // Remove the page switch value field from the submitted data if that's the last step, so it's not passed on
-        // in e-mail notifications and the like. However, in intermediate steps we need it because otherwise it's not
-        // possible to have an empty step (e.g. only explanation fields) as the step data would be empty and
-        // getFirstInvalidStep() would return the one before the empty step.
-        if ($manager->isLastStep()) {
-            $submittedBag->remove('mp_form_pageswitch');
-        }
-
         // Store data in session
         $stepData = $manager->getDataOfCurrentStep();
         $stepData = $stepData->withSubmitted($submittedBag);
@@ -65,6 +57,12 @@ class PrepareFomDataListener
             $submitted = $allData->getAllSubmitted();
             $labels = $allData->getAllLabels();
             $files = $allData->getAllFiles();
+
+            // Remove the page switch value field from the submitted data, so it's not passed on
+            // in e-mail notifications and the like. However, in intermediate steps we need it because otherwise it's not
+            // possible to have an empty step (e.g. only explanation fields) as the step data would be empty and
+            // getFirstInvalidStep() would return the one before the empty step.
+            unset($submitted['mp_form_pageswitch']);
 
             // Add session data for Contao 4.13
             if (version_compare(ContaoCoreBundle::getVersion(), '5.0', '<')) {
