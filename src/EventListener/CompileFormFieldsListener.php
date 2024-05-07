@@ -70,8 +70,8 @@ class CompileFormFieldsListener
         // here! The problem with storing $_FILES across requests is that we would need to move
         // it from its tmp_name as PHP deletes files automatically after the request has
         // finished. We could indeed move them here but if we did at this stage the form fields
-        // themselves would later not be able to move them to their own desired place. So
-        // we cannot store any file information at this stage.
+        // themselves would later not be able to move them to their own desired place. So we
+        // cannot store any file information at this stage.
         if ($_POST) {
             $stepData = $stepData->withOriginalPostData(new ParameterBag($_POST));
             $manager->storeStepData($stepData);

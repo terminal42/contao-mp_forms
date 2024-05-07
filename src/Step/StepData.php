@@ -10,7 +10,7 @@ class StepData
         private readonly int $step,
         private ParameterBag $submitted,
         private ParameterBag $labels,
-        private ParameterBag $files,
+        private FileParameterBag $files,
         private ParameterBag $originalPostData,
     ) {
     }
@@ -39,7 +39,7 @@ class StepData
         return $this->labels;
     }
 
-    public function getFiles(): ParameterBag
+    public function getFiles(): FileParameterBag
     {
         return $this->files;
     }
@@ -73,7 +73,7 @@ class StepData
         return $clone;
     }
 
-    public function withFiles(ParameterBag $files): self
+    public function withFiles(FileParameterBag $files): self
     {
         $clone = clone $this;
         $clone->files = $files;
@@ -87,7 +87,7 @@ class StepData
             $step,
             new ParameterBag(),
             new ParameterBag(),
-            new ParameterBag(),
+            new FileParameterBag(),
             new ParameterBag(),
         );
     }

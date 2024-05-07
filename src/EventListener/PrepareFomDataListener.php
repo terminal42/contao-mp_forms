@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Terminal42\MultipageFormsBundle\EventListener;
 
+use Codefog\HasteBundle\FileUploadNormalizer;
 use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\Form;
@@ -18,7 +19,8 @@ class PrepareFomDataListener
 {
     public function __construct(
         private readonly FormManagerFactoryInterface $formManagerFactory,
-        private readonly RequestStack $reqestStack,
+        private readonly RequestStack $requestStack,
+        private readonly FileUploadNormalizer $fileUploadNormalizer,
     ) {
     }
 
@@ -83,12 +85,12 @@ class PrepareFomDataListener
     private function getUploadedFiles($hook = []): FileParameterBag
     {
         // Contao 5
-        if (0 !== (is_countable($hook) ? \count($hook) : 0)) {
-            return new FileParameterBag($hook);
+        if (\is_array($hook) && [] !== $hook) {
+            return new FileParameterBag($this->fileUploadNormalizer->normalize($hook));
         }
 
         // Contao 4.13
-        $request = $this->reqestStack->getCurrentRequest();
+        $request = $this->requestStack->getCurrentRequest();
 
         if (null === $request) {
             return new FileParameterBag();

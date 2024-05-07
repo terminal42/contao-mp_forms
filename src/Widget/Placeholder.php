@@ -82,7 +82,6 @@ class Placeholder extends Widget
     private function generateTokens(): array
     {
         $tokens = [];
-        $fileTokens = [];
         $summaryTokens = [];
 
         /** @var FormManagerFactoryInterface $factory */
@@ -91,60 +90,47 @@ class Placeholder extends Widget
         /** @var StringParser $stringParser */
         $stringParser = System::getContainer()->get(StringParser::class);
 
-        /** @var UrlParser $urlParser */
-        $urlParser = System::getContainer()->get(UrlParser::class);
-
         $manager = $factory->forFormId((int) $this->pid);
 
         $stepsCollection = $manager->getDataOfAllSteps();
 
-        foreach ($stepsCollection->getAllSubmitted() as $k => $v) {
-            $stringParser->flatten($v, 'form_'.$k, $tokens);
-            $summaryTokens[$k]['value'] = $tokens['form_'.$k];
+        foreach ($stepsCollection->getAllSubmitted() as $formFieldName => $formFieldValue) {
+            $stringParser->flatten($formFieldValue, 'form_'.$formFieldName, $tokens);
+            $summaryTokens[$formFieldName]['value'] = $tokens['form_'.$formFieldName];
         }
 
-        foreach ($stepsCollection->getAllLabels() as $k => $v) {
-            $stringParser->flatten($v, 'formlabel_'.$k, $tokens);
-            $summaryTokens[$k]['label'] = $tokens['formlabel_'.$k];
+        foreach ($stepsCollection->getAllLabels() as $formFieldName => $formFieldValue) {
+            $stringParser->flatten($formFieldValue, 'formlabel_'.$formFieldName, $tokens);
+            $summaryTokens[$formFieldName]['label'] = $tokens['formlabel_'.$formFieldName];
         }
 
-        foreach ($stepsCollection->getAllFiles() as $k => $v) {
-            try {
-                $file = new File($v['tmp_name']);
-            } catch (FileNotFoundException $e) {
-                continue;
+        foreach ($stepsCollection->getAllFiles() as $formFieldName => $normalizedFiles) {
+            $html = [];
+
+            foreach ($normalizedFiles as $k => $normalizedFile) {
+                try {
+                    $file = new File($normalizedFile['tmp_name']);
+                } catch (FileNotFoundException $e) {
+                    return [];
+                }
+
+                // Generate the tokens for the index (file 0, 1, 2, ...) and store the HTML per
+                // download for later
+                $tokens = array_merge($tokens, $this->generateFileTokens($file, 'file_'.$formFieldName.'_'.$k));
+                $html[] = $this->generateFileDownloadHtml($file, $this->generateAndHandleDownloadUrl($file, 'file_'.$formFieldName.'_'.$k));
+
+                // If we are at key 0 we also generate one non-indexed token for BC reasons and
+                // easier usage for single upload fields.
+                if (0 === $k) {
+                    $tokens = array_merge($tokens, $this->generateFileTokens($file, 'file_'.$formFieldName));
+                }
             }
 
-            if (isset($_GET['summary_download']) && $k === $_GET['summary_download']) {
-                $binaryFileResponse = new BinaryFileResponse($file);
-                $binaryFileResponse->setContentDisposition(
-                    $this->mp_forms_downloadInline ? ResponseHeaderBag::DISPOSITION_INLINE : ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                    $file->getBasename(),
-                );
-
-                throw new ResponseException($binaryFileResponse);
-            }
-
-            $fileTokens['download_url'] = $urlParser->addQueryString('summary_download='.$k);
-            $fileTokens['extension'] = $file->getExtension();
-            $fileTokens['mime'] = $file->getMimeType();
-            $fileTokens['size'] = $file->getSize();
-
-            foreach ($fileTokens as $kk => $vv) {
-                $stringParser->flatten($vv, 'file_'.$k.'_'.$kk, $tokens);
-            }
-
-            // Generate a general HTML output using the download template
-            $tpl = new FrontendTemplate(empty($this->mp_forms_downloadTemplate) ? 'ce_download' : $this->mp_forms_downloadTemplate);
-            $tpl->link = $file->getBasename($file->getExtension());
-            $tpl->title = StringUtil::specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['download'], $file->getBasename($file->getExtension())));
-            $tpl->href = $fileTokens['download_url'];
-            $tpl->filesize = System::getReadableSize($file->getSize());
-            $tpl->mime = $file->getMimeType();
-            $tpl->extension = $file->getExtension();
-
-            $stringParser->flatten($tpl->parse(), 'file_'.$k, $tokens);
-            $summaryTokens[$k]['value'] = $tokens['file_'.$k];
+            // Generate an HTML token (can contain multiple downloads) and add that as the
+            // default value for the "file_<formfield>" token and our summary for later
+            $htmlToken = implode(' ', $html);
+            $tokens['file_'.$formFieldName] = $htmlToken;
+            $summaryTokens[$formFieldName]['value'] = $htmlToken;
         }
 
         // Add a simple summary token that outputs label plus value for everything that
@@ -162,7 +148,7 @@ class Placeholder extends Widget
             }
 
             $summaryToken[] = sprintf('<div data-ff-name="%s" class="label">%s</div>', htmlspecialchars($k), $v['label'] ?? '');
-            $summaryToken[] = sprintf('<div data-ff-name="%s" class="value">%s</div>', htmlspecialchars($k), $v['value'] ?? '');
+            $summaryToken[] = sprintf('<div data-ff-name="%s" class="value">%s</div>', htmlspecialchars($k), $v['value']);
         }
 
         $tokens['mp_forms_summary'] = implode("\n", $summaryToken);
@@ -183,5 +169,47 @@ class Placeholder extends Widget
         $tokens['mp_forms_debug'] = $output;
 
         return $tokens;
+    }
+
+    private function generateFileTokens(File $file, string $tokenKey): array
+    {
+        $fileTokens = [];
+        $fileTokens[$tokenKey.'_download_url'] = $this->generateAndHandleDownloadUrl($file, $tokenKey);
+        $fileTokens[$tokenKey.'_extension'] = $file->getExtension();
+        $fileTokens[$tokenKey.'_mime'] = $file->getMimeType();
+        $fileTokens[$tokenKey.'_size'] = $file->getSize();
+
+        return $fileTokens;
+    }
+
+    private function generateAndHandleDownloadUrl(File $file, string $key): string
+    {
+        if (isset($_GET['summary_download']) && $key === $_GET['summary_download']) {
+            $binaryFileResponse = new BinaryFileResponse($file);
+            $binaryFileResponse->setContentDisposition(
+                $this->mp_forms_downloadInline ? ResponseHeaderBag::DISPOSITION_INLINE : ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                $file->getBasename(),
+            );
+
+            throw new ResponseException($binaryFileResponse);
+        }
+
+        $urlParser = System::getContainer()->get(UrlParser::class);
+
+        return $urlParser->addQueryString('summary_download='.$key);
+    }
+
+    private function generateFileDownloadHtml(File $file, string $downloadUrl): string
+    {
+        // Generate a general HTML output using the download template
+        $tpl = new FrontendTemplate(empty($this->mp_forms_downloadTemplate) ? 'ce_download' : $this->mp_forms_downloadTemplate);
+        $tpl->link = $file->getBasename($file->getExtension());
+        $tpl->title = StringUtil::specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['download'], $file->getBasename($file->getExtension())));
+        $tpl->href = $downloadUrl;
+        $tpl->filesize = System::getReadableSize($file->getSize());
+        $tpl->mime = $file->getMimeType();
+        $tpl->extension = $file->getExtension();
+
+        return $tpl->parse();
     }
 }
