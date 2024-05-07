@@ -16,8 +16,8 @@ class StepData
     }
 
     /**
-     * A step is considered empty when there is no submitted data or files.
-     * Original post data or labels are no user submitted data.
+     * A step is considered empty when there is no submitted data or files. Original
+     * post data or labels are no user submitted data.
      */
     public function isEmpty(): bool
     {

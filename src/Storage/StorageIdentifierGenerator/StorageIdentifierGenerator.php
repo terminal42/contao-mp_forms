@@ -14,7 +14,8 @@ class StorageIdentifierGenerator implements StorageIdentifierGeneratorInterface
         $info[] = $manager->getFormId();
         $info[] = $manager->getSessionReference();
 
-        // Ensure the identifier changes, when the fields are updated as the settings might change
+        // Ensure the identifier changes, when the fields are updated as the settings
+        // might change
         foreach ($manager->getFormFieldModels() as $fieldModel) {
             $info[] = $fieldModel->tstamp;
         }

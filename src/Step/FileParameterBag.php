@@ -9,11 +9,10 @@ use Symfony\Component\Filesystem\Filesystem;
 class FileParameterBag extends ParameterBag
 {
     /**
-     * PHP deletes file uploads after the request ends which is a problem
-     * for mp_forms as it wants to keep them across requests.
-     * Depending on how a form upload field is configured, however, a file might
-     * already have been moved to a final destination. So we only do this if
-     * it was uploaded in the current request.
+     * PHP deletes file uploads after the request ends which is a problem for mp_forms
+     * as it wants to keep them across requests. Depending on how a form upload field
+     * is configured, however, a file might already have been moved to a final
+     * destination. So we only do this if it was uploaded in the current request.
      */
     public function set(string $name, mixed $value): self
     {

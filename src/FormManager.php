@@ -354,7 +354,8 @@ class FormManager
 
         if (null !== $collection) {
             foreach ($collection as $formFieldModel) {
-                // Ignore the name of form fields which do not use a name (see contao/core-bundle #1268)
+                // Ignore the name of form fields which do not use a name (see
+                // contao/core-bundle #1268)
                 if (
                     $formFieldModel->name && isset($GLOBALS['TL_DCA']['tl_form_field']['palettes'][$formFieldModel->type])
                     && preg_match('/[,;]name[,;]/', (string) $GLOBALS['TL_DCA']['tl_form_field']['palettes'][$formFieldModel->type])
@@ -389,7 +390,7 @@ class FormManager
 
         $this->preparing = true;
 
-        $formModel = $this->contaoFramework->getAdapter(FormModel::class)->findByPk($this->formId);
+        $formModel = $this->contaoFramework->getAdapter(FormModel::class)->findById($this->formId);
 
         if (null === $formModel) {
             throw new \InvalidArgumentException(sprintf('Could not load form ID "%d".', $this->formId));
@@ -418,8 +419,7 @@ class FormManager
             $this->formFieldsPerStep[$i][$k] = $formField;
 
             if ($this->isPageBreak($formField)) {
-                // Set the name on the model, otherwise one has to enter it
-                // in the back end every time
+                // Set the name on the model, otherwise one has to enter it in the back end every time
                 $formField->name = $formField->type;
 
                 // Increase counter

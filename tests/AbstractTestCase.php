@@ -95,9 +95,9 @@ abstract class AbstractTestCase extends ContaoTestCase
         $request->setSession(new Session(new MockArraySessionStorage()));
         $stack->push($request);
 
-        $formModelAdapter = $this->mockAdapter(['findByPk']);
+        $formModelAdapter = $this->mockAdapter(['findById']);
         $formModelAdapter
-            ->method('findByPk')
+            ->method('findById')
             ->willReturn($formModel)
         ;
 

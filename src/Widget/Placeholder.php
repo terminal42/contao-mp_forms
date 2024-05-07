@@ -147,7 +147,8 @@ class Placeholder extends Widget
             $summaryTokens[$k]['value'] = $tokens['file_'.$k];
         }
 
-        // Add a simple summary token that outputs label plus value for everything that was submitted
+        // Add a simple summary token that outputs label plus value for everything that
+        // was submitted
         $summaryToken = [];
 
         foreach ($summaryTokens as $k => $v) {

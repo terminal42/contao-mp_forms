@@ -70,7 +70,7 @@ class StepDataTest extends TestCase
         $this->assertTrue($parameters->equals($stepData->getLabels()));
     }
 
-    public function parametersDataProvider(): \Generator
+    public static function parametersDataProvider(): iterable
     {
         yield [
             [

@@ -40,7 +40,8 @@ class CompileFormFieldsListener
 
         $manager = $this->formManagerFactory->forFormId((int) $form->id);
 
-        // If the manager is currently being prepared (recursive compileFormFields hook call), we abort
+        // If the manager is currently being prepared (recursive compileFormFields hook
+        // call), we abort
         if ($manager->isPreparing()) {
             return $formFields;
         }
@@ -50,10 +51,10 @@ class CompileFormFieldsListener
             return $manager->getFieldsWithoutPageBreaks();
         }
 
-        // Validate whether previous form data was submitted if we're not on the first step.
-        // This has to be done no matter if we're in a POST request right now or not as otherwise
-        // you can submit a POST request without any previous step data (e.g. by deleting the session cookie
-        // manually)
+        // Validate whether previous form data was submitted if we're not on the first
+        // step. This has to be done no matter if we're in a POST request right now or
+        // not as otherwise you can submit a POST request without any previous step data
+        // (e.g. by deleting the session cookie manually)
         if (!$manager->isFirstStep()) {
             $firstInvalidStep = $manager->getFirstInvalidStep();
 
@@ -64,11 +65,13 @@ class CompileFormFieldsListener
 
         $stepData = $manager->getDataOfCurrentStep();
 
-        // If there is form data submitted in this step, store the original values here no matter if we're going back or if we continue.
-        // Important: We do not store $_FILES here! The problem with storing $_FILES across requests is that we would need
-        // to move it from its tmp_name as PHP deletes files automatically after the request has finished. We could indeed
-        // move them here but if we did at this stage the form fields themselves would later not be able to move them
-        // to their own desired place. So we cannot store any file information at this stage.
+        // If there is form data submitted in this step, store the original values here no
+        // matter if we're going back or if we continue. Important: We do not store $_FILES
+        // here! The problem with storing $_FILES across requests is that we would need to move
+        // it from its tmp_name as PHP deletes files automatically after the request has
+        // finished. We could indeed move them here but if we did at this stage the form fields
+        // themselves would later not be able to move them to their own desired place. So
+        // we cannot store any file information at this stage.
         if ($_POST) {
             $stepData = $stepData->withOriginalPostData(new ParameterBag($_POST));
             $manager->storeStepData($stepData);

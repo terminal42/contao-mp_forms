@@ -21,10 +21,10 @@ class FormManagerTest extends ContaoTestCase
     public function testAccessingAllDataWithoutFormFields(): void
     {
         $formModel = $this->mockClassWithProperties(FormModel::class, ['id' => 42]);
-        $formModelAdapter = $this->mockAdapter(['findByPk']);
+        $formModelAdapter = $this->mockAdapter(['findById']);
         $formModelAdapter
             ->expects($this->once())
-            ->method('findByPk')
+            ->method('findById')
             ->with(42)
             ->willReturn($formModel)
         ;
