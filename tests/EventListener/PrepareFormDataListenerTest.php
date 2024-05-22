@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Terminal42\MultipageFormsBundle\Test\EventListener;
 
+use Codefog\HasteBundle\FileUploadNormalizer;
 use Contao\CoreBundle\Exception\RedirectResponseException;
 use Contao\FormModel;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -33,7 +34,7 @@ class PrepareFormDataListenerTest extends AbstractTestCase
             1, // This mocks step=1 (page 2)
         );
 
-        $listener = new PrepareFomDataListener($factory, $this->createMock(RequestStack::class));
+        $listener = new PrepareFomDataListener($factory, $this->createMock(RequestStack::class), $this->createMock(FileUploadNormalizer::class));
 
         $submitted = ['submitted2' => 'foobar', 'mp_form_pageswitch' => 'continue'];
         $labels = [];
@@ -77,7 +78,7 @@ class PrepareFormDataListenerTest extends AbstractTestCase
             2, // This mocks step=2 (page 3 - last page)
         );
 
-        $listener = new PrepareFomDataListener($factory, $this->createMock(RequestStack::class));
+        $listener = new PrepareFomDataListener($factory, $this->createMock(RequestStack::class), $this->createMock(FileUploadNormalizer::class));
 
         $submitted = ['submitted3' => 'foobar', 'mp_form_pageswitch' => 'continue'];
         $labels = [];

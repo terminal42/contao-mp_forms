@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Codefog\HasteBundle\FileUploadNormalizer;
 use Codefog\HasteBundle\UrlParser;
 use Terminal42\MultipageFormsBundle\Controller\FrontendModule\StepsController;
 use Terminal42\MultipageFormsBundle\EventListener\CompileFormFieldsListener;
@@ -57,6 +58,7 @@ return static function (ContainerConfigurator $container): void {
         ->args([
             service(FormManagerFactoryInterface::class),
             service('request_stack'),
+            service(FileUploadNormalizer::class),
         ])
     ;
 

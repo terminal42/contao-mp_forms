@@ -25,14 +25,12 @@ class StepDataCollectionTest extends TestCase
 
         $this->assertSame($expected, $stepCollection->getAllLabels());
         $this->assertSame($expected, $stepCollection->getAllSubmitted());
-        $this->assertSame($expected, $stepCollection->getAllFiles());
     }
 
     private function createStepData(int $step, ParameterBag $parameters): StepData
     {
         $step = StepData::create($step);
         $step = $step->withSubmitted($parameters);
-        $step = $step->withFiles($parameters);
 
         return $step->withLabels($parameters);
     }

@@ -6,6 +6,15 @@ namespace Terminal42\MultipageFormsBundle\Step;
 
 use Symfony\Component\Filesystem\Filesystem;
 
+/**
+ * This class expects $parameters to be in the format of.
+ *
+ * array<string, array<array{name: string, type: string, tmp_name: string, error:
+ * int, size: int, uploaded: bool, uuid: ?string, stream: ?resource}>>
+ *
+ * as provided by the FileUploadNormalizer service. Meaning that every file upload
+ * can contain multiple files.
+ */
 class FileParameterBag extends ParameterBag
 {
     /**
@@ -16,15 +25,20 @@ class FileParameterBag extends ParameterBag
      */
     public function set(string $name, mixed $value): self
     {
-        if (
-            \is_array($value)
-            && \array_key_exists('tmp_name', $value)
-            && \is_string($value['tmp_name'])
-            && is_uploaded_file($value['tmp_name'])
-        ) {
-            $target = (new Filesystem())->tempnam(sys_get_temp_dir(), 'nc');
-            move_uploaded_file($value['tmp_name'], $target);
-            $value['tmp_name'] = $target;
+        if (!\is_array($value)) {
+            throw new \InvalidArgumentException('$value must be an array normalized by the FileUploadNormalizer service.');
+        }
+
+        foreach ($value as $k => $upload) {
+            if (!\is_array($upload) && !\array_key_exists('tmp_name', $upload)) {
+                throw new \InvalidArgumentException('$value must be an array normalized by the FileUploadNormalizer service.');
+            }
+
+            if (is_uploaded_file($upload['tmp_name'])) {
+                $target = (new Filesystem())->tempnam(sys_get_temp_dir(), 'nc');
+                move_uploaded_file($upload['tmp_name'], $target);
+                $value[$k]['tmp_name'] = $target;
+            }
         }
 
         return parent::set($name, $value);

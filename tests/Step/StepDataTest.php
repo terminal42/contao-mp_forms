@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Terminal42\MultipageFormsBundle\Test\Step;
 
 use PHPUnit\Framework\TestCase;
+use Terminal42\MultipageFormsBundle\Step\FileParameterBag;
 use Terminal42\MultipageFormsBundle\Step\ParameterBag;
 use Terminal42\MultipageFormsBundle\Step\StepData;
 
@@ -25,14 +26,17 @@ class StepDataTest extends TestCase
         $this->assertTrue($parameters->equals($stepData->getSubmitted()));
     }
 
-    /**
-     * @dataProvider parametersDataProvider
-     */
-    public function testFiles(array $data): void
+    public function testFiles(): void
     {
         $stepData = StepData::create(1);
 
-        $parameters = new ParameterBag($data);
+        $parameters = new FileParameterBag([
+            'file_upload' => [
+                [
+                    'tmp_name' => '/tmp/file.tmp',
+                ],
+            ],
+        ]);
 
         $this->assertTrue($stepData->getFiles()->empty());
 
