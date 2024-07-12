@@ -30,7 +30,7 @@ class FileParameterBag extends ParameterBag
         }
 
         foreach ($value as $k => $upload) {
-            if (!\is_array($upload) && !\array_key_exists('tmp_name', $upload)) {
+            if (!\is_array($upload) || !\array_key_exists('tmp_name', $upload)) {
                 throw new \InvalidArgumentException('$value must be an array normalized by the FileUploadNormalizer service.');
             }
 
