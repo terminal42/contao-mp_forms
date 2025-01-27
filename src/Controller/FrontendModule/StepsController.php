@@ -75,6 +75,7 @@ class StepsController extends AbstractFrontendModuleController
                 'nofollow' => true,
                 'accesskey' => '',
                 'target' => '',
+                'tabindex' => '',
             ];
         }
 
