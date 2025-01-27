@@ -100,6 +100,6 @@ class PrepareFomDataListener
             return new FileParameterBag();
         }
 
-        return new FileParameterBag($_SESSION['FILES'] ?? []);
+        return new FileParameterBag($this->fileUploadNormalizer->normalize($_SESSION['FILES'] ?? []));
     }
 }
