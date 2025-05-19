@@ -439,7 +439,7 @@ class FormManager
 
         // If the last form field is not a page break, we need to merge the last step into the previous one
         if (!$isPageBreakLastFormField) {
-            $lastStepIndex = count($this->formFieldsPerStep) - 1;
+            $lastStepIndex = \count($this->formFieldsPerStep) - 1;
 
             $this->formFieldsPerStep[$lastStepIndex - 1] = [
                 ...$this->formFieldsPerStep[$lastStepIndex - 1], // Second last step
