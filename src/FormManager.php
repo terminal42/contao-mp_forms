@@ -414,21 +414,40 @@ class FormManager
         }
 
         $i = 0;
+        $isPageBreakLastFormField = false;
 
         foreach ($this->formFieldModels as $k => $formField) {
             $this->formFieldsPerStep[$i][$k] = $formField;
 
             if ($this->isPageBreak($formField)) {
+                $isPageBreakLastFormField = true;
+
                 // Set the name on the model, otherwise one has to enter it in the back end every time
                 $formField->name = $formField->type;
 
                 // Increase counter
                 ++$i;
+            } else {
+                $isPageBreakLastFormField = false;
             }
 
             // If we have a regular submit form field, that's a misconfiguration
             if ('submit' === $formField->type) {
                 $this->isValidFormFieldCombination = false;
+            }
+        }
+
+        // If the last form field is not a page break, we need to merge the last step into the previous one
+        if (!$isPageBreakLastFormField) {
+            $lastStepIndex = count($this->formFieldsPerStep) - 1;
+
+            if (isset($this->formFieldsPerStep[$lastStepIndex], $this->formFieldsPerStep[$lastStepIndex - 1])) {
+                $this->formFieldsPerStep[$lastStepIndex - 1] = [
+                    ...$this->formFieldsPerStep[$lastStepIndex - 1], // Second last step
+                    ...$this->formFieldsPerStep[$lastStepIndex], // Last step
+                ];
+
+                array_pop($this->formFieldsPerStep);
             }
         }
 
