@@ -78,7 +78,19 @@ class FormManager
     {
         $this->prepare();
 
-        return \count(array_keys($this->formFieldsPerStep));
+        $count = 0;
+
+        // Get the number of steps based on the number of page breaks in the form fields
+        foreach ($this->formFieldsPerStep as $formFields) {
+            foreach ($formFields as $formField) {
+                if ($this->isPageBreak($formField)) {
+                    $count++;
+                    break;
+                }
+            }
+        }
+
+        return $count;
     }
 
     public function isValidFormFieldCombination(): bool
