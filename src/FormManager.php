@@ -447,7 +447,7 @@ class FormManager
                     ...$this->formFieldsPerStep[$lastStepIndex], // Last step
                 ];
 
-                unset($this->formFieldsPerStep[$lastStepIndex]);
+                array_pop($this->formFieldsPerStep);
             }
         }
 
