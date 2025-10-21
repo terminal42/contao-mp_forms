@@ -69,6 +69,7 @@ class PrepareFomDataListener
             // explanation fields) as the step data would be empty and getFirstInvalidStep()
             // would return the one before the empty step.
             unset($submitted['mp_form_pageswitch']);
+            unset($submitted[$perFormKey]);
 
             // Add session data for Contao 4.13
             if (version_compare(ContaoCoreBundle::getVersion(), '5.0', '<')) {
