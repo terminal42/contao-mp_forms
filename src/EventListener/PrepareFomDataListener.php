@@ -39,7 +39,11 @@ class PrepareFomDataListener
         $submittedBag = new ParameterBag($submitted);
         $labelsBag = new ParameterBag($labels);
 
-        $pageSwitchValue = $submittedBag->get('mp_form_pageswitch', '');
+    // Support per-form pageswitch names (e.g. "mp_form_pageswitch_123") to
+    // allow multiple forms on one page. Fall back to legacy "mp_form_pageswitch".
+    $perFormKey = 'mp_form_pageswitch_'.$form->id;
+
+    $pageSwitchValue = $submittedBag->get($perFormKey, $submittedBag->get('mp_form_pageswitch', ''));
 
         // Store data in session
         $stepData = $manager->getDataOfCurrentStep();

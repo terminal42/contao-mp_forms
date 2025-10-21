@@ -422,8 +422,11 @@ class FormManager
             if ($this->isPageBreak($formField)) {
                 $isPageBreakLastFormField = true;
 
-                // Set the name on the model, otherwise one has to enter it in the back end every time
-                $formField->name = $formField->type;
+                // Set a unique name on the model (per form) to allow multiple forms on the
+                // same page to work independently. Previously this was always
+                // "mp_form_pageswitch" which caused collisions when multiple forms were
+                // present.
+                $formField->name = $formField->type.'_'.$this->formModel->id;
 
                 // Increase counter
                 ++$i;
