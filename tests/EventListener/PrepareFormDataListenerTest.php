@@ -36,7 +36,7 @@ class PrepareFormDataListenerTest extends AbstractTestCase
 
         $listener = new PrepareFomDataListener($factory, $this->createMock(RequestStack::class), $this->createMock(FileUploadNormalizer::class));
 
-        $submitted = ['submitted2' => 'foobar', 'mp_form_pageswitch' => 'continue'];
+        $submitted = ['submitted2' => 'foobar', 'mp_form_pageswitch_42' => 'continue'];
         $labels = [];
         $fields = [];
         $files = [];
@@ -45,27 +45,27 @@ class PrepareFormDataListenerTest extends AbstractTestCase
             $listener($submitted, $labels, $fields, $form, $files);
         } catch (RedirectResponseException $exception) {
             $this->assertSame(
-                'https://www.example.com/form?step=2&ref='.self::SESSION_IDENTIFIER,
+                'https://www.example.com/form?step=2&ref=' . self::SESSION_IDENTIFIER,
                 $exception->getResponse()->headers->get('Location'),
             );
         }
 
-        $this->assertSame(['submitted2' => 'foobar', 'mp_form_pageswitch' => 'continue'], $submitted); // "mp_form_pageswitch" should not be removed
+        $this->assertSame(['submitted2' => 'foobar', 'mp_form_pageswitch_42' => 'continue'], $submitted); // pageswitch should not be removed
         $this->assertSame([], $labels); // Test we do not modify the hook parameters if not in last step
 
         $manager = $factory->forFormId(42);
 
-        $this->assertSame(['submitted1' => 'foobar', 'submitted2' => 'foobar', 'mp_form_pageswitch' => 'continue'], $manager->getDataOfAllSteps()->getAllSubmitted());
+        $this->assertSame(['submitted1' => 'foobar', 'submitted2' => 'foobar', 'mp_form_pageswitch_42' => 'continue'], $manager->getDataOfAllSteps()->getAllSubmitted());
         $this->assertSame(['label1' => 'foobar'], $manager->getDataOfAllSteps()->getAllLabels());
     }
 
     public function testDataIsStoredProperlyAndDoesAdjustHookParametersOnLastStep(): void
     {
         $stepData = StepData::create(0);
-        $stepData = $stepData->withSubmitted(new ParameterBag(['submitted1' => 'foobar', 'mp_form_pageswitch' => 'continue']));
+        $stepData = $stepData->withSubmitted(new ParameterBag(['submitted1' => 'foobar', 'mp_form_pageswitch_42' => 'continue']));
         $stepData = $stepData->withLabels(new ParameterBag(['label1' => 'foobar']));
         $stepData2 = StepData::create(1);
-        $stepData2 = $stepData2->withSubmitted(new ParameterBag(['submitted2' => 'foobar', 'mp_form_pageswitch' => 'continue']));
+        $stepData2 = $stepData2->withSubmitted(new ParameterBag(['submitted2' => 'foobar', 'mp_form_pageswitch_42' => 'continue']));
         $initialData = (new StepDataCollection())->set($stepData)->set($stepData2);
         $storage = $this->createStorage($initialData);
 
@@ -80,7 +80,7 @@ class PrepareFormDataListenerTest extends AbstractTestCase
 
         $listener = new PrepareFomDataListener($factory, $this->createMock(RequestStack::class), $this->createMock(FileUploadNormalizer::class));
 
-        $submitted = ['submitted3' => 'foobar', 'mp_form_pageswitch' => 'continue'];
+        $submitted = ['submitted3' => 'foobar', 'mp_form_pageswitch_42' => 'continue'];
         $labels = [];
         $fields = [];
         $files = [];

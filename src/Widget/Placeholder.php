@@ -143,8 +143,7 @@ class Placeholder extends Widget
             }
 
             // Also skip Contao internal tokens and the page switch element
-            if (\in_array($k, ['REQUEST_TOKEN', 'FORM_SUBMIT', 'mp_form_pageswitch'], true)
-                || str_starts_with($k, 'mp_form_pageswitch_')) {
+            if (\in_array($k, ['REQUEST_TOKEN', 'FORM_SUBMIT', $manager->getPageSwitchFormFieldName()], true)) {
                 continue;
             }
 

@@ -347,6 +347,16 @@ class FormManager
         return 'mp_form_pageswitch' === $formField->type;
     }
 
+    /**
+     * Returns the form field name used for the page switch control for this form.
+     */
+    public function getPageSwitchFormFieldName(): string
+    {
+        $this->prepare();
+
+        return 'mp_form_pageswitch_'.$this->formModel->id;
+    }
+
     private function loadFormFieldModels(): void
     {
         $collection = $this->contaoFramework->getAdapter(FormFieldModel::class)->findPublishedByPid($this->formModel->id);

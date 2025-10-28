@@ -39,11 +39,9 @@ class PrepareFomDataListener
         $submittedBag = new ParameterBag($submitted);
         $labelsBag = new ParameterBag($labels);
 
-    // Support per-form pageswitch names (e.g. "mp_form_pageswitch_123") to
-    // allow multiple forms on one page. Fall back to legacy "mp_form_pageswitch".
-    $perFormKey = 'mp_form_pageswitch_'.$form->id;
-
-    $pageSwitchValue = $submittedBag->get($perFormKey, $submittedBag->get('mp_form_pageswitch', ''));
+        // Use the per-form page switch name so multiple forms on the same page don't interfere.
+        $pageSwitchKey = $manager->getPageSwitchFormFieldName();
+        $pageSwitchValue = $submittedBag->get($pageSwitchKey, '');
 
         // Store data in session
         $stepData = $manager->getDataOfCurrentStep();
@@ -68,8 +66,7 @@ class PrepareFomDataListener
             // need it because otherwise it's not possible to have an empty step (e.g. only
             // explanation fields) as the step data would be empty and getFirstInvalidStep()
             // would return the one before the empty step.
-            unset($submitted['mp_form_pageswitch']);
-            unset($submitted[$perFormKey]);
+            unset($submitted[$pageSwitchKey]);
 
             // Add session data for Contao 4.13
             if (version_compare(ContaoCoreBundle::getVersion(), '5.0', '<')) {
