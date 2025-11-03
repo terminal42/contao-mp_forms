@@ -77,8 +77,9 @@ class CompileFormFieldsListener
             $manager->storeStepData($stepData);
         }
 
-        // Redirect back if asked for it
-        if ('back' === $request->request->get('mp_form_pageswitch')) {
+        // Redirect back if asked for it, using the per-form page switch name so
+        // forms on the same page don't interfere with each other.
+        if ('back' === $request->request->get($manager->getPageSwitchFormFieldName())) {
             $manager->redirectToStep($manager->getPreviousStep());
         }
 

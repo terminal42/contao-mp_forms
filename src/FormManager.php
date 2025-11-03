@@ -347,6 +347,16 @@ class FormManager
         return 'mp_form_pageswitch' === $formField->type;
     }
 
+    /**
+     * Returns the form field name used for the page switch control for this form.
+     */
+    public function getPageSwitchFormFieldName(): string
+    {
+        $this->prepare();
+
+        return 'mp_form_pageswitch_'.$this->formModel->id;
+    }
+
     private function loadFormFieldModels(): void
     {
         $collection = $this->contaoFramework->getAdapter(FormFieldModel::class)->findPublishedByPid($this->formModel->id);
@@ -422,8 +432,11 @@ class FormManager
             if ($this->isPageBreak($formField)) {
                 $isPageBreakLastFormField = true;
 
-                // Set the name on the model, otherwise one has to enter it in the back end every time
-                $formField->name = $formField->type;
+                // Set a unique name on the model (per form) to allow multiple forms on the
+                // same page to work independently. Previously this was always
+                // "mp_form_pageswitch" which caused collisions when multiple forms were
+                // present.
+                $formField->name = $formField->type.'_'.$this->formModel->id;
 
                 // Increase counter
                 ++$i;
