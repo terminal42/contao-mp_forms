@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Contao\Controller;
 
-$GLOBALS['TL_DCA']['tl_form_field']['palettes']['mp_form_pageswitch'] = '{type_legend},type,label,mp_forms_backButton,slabel;{image_legend:hide},imageSubmit;{expert_legend:hide},mp_forms_backFragment,mp_forms_nextFragment,class,accesskey,tabindex;{template_legend:hide},customTpl;{invisible_legend:hide},invisible';
+$GLOBALS['TL_DCA']['tl_form_field']['palettes']['mp_form_pageswitch'] = '{type_legend},type,label,mp_forms_backButton,slabel,mp_form_show_progressbar;{image_legend:hide},imageSubmit;{expert_legend:hide},mp_forms_backFragment,mp_forms_nextFragment,class,accesskey,tabindex;{template_legend:hide},customTpl;{invisible_legend:hide},invisible';
 $GLOBALS['TL_DCA']['tl_form_field']['palettes']['mp_form_placeholder'] = '{type_legend},type;{text_legend},html;{mp_forms_download_legend},mp_forms_downloadTemplate,mp_forms_downloadInline;{template_legend:hide},customTpl;{invisible_legend:hide},invisible';
 
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['mp_forms_backButton'] = [
@@ -12,6 +12,13 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['mp_forms_backButton'] = [
     'inputType' => 'text',
     'eval' => ['tl_class' => 'w50 clr', 'maxlength' => 255],
     'sql' => ['type' => 'string', 'length' => 255, 'default' => '', 'notnull' => true],
+];
+
+$GLOBALS['TL_DCA']['tl_form_field']['fields']['mp_form_show_progressbar'] = [
+    'exclude'   => true,
+    'inputType' => 'checkbox',
+    'eval'      => ['tl_class'=>'w50 clr'],
+    'sql'		=> ['type' => 'boolean', 'default' => false]
 ];
 
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['mp_forms_backFragment'] = [

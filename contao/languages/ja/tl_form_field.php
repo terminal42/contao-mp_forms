@@ -21,3 +21,4 @@ $GLOBALS['TL_LANG']['tl_form_field']['mp_forms_backFragment'] = ['戻るボタ�
 $GLOBALS['TL_LANG']['tl_form_field']['mp_forms_nextFragment'] = ['続けるボタンのURLの断片', '続けるボタンをクリックしたときのURLに付加するURLの断片(例えば、アンカーのリンク)を入力できます。"#"とすると省略できます。'];
 $GLOBALS['TL_LANG']['tl_form_field']['mp_forms_downloadTemplate'] = ['ダウンロード用テンプレート', 'サマリーページのダウンロードリンクのレンダリングに使用されるテンプレート。'];
 $GLOBALS['TL_LANG']['tl_form_field']['mp_forms_downloadInline'] = ['ブラウザーで表示', 'ダウンロードのダイアログを開く代わりにブラウザーでファイルを表示します。'];
+$GLOBALS['TL_LANG']['tl_form_field']['mp_form_show_progressbar'] = ['進捗状況を表示', 'フォームの現在のステップを進行状況インジケーターとして表示します。'];
