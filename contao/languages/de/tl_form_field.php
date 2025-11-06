@@ -21,3 +21,4 @@ $GLOBALS['TL_LANG']['tl_form_field']['mp_forms_backFragment'] = ['URL Fragment f
 $GLOBALS['TL_LANG']['tl_form_field']['mp_forms_nextFragment'] = ['URL Fragment für die Weiter-Schaltfläche', 'Hier können Sie ein optionales URL Fragment eingeben, welches der URL hinzugefügt wird (z.B. für Sprunglinks). Lassen Sie "#" weg.'];
 $GLOBALS['TL_LANG']['tl_form_field']['mp_forms_downloadTemplate'] = ['Template für Download-Elemente', 'Template, das für das Rendern des Download-Links auf Zusammenfassungsseiten verwendet wird.'];
 $GLOBALS['TL_LANG']['tl_form_field']['mp_forms_downloadInline'] = ['Im Browser anzeigen', 'Die Datei im Browser anzeigen, anstatt den Download-Dialog zu öffnen.'];
+$GLOBALS['TL_LANG']['tl_form_field']['mp_form_show_progressbar'] = ['Fortschritt anzeigen', 'zeigt den aktuellen Schritt im Formular als Fortschrittsanzeige an'];
