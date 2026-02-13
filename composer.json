@@ -29,8 +29,8 @@
     "php": "^8.1",
     "contao/core-bundle": "^4.13 || ^5.0.8",
     "codefog/contao-haste": "^5.2",
-    "symfony/filesystem": "^5.4 || ^6.0",
-    "symfony/var-dumper": "^5.4 || ^6.0"
+    "symfony/filesystem": "^5.4 || ^6.0 || ^7.4",
+    "symfony/var-dumper": "^5.4 || ^6.0 || ^7.4"
   },
   "autoload": {
     "psr-4": {
