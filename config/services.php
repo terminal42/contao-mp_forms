@@ -8,11 +8,11 @@ use Codefog\HasteBundle\FileUploadNormalizer;
 use Codefog\HasteBundle\UrlParser;
 use Terminal42\MultipageFormsBundle\Controller\FrontendModule\StepsController;
 use Terminal42\MultipageFormsBundle\EventListener\CompileFormFieldsListener;
-use Terminal42\MultipageFormsBundle\EventListener\InsertTagsListener;
 use Terminal42\MultipageFormsBundle\EventListener\LoadFormFieldListener;
 use Terminal42\MultipageFormsBundle\EventListener\PrepareFomDataListener;
 use Terminal42\MultipageFormsBundle\FormManagerFactory;
 use Terminal42\MultipageFormsBundle\FormManagerFactoryInterface;
+use Terminal42\MultipageFormsBundle\InsertTag\MultipageFormsInsertTag;
 
 return static function (ContainerConfigurator $container): void {
     $services = $container->services();
@@ -32,7 +32,7 @@ return static function (ContainerConfigurator $container): void {
     ;
 
     $services
-        ->set(InsertTagsListener::class)
+        ->set(MultipageFormsInsertTag::class)
         ->args([
             service(FormManagerFactoryInterface::class),
         ])
