@@ -15,7 +15,7 @@ use Terminal42\MultipageFormsBundle\Step\StepData;
 use Terminal42\MultipageFormsBundle\Step\StepDataCollection;
 use Terminal42\MultipageFormsBundle\Test\AbstractTestCase;
 
-class PrepareFormDataListenerTest extends AbstractTestCase
+final class PrepareFormDataListenerTest extends AbstractTestCase
 {
     public function testDataIsStoredProperlyAndDoesNotAdjustHookParametersIfNotOnLastStep(): void
     {
@@ -34,7 +34,7 @@ class PrepareFormDataListenerTest extends AbstractTestCase
             1, // This mocks step=1 (page 2)
         );
 
-        $listener = new PrepareFomDataListener($factory, $this->createMock(RequestStack::class), $this->createMock(FileUploadNormalizer::class));
+        $listener = new PrepareFomDataListener($factory, new \Symfony\Component\HttpFoundation\RequestStack(), $this->createStub(FileUploadNormalizer::class));
 
         $submitted = ['submitted2' => 'foobar', 'mp_form_pageswitch_42' => 'continue'];
         $labels = [];
@@ -78,7 +78,7 @@ class PrepareFormDataListenerTest extends AbstractTestCase
             2, // This mocks step=2 (page 3 - last page)
         );
 
-        $listener = new PrepareFomDataListener($factory, $this->createMock(RequestStack::class), $this->createMock(FileUploadNormalizer::class));
+        $listener = new PrepareFomDataListener($factory, new \Symfony\Component\HttpFoundation\RequestStack(), $this->createStub(FileUploadNormalizer::class));
 
         $submitted = ['submitted3' => 'foobar', 'mp_form_pageswitch_42' => 'continue'];
         $labels = [];

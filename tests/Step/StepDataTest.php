@@ -9,7 +9,7 @@ use Terminal42\MultipageFormsBundle\Step\FileParameterBag;
 use Terminal42\MultipageFormsBundle\Step\ParameterBag;
 use Terminal42\MultipageFormsBundle\Step\StepData;
 
-class StepDataTest extends TestCase
+final class StepDataTest extends TestCase
 {
     /**
      * @dataProvider parametersDataProvider
