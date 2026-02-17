@@ -210,7 +210,7 @@ class FormManager
         $this->validateStep($step);
 
         foreach ($this->getFieldsForStep($step) as $formField) {
-            if ($this->isPageBreak($formField) && '' !== $formField->label) {
+            if ($this->isPageBreak($formField) && $formField->label) {
                 return $formField->label;
             }
         }
