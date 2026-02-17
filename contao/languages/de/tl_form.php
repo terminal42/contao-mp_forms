@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 $GLOBALS['TL_LANG']['tl_form']['mp_forms_legend'] = 'Mehrseitige Formulare';
 
 /*
