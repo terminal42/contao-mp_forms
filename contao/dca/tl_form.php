@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 
 PaletteManipulator::create()
-    ->addLegend('mp_forms_legend', null, PaletteManipulator::POSITION_AFTER, true)
+    ->addLegend('mp_forms_legend', hide: true)
     ->addField('mp_forms_getParam', 'mp_forms_legend')
     ->addField('mp_forms_sessionRefParam', 'mp_forms_legend')
     ->addField('mp_forms_backFragment', 'mp_forms_legend')
@@ -14,7 +14,6 @@ PaletteManipulator::create()
 ;
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_getParam'] = [
-    'exclude' => true,
     'default' => 'step',
     'inputType' => 'text',
     'eval' => ['tl_class' => 'w50', 'maxlength' => 255],
@@ -22,7 +21,6 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_getParam'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_sessionRefParam'] = [
-    'exclude' => true,
     'default' => 'ref',
     'inputType' => 'text',
     'eval' => ['tl_class' => 'w50', 'maxlength' => 255],
@@ -30,14 +28,12 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_sessionRefParam'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_backFragment'] = [
-    'exclude' => true,
     'inputType' => 'text',
     'eval' => ['tl_class' => 'w50', 'maxlength' => 255],
     'sql' => "varchar(255) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['mp_forms_nextFragment'] = [
-    'exclude' => true,
     'inputType' => 'text',
     'eval' => ['tl_class' => 'w50', 'maxlength' => 255],
     'sql' => "varchar(255) NOT NULL default ''",

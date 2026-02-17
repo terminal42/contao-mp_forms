@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Terminal42\MultipageFormsBundle\FormManager;
 use Terminal42\MultipageFormsBundle\FormManagerFactoryInterface;
 
-#[AsFrontendModule('mp_form_steps', template: 'mod_mp_form_steps')]
+#[AsFrontendModule('mp_form_steps', template: 'frontend_module/mp_form_steps')]
 class StepsController extends AbstractFrontendModuleController
 {
     public function __construct(

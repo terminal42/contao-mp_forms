@@ -1,38 +1,34 @@
 <?php
 
-declare(strict_types=1);
+namespace Terminal42\MultipageFormsBundle\InsertTag;
 
-namespace Terminal42\MultipageFormsBundle\EventListener;
-
-use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsInsertTag;
+use Contao\CoreBundle\InsertTag\InsertTagResult;
+use Contao\CoreBundle\InsertTag\ResolvedInsertTag;
+use Contao\CoreBundle\InsertTag\Resolver\InsertTagResolverNestedResolvedInterface;
 use Terminal42\MultipageFormsBundle\FormManager;
 use Terminal42\MultipageFormsBundle\FormManagerFactoryInterface;
 
-#[AsHook('replaceInsertTags')]
-class InsertTagsListener
+#[AsInsertTag('mp_forms')]
+class MultipageFormsInsertTag implements InsertTagResolverNestedResolvedInterface
 {
     public function __construct(private readonly FormManagerFactoryInterface $formManagerFactory)
     {
     }
 
-    public function __invoke(string $tag)
+    public function __invoke(ResolvedInsertTag $insertTag): InsertTagResult
     {
-        if (!str_starts_with($tag, 'mp_forms::')) {
-            return false;
-        }
-
-        $chunks = explode('::', $tag);
-        $formId = $chunks[1];
-        $type = $chunks[2];
-        $value = $chunks[3] ?? '';
+        $formId = $insertTag->getParameters()->get(0);
+        $type = $insertTag->getParameters()->get(1);
+        $value = $insertTag->getParameters()->get(2) ?? '';
 
         $manager = $this->formManagerFactory->forFormId((int) $formId);
 
-        return match ($type) {
+        return new InsertTagResult(match ($type) {
             'step' => $this->getStepValue($manager, $value),
             'field_value' => $manager->getDataOfAllSteps()->getAllSubmitted()[$value] ?? '',
             default => '',
-        };
+        });
     }
 
     private function getStepValue(FormManager $manager, string $value): string
