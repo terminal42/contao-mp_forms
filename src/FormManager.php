@@ -326,6 +326,16 @@ class FormManager
     }
 
     /**
+     * Returns the form field name used for the page switch control for this form.
+     */
+    public function getPageSwitchFormFieldName(): string
+    {
+        $this->prepare();
+
+        return 'mp_form_pageswitch_'.$this->formModel->id;
+    }
+
+    /**
      * @throws \OutOfBoundsException if the step does not exist
      */
     private function validateStep(int $step): void
@@ -333,7 +343,7 @@ class FormManager
         $this->prepare();
 
         if (!$this->hasStep($step)) {
-            throw new \OutOfBoundsException(sprintf('Step %d does not exist.', $step));
+            throw new \OutOfBoundsException(\sprintf('Step %d does not exist.', $step));
         }
     }
 
@@ -345,16 +355,6 @@ class FormManager
     private function isPageBreak(FormFieldModel $formField): bool
     {
         return 'mp_form_pageswitch' === $formField->type;
-    }
-
-    /**
-     * Returns the form field name used for the page switch control for this form.
-     */
-    public function getPageSwitchFormFieldName(): string
-    {
-        $this->prepare();
-
-        return 'mp_form_pageswitch_'.$this->formModel->id;
     }
 
     private function loadFormFieldModels(): void
@@ -403,7 +403,7 @@ class FormManager
         $formModel = $this->contaoFramework->getAdapter(FormModel::class)->findById($this->formId);
 
         if (null === $formModel) {
-            throw new \InvalidArgumentException(sprintf('Could not load form ID "%d".', $this->formId));
+            throw new \InvalidArgumentException(\sprintf('Could not load form ID "%d".', $this->formId));
         }
 
         $this->formModel = $formModel;
@@ -452,7 +452,7 @@ class FormManager
 
         // If the last form field is not a page break, we need to merge the last step into the previous one
         if (!$isPageBreakLastFormField) {
-            $lastStepIndex = count($this->formFieldsPerStep) - 1;
+            $lastStepIndex = \count($this->formFieldsPerStep) - 1;
 
             if (isset($this->formFieldsPerStep[$lastStepIndex], $this->formFieldsPerStep[$lastStepIndex - 1])) {
                 $this->formFieldsPerStep[$lastStepIndex - 1] = [
@@ -477,7 +477,7 @@ class FormManager
             throw new \InvalidArgumentException('Mode must be either "back" or "next".');
         }
 
-        $key = sprintf('mp_forms_%sFragment', $mode);
+        $key = \sprintf('mp_forms_%sFragment', $mode);
 
         foreach ($this->getFieldsForStep($step) as $formField) {
             if ($this->isPageBreak($formField) && isset($formField->{$key}) && '' !== $formField->{$key}) {
