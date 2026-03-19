@@ -16,7 +16,7 @@ use Terminal42\MultipageFormsBundle\Storage\FormManagerAwareInterface;
 use Terminal42\MultipageFormsBundle\Storage\FormManagerAwareTrait;
 use Terminal42\MultipageFormsBundle\Storage\StorageInterface;
 
-class FormManagerFactoryTest extends TestCase
+final class FormManagerFactoryTest extends TestCase
 {
     public function testKeepsSameInstance(): void
     {
@@ -24,9 +24,9 @@ class FormManagerFactoryTest extends TestCase
         $requestStack->push(new Request());
 
         $factory = new FormManagerFactory(
-            $this->createMock(ContaoFramework::class),
+            $this->createStub(ContaoFramework::class),
             $requestStack,
-            $this->createMock(UrlParser::class),
+            $this->createStub(UrlParser::class),
         );
 
         $manager = $factory->forFormId(42);
@@ -44,9 +44,9 @@ class FormManagerFactoryTest extends TestCase
         $this->expectExceptionMessage('Cannot instantiate a FormManager without a request.');
 
         $factory = new FormManagerFactory(
-            $this->createMock(ContaoFramework::class),
+            $this->createStub(ContaoFramework::class),
             new RequestStack(),
-            $this->createMock(UrlParser::class),
+            $this->createStub(UrlParser::class),
         );
 
         $factory->forFormId(42);
@@ -76,9 +76,9 @@ class FormManagerFactoryTest extends TestCase
         };
 
         $factory = new FormManagerFactory(
-            $this->createMock(ContaoFramework::class),
+            $this->createStub(ContaoFramework::class),
             $requestStack,
-            $this->createMock(UrlParser::class),
+            $this->createStub(UrlParser::class),
         );
 
         $factory->setStorage($storage);

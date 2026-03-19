@@ -147,8 +147,8 @@ class Placeholder extends Widget
                 continue;
             }
 
-            $summaryToken[] = sprintf('<div data-ff-name="%s" class="label">%s</div>', htmlspecialchars($k), $v['label'] ?? '');
-            $summaryToken[] = sprintf('<div data-ff-name="%s" class="value">%s</div>', htmlspecialchars($k), $v['value']);
+            $summaryToken[] = \sprintf('<div data-ff-name="%s" class="label">%s</div>', htmlspecialchars($k), $v['label'] ?? '');
+            $summaryToken[] = \sprintf('<div data-ff-name="%s" class="value">%s</div>', htmlspecialchars($k), $v['value']);
         }
 
         $tokens['mp_forms_summary'] = implode("\n", $summaryToken);
@@ -157,7 +157,7 @@ class Placeholder extends Widget
         $debugTokens = [];
 
         foreach ($tokens as $k => $v) {
-            $debugTokens[sprintf('##%s##', $k)] = $v;
+            $debugTokens[\sprintf('##%s##', $k)] = $v;
         }
 
         $cloner = new VarCloner();
@@ -204,7 +204,7 @@ class Placeholder extends Widget
         // Generate a general HTML output using the download template
         $tpl = new FrontendTemplate(empty($this->mp_forms_downloadTemplate) ? 'ce_download' : $this->mp_forms_downloadTemplate);
         $tpl->link = $file->getBasename($file->getExtension());
-        $tpl->title = StringUtil::specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['download'], $file->getBasename($file->getExtension())));
+        $tpl->title = StringUtil::specialchars(\sprintf($GLOBALS['TL_LANG']['MSC']['download'], $file->getBasename($file->getExtension())));
         $tpl->href = $downloadUrl;
         $tpl->filesize = System::getReadableSize($file->getSize());
         $tpl->mime = $file->getMimeType();

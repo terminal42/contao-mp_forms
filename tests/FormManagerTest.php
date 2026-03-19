@@ -16,7 +16,7 @@ use Terminal42\MultipageFormsBundle\Storage\SessionReferenceGenerator\SessionRef
 use Terminal42\MultipageFormsBundle\Storage\StorageIdentifierGenerator\StorageIdentifierGeneratorInterface;
 use Terminal42\MultipageFormsBundle\Storage\StorageInterface;
 
-class FormManagerTest extends ContaoTestCase
+final class FormManagerTest extends ContaoTestCase
 {
     public function testAccessingAllDataWithoutFormFields(): void
     {
@@ -48,9 +48,9 @@ class FormManagerTest extends ContaoTestCase
             42,
             new Request(),
             $framework,
-            $this->createMock(StorageInterface::class),
-            $this->createMock(StorageIdentifierGeneratorInterface::class),
-            $this->createMock(SessionReferenceGeneratorInterface::class),
+            $this->createStub(StorageInterface::class),
+            $this->createStub(StorageIdentifierGeneratorInterface::class),
+            $this->createStub(SessionReferenceGeneratorInterface::class),
             new UrlParser(),
         );
 

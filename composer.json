@@ -27,10 +27,10 @@
   },
   "require": {
     "php": "^8.1",
-    "contao/core-bundle": "^4.13 || ^5.0.8",
+    "contao/core-bundle": "^5.3",
     "codefog/contao-haste": "^5.2",
-    "symfony/filesystem": "^5.4 || ^6.0",
-    "symfony/var-dumper": "^5.4 || ^6.0"
+    "symfony/filesystem": "^6.4 || ^7.4",
+    "symfony/var-dumper": "^6.4 || ^7.4"
   },
   "autoload": {
     "psr-4": {

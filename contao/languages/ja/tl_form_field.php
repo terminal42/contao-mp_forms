@@ -2,9 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * Form fields
- */
 $GLOBALS['TL_LANG']['FFL']['mp_form_pageswitch'] = ['改ページ', 'フォームの項目を異るページ/段階に分割します。'];
 $GLOBALS['TL_LANG']['FFL']['mp_form_placeholder'] = ['要約', '以前のページのフォームのデータを表示します。'];
 

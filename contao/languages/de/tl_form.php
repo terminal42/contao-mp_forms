@@ -2,9 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * Legends
- */
 $GLOBALS['TL_LANG']['tl_form']['mp_forms_legend'] = 'Mehrseitige Formulare';
 
 /*

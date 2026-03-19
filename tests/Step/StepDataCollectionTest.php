@@ -9,7 +9,7 @@ use Terminal42\MultipageFormsBundle\Step\ParameterBag;
 use Terminal42\MultipageFormsBundle\Step\StepData;
 use Terminal42\MultipageFormsBundle\Step\StepDataCollection;
 
-class StepDataCollectionTest extends TestCase
+final class StepDataCollectionTest extends TestCase
 {
     public function testGetAll(): void
     {
